@@ -67,6 +67,14 @@ const Header: React.FC<HeaderProps> = ({
             </div>
           )}
         </div>
+
+        {/* Notification - Moved to be next to the menu button (left of it) */}
+        <div className="absolute right-16 top-1/2 -translate-y-1/2 z-40">
+            <div className="w-12 h-12 rounded-full hover:bg-white/10 flex items-center justify-center relative transition-colors cursor-pointer text-white">
+               <i className="fa-solid fa-bell text-xl"></i>
+               <span className="absolute top-3 right-3 w-3 h-3 bg-dogame-danger rounded-full border-2 border-dogame-bg"></span>
+            </div>
+        </div>
         
         {/* Brand - Absolute Center */}
         <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center gap-2 pointer-events-none">
@@ -76,14 +84,6 @@ const Header: React.FC<HeaderProps> = ({
             <h1 className="font-sans font-bold text-3xl tracking-tight text-white drop-shadow-md hidden sm:block">
                 DOGAME
             </h1>
-        </div>
-        
-        {/* Notification - Absolute Left */}
-        <div className="absolute left-2 top-1/2 -translate-y-1/2">
-            <div className="w-12 h-12 rounded-full hover:bg-white/10 flex items-center justify-center relative transition-colors cursor-pointer text-white">
-               <i className="fa-solid fa-bell text-xl"></i>
-               <span className="absolute top-3 right-3 w-3 h-3 bg-dogame-danger rounded-full border-2 border-dogame-bg"></span>
-            </div>
         </div>
 
     </header>
