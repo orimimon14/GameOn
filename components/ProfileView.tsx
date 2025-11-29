@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { GamerProfile } from '../types';
 import ImageEditModal from './ImageEditModal';
@@ -117,15 +118,9 @@ const ProfileView: React.FC<ProfileViewProps> = ({ profile, onSave, isOwnProfile
                     </div>
                 </div>
 
-                {/* Settings & Logout */}
+                {/* Logout Only */}
                 {isOwnProfile && !isEditing && (
                     <div className="space-y-3 mb-8">
-                        <button 
-                            onClick={onReturnToLobby}
-                            className="w-full py-4 bg-white/5 rounded-2xl text-white font-medium hover:bg-white/10 transition-colors flex items-center justify-center gap-2"
-                        >
-                            <i className="fa-solid fa-home"></i> חזרה ללובי
-                        </button>
                          <button className="w-full py-4 text-dogame-danger font-medium hover:bg-dogame-danger/10 rounded-2xl transition-colors">
                             התנתק מהמערכת
                         </button>

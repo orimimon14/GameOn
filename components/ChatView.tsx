@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { GamerProfile, Message } from '../types';
 import { mockConversations, currentUserProfile } from '../constants';
@@ -44,8 +45,11 @@ const ChatView: React.FC<ChatViewProps> = ({ matches, onBack }) => {
     // Sidebar Component (Chat List)
     const Sidebar = () => (
         <div className={`flex-col h-full bg-dogame-surface border-l border-white/5 ${selectedMatchId ? 'hidden md:flex w-full md:w-96' : 'flex w-full'}`}>
-             <div className="p-4 pt-20 border-b border-white/5">
-                 <h2 className="text-2xl font-bold text-white">הודעות</h2>
+             <div className="p-4 pt-20 border-b border-white/5 flex items-center gap-3">
+                 <button onClick={onBack} className="w-10 h-10 flex items-center justify-center bg-white/5 hover:bg-white/10 rounded-full transition-colors text-white shadow-sm border border-white/5">
+                    <i className="fa-solid fa-arrow-right text-lg"></i>
+                 </button>
+                 <h2 className="text-2xl font-bold text-white pr-2">הודעות</h2>
              </div>
              <div className="overflow-y-auto flex-1 p-2 space-y-1">
                  {matches.map(m => {
@@ -56,7 +60,7 @@ const ChatView: React.FC<ChatViewProps> = ({ matches, onBack }) => {
                             onClick={() => setSelectedMatchId(m.id)}
                             className={`w-full p-4 rounded-xl flex items-center gap-4 transition-colors ${selectedMatchId === m.id ? 'bg-white/10' : 'hover:bg-white/5'}`}
                          >
-                             <div className="relative w-12 h-12">
+                             <div className="relative w-12 h-12 shrink-0">
                                  <img src={m.image} className="w-full h-full rounded-full object-cover" />
                                  <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-dogame-surface"></div>
                              </div>
@@ -81,9 +85,9 @@ const ChatView: React.FC<ChatViewProps> = ({ matches, onBack }) => {
         return (
             <div className={`flex-col flex-1 h-full bg-dogame-bg relative ${!selectedMatchId ? 'hidden md:flex' : 'flex'}`}>
                 {/* Header */}
-                <div className="h-20 flex items-center px-4 border-b border-white/5 bg-dogame-surface sticky top-0 z-10 pt-4 shadow-sm">
+                <div className="h-20 flex items-center px-4 border-b border-white/5 bg-dogame-surface sticky top-0 z-10 pt-4 shadow-sm shrink-0">
                     <button onClick={() => setSelectedMatchId(null)} className="md:hidden ml-4 text-dogame-text hover:bg-white/10 p-2 rounded-full"><i className="fa-solid fa-arrow-right"></i></button>
-                    <div className="w-10 h-10 rounded-full overflow-hidden ml-3 border border-white/10">
+                    <div className="w-10 h-10 rounded-full overflow-hidden ml-3 border border-white/10 shrink-0">
                         <img src={activeMatch.image} className="w-full h-full object-cover" />
                     </div>
                     <div>
@@ -92,14 +96,18 @@ const ChatView: React.FC<ChatViewProps> = ({ matches, onBack }) => {
                     </div>
                 </div>
 
-                {/* Messages */}
+                {/* Messages Area */}
                 <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-dogame-bg">
                     {(conversations[activeMatch.id] || []).map(msg => {
                         const isMe = msg.senderId === currentUserProfile.id;
                         return (
                             <div key={msg.id} className={`flex ${isMe ? 'justify-start' : 'justify-end'}`}>
-                                <div className={`max-w-[75%] px-4 py-3 rounded-2xl text-sm ${isMe ? 'bg-dogame-primary text-white rounded-tr-none shadow-md' : 'bg-dogame-surface text-gray-200 rounded-tl-none border border-white/5'}`}>
-                                    {msg.text}
+                                <div className={`max-w-[75%] px-4 py-3 rounded-2xl text-base shadow-sm ${
+                                    isMe 
+                                    ? 'bg-dogame-primary text-white rounded-tr-none' 
+                                    : 'bg-dogame-surface text-gray-100 rounded-tl-none border border-white/5'
+                                }`}>
+                                    <p className="whitespace-pre-wrap leading-relaxed" dir="auto">{msg.text}</p>
                                     <div className={`text-[10px] mt-1 opacity-70 ${isMe ? 'text-right' : 'text-left'}`}>{msg.timestamp}</div>
                                 </div>
                             </div>
@@ -108,18 +116,29 @@ const ChatView: React.FC<ChatViewProps> = ({ matches, onBack }) => {
                     <div ref={endRef} />
                 </div>
 
-                {/* Input */}
-                <div className="p-4 bg-dogame-surface border-t border-white/5">
-                    <form onSubmit={e => {e.preventDefault(); handleSend()}} className="flex gap-2 relative">
-                        <input 
-                            value={newMessage} 
-                            onChange={e => setNewMessage(e.target.value)} 
-                            placeholder="כתוב הודעה..."
-                            className="w-full bg-dogame-bg border border-white/10 rounded-full px-5 py-3 text-white focus:outline-none focus:border-dogame-primary transition-colors text-right"
-                            dir="rtl"
-                        />
-                        <button type="submit" className={`w-12 h-12 rounded-full flex items-center justify-center transition-all ${newMessage.trim() ? 'bg-dogame-primary text-white shadow-glow' : 'bg-white/5 text-dogame-muted'}`}>
-                            <i className="fa-solid fa-paper-plane text-sm"></i>
+                {/* Input Area */}
+                <div className="p-3 bg-dogame-surface border-t border-white/5 shrink-0">
+                    <form onSubmit={e => {e.preventDefault(); handleSend()}} className="flex gap-2 items-center">
+                        <div className="flex-1 relative">
+                            <input 
+                                value={newMessage} 
+                                onChange={e => setNewMessage(e.target.value)} 
+                                placeholder="כתוב הודעה..."
+                                className="w-full bg-dogame-bg border border-white/10 rounded-2xl pl-4 pr-4 py-3 text-white focus:outline-none focus:border-dogame-primary transition-colors text-right"
+                                dir="auto"
+                                autoComplete="off"
+                            />
+                        </div>
+                        <button 
+                            type="submit" 
+                            disabled={!newMessage.trim()}
+                            className={`w-12 h-12 rounded-full flex items-center justify-center transition-all shrink-0 ${
+                                newMessage.trim() 
+                                ? 'bg-dogame-primary text-white shadow-glow hover:scale-105 active:scale-95' 
+                                : 'bg-white/5 text-dogame-muted'
+                            }`}
+                        >
+                            <i className={`fa-solid fa-paper-plane text-lg ${newMessage.trim() ? '' : 'opacity-50'}`}></i>
                         </button>
                     </form>
                 </div>
