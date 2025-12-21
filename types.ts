@@ -1,3 +1,4 @@
+
 export interface GamerProfile {
   id: number;
   name: string;
@@ -17,7 +18,17 @@ export interface Message {
   timestamp: string;
 }
 
-// FIX: Add Persona type definition to resolve error in components/PersonaCard.tsx
+export interface BackgroundItem {
+  id: string;
+  name: string;
+  price: number;
+  previewUrl: string;
+  isAnimated: boolean;
+  rarity: 'Common' | 'Rare' | 'Epic' | 'Legendary';
+  animationClass?: string;
+  category: 'Cyber' | 'Nature' | 'Space' | 'Abstract';
+}
+
 export interface Persona {
   image: string;
   name: string;
@@ -28,21 +39,18 @@ export interface Persona {
   frustrations: string;
 }
 
-// FIX: Add Feature type definition to resolve error in components/FeatureTable.tsx
 export interface Feature {
   epic: string;
   userStory: string;
   priority: 'High' | 'Medium' | 'Low';
 }
 
-// FIX: Add RoadmapItem type definition to resolve error in components/Roadmap.tsx
 export interface RoadmapItem {
   quarter: string;
   title: string;
   description: string;
 }
 
-// FIX: Add GeneratedIdea type definition to resolve error in components/GeminiFeatureIdeation.tsx
 export interface GeneratedIdea {
   featureName: string;
   description: string;

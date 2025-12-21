@@ -1,44 +1,50 @@
+
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>DOGAME - Find Your Squad</title>
+    <title>swish & game - Find Your Squad</title>
     
-    <!-- Fonts: Rubik (Friendly Rounded) -->
+    <!-- Fonts: Rubik -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
 
     <!-- Tailwind & Config -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
+        darkMode: 'class',
         theme: {
           extend: {
             colors: {
               dogame: {
-                bg: '#0F172A',       // Slate 900 (Softer dark)
-                surface: '#1E293B',  // Slate 800
-                primary: '#6366F1',  // Indigo 500 (Friendly Blue/Purple)
-                accent: '#22D3EE',   // Cyan 400 (Bright but soft)
-                success: '#34D399',  // Emerald 400
-                danger: '#F43F5E',   // Rose 500
-                text: '#F8FAFC',     // Slate 50
-                muted: '#94A3B8',    // Slate 400
+                bg: '#0F172A',
+                surface: '#1E293B',
+                primary: '#6366F1',
+                accent: '#22D3EE',
+                success: '#34D399',
+                danger: '#F43F5E',
+                text: '#F8FAFC',
+                muted: '#94A3B8',
+                lightBg: '#F1F5F9',
+                lightSurface: '#FFFFFF',
+                lightText: '#0F172A',
               }
             },
             fontFamily: {
-              sans: ['Rubik', 'sans-serif'], // One font for everything, very readable
+              sans: ['Rubik', 'sans-serif'],
             },
             boxShadow: {
               'soft': '0 10px 40px -10px rgba(0, 0, 0, 0.3)',
-              'glow': '0 0 20px rgba(99, 102, 241, 0.4)',
+              'glow': '0 0 25px rgba(99, 102, 241, 0.5)',
             },
             animation: {
               'float': 'float 6s ease-in-out infinite',
               'pop': 'pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+              'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
             },
             keyframes: {
               float: {
@@ -48,6 +54,11 @@
               pop: {
                 '0%': { transform: 'scale(0.9)', opacity: 0 },
                 '100%': { transform: 'scale(1)', opacity: 1 },
+              },
+              pan: {
+                '0%': { transform: 'scale(1.1) translateX(-2%) translateY(-2%)' },
+                '50%': { transform: 'scale(1.2) translateX(2%) translateY(2%)' },
+                '100%': { transform: 'scale(1.1) translateX(-2%) translateY(-2%)' },
               }
             }
           }
@@ -57,36 +68,29 @@
 
     <style>
       body {
-        background-color: #0F172A;
-        color: #F8FAFC;
-        font-family: 'Rubik', sans-serif;
-        overflow: hidden;
+        transition: background-color 0.3s ease, color 0.3s ease;
+      }
+      .dark body { background-color: #0F172A; color: #F8FAFC; }
+      .light body { background-color: #F1F5F9; color: #0F172A; }
+
+      .bg-moving {
+        animation: pan 20s ease-in-out infinite;
+        will-change: transform;
       }
 
-      /* Soft Gradient Background */
-      .bg-soft {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        z-index: -2;
-        background: radial-gradient(circle at 50% 0%, #312e81 0%, #0F172A 70%);
-      }
-
-      /* Clean Card */
-      .clean-card {
-        background: #1E293B;
-        border-radius: 24px;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-        border: 1px solid rgba(255, 255, 255, 0.05);
-      }
-
-      /* Scrollbar */
       ::-webkit-scrollbar { width: 6px; }
       ::-webkit-scrollbar-track { background: transparent; }
-      ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
-      ::-webkit-scrollbar-thumb:hover { background: #475569; }
+      ::-webkit-scrollbar-thumb { background: #6366F1; border-radius: 10px; }
+      
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      
+      /* Match pop-up animation */
+      @keyframes match-pop {
+        0% { transform: scale(0.5) rotate(-10deg); opacity: 0; }
+        70% { transform: scale(1.1) rotate(5deg); opacity: 1; }
+        100% { transform: scale(1) rotate(0); opacity: 1; }
+      }
+      .animate-match { animation: match-pop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
     </style>
     <script type="importmap">
     {
@@ -99,8 +103,7 @@
     }
     </script>
   </head>
-  <body>
-    <div class="bg-soft"></div>
+  <body class="dark overflow-hidden">
     <div id="root"></div>
   </body>
 </html>
