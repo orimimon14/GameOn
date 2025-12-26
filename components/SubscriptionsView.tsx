@@ -32,12 +32,11 @@ const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ onSelectPlan }) =
             isCurrent: false,
             recommended: true,
             features: [
-                { text: 'סוואייפים ללא הגבלה', included: true },
-                { text: 'צ׳אט ללא הגבלה (כולל וידאו)', included: true },
-                { text: 'העלאת קבצים עד 1GB', included: true },
-                { text: 'ראה מי עשה לך לייק', included: true },
-                { text: 'חוויה נקייה מפרסומות', included: true },
-                { text: 'גישה מלאה ל-AI Engine', included: true },
+                { text: 'צ׳אט בסיסי ופתיחת קבוצות', included: true },
+                { text: 'העלאת קבצים עד 100MB', included: true },
+                { text: 'אימוג׳ים ללא הגבלת האתר', included: true },
+                { text: 'עיצוב פרופיל משודרג', included: true },
+                { text: 'בחירה חופשית לצבע השם', included: true },
             ],
             color: 'gold'
         }
