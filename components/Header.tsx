@@ -1,8 +1,10 @@
 
 import React, { useState } from 'react';
+import { GamerProfile } from '../types';
 
 interface HeaderProps {
   viewTitle: string;
+  userProfile: GamerProfile;
   onOpenSubscriptions: () => void;
   onOpenProfile: () => void;
   onOpenChat: () => void;
@@ -13,6 +15,7 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ 
   viewTitle, 
+  userProfile,
   onOpenSubscriptions, 
   onOpenProfile, 
   onOpenChat, 
@@ -89,7 +92,6 @@ const Header: React.FC<HeaderProps> = ({
                     <div className="fixed inset-0 z-40" onClick={() => setIsNotifMenuOpen(false)}></div>
                     <div className="absolute top-14 right-0 w-80 dark:bg-dogame-surface/95 bg-white/95 backdrop-blur-2xl rounded-[28px] shadow-2xl border dark:border-white/10 border-gray-200 z-50 overflow-hidden animate-pop origin-top-right">
                         
-                        {/* Notification Header with Toggle */}
                         <div className="p-4 border-b dark:border-white/5 border-gray-100 flex items-center justify-between">
                           <div className="flex items-center gap-2">
                             <button 
@@ -205,7 +207,6 @@ const Header: React.FC<HeaderProps> = ({
 
                   <div className="w-full h-[1px] dark:bg-white/5 bg-gray-100 my-2"></div>
 
-                  {/* PREMIUM CALL TO ACTION */}
                   <button onClick={() => {onOpenSubscriptions(); setIsMenuOpen(false)}} className="text-right px-4 py-4 rounded-2xl bg-gradient-to-r from-yellow-400/10 to-amber-500/10 border border-yellow-500/30 flex items-center justify-between group hover:from-yellow-400 hover:to-amber-500 transition-all shadow-lg shadow-yellow-500/10">
                     <div className="w-8 h-8 rounded-lg bg-yellow-400 flex items-center justify-center group-hover:bg-white group-hover:text-yellow-500 transition-colors shadow-glow">
                       <i className="fa-solid fa-crown text-sm"></i>

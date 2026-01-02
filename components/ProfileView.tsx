@@ -34,11 +34,21 @@ const ProfileView: React.FC<ProfileViewProps> = ({
         setIsEditing(false);
     }
 
-    const handleEquipBackground = (bg: BackgroundItem) => {
-        const updated = { ...editedProfile, bannerImage: bg.previewUrl };
+    const handleEquipItem = (item: BackgroundItem) => {
+        let updated;
+        if (item.itemType === 'background') {
+            updated = { ...editedProfile, bannerImage: item.previewUrl };
+        } else {
+            updated = { ...editedProfile, avatarBorder: item.previewUrl };
+        }
         setEditedProfile(updated);
         onSave(updated);
         setIsCollectionModalOpen(false);
+    };
+
+    const isColorBackground = (bg: string | null | undefined) => {
+        if (!bg) return false;
+        return bg.startsWith('#') || bg.startsWith('rgb') || bg.startsWith('linear-gradient');
     };
 
     return (
@@ -47,7 +57,14 @@ const ProfileView: React.FC<ProfileViewProps> = ({
             {/* Full Page Background Area */}
             {profile.bannerImage && (
                 <div className="fixed inset-0 z-0 pointer-events-none">
-                    <img src={profile.bannerImage} className="w-full h-full object-cover animate-pulse-slow opacity-40" />
+                    {isColorBackground(profile.bannerImage) ? (
+                        <div 
+                            style={{ background: profile.bannerImage }} 
+                            className="w-full h-full animate-pulse-slow opacity-40 bg-moving" 
+                        />
+                    ) : (
+                        <img src={profile.bannerImage} className="w-full h-full object-cover animate-pulse-slow opacity-40" />
+                    )}
                     <div className="absolute inset-0 bg-gradient-to-b from-dogame-bg/30 via-dogame-bg/80 to-dogame-bg"></div>
                     <div className="absolute inset-0 backdrop-blur-[6px]"></div>
                 </div>
@@ -68,7 +85,7 @@ const ProfileView: React.FC<ProfileViewProps> = ({
                 isOpen={isCollectionModalOpen}
                 onClose={() => setIsCollectionModalOpen(false)}
                 ownedItems={ownedBackgrounds}
-                onEquip={handleEquipBackground}
+                onEquip={handleEquipItem}
             />
             
             {/* Profile Content */}
@@ -76,12 +93,22 @@ const ProfileView: React.FC<ProfileViewProps> = ({
                 
                 {/* Header Section */}
                 <div className="flex flex-col items-center text-center mb-10">
-                    <div className="relative w-40 h-40 mb-6">
-                        <div className="w-full h-full rounded-full border-8 border-white/10 overflow-hidden shadow-2xl bg-dogame-surface group">
-                            <img src={editedProfile.image} className="w-full h-full object-cover transition-transform group-hover:scale-110" />
+                    <div className="relative w-40 h-40 mb-6 group">
+                        {/* Avatar Border Wrapper */}
+                        <div className="absolute inset-0 p-1.5 rounded-full overflow-hidden">
+                            {editedProfile.avatarBorder && (
+                                <div 
+                                    style={{ background: editedProfile.avatarBorder }} 
+                                    className="absolute inset-0 z-0 bg-moving" 
+                                />
+                            )}
+                            <div className="relative z-10 w-full h-full rounded-full border-[6px] border-dogame-bg overflow-hidden shadow-2xl bg-dogame-surface">
+                                <img src={editedProfile.image} className="w-full h-full object-cover transition-transform group-hover:scale-110" />
+                            </div>
                         </div>
+                        
                         {isOwnProfile && (
-                            <button onClick={() => { setImageTarget('image'); setIsImageModalOpen(true); }} className="absolute bottom-2 right-2 w-12 h-12 bg-dogame-primary text-white rounded-full flex items-center justify-center border-4 border-dogame-bg hover:scale-110 transition-transform shadow-glow">
+                            <button onClick={() => { setImageTarget('image'); setIsImageModalOpen(true); }} className="absolute bottom-2 right-2 z-20 w-12 h-12 bg-dogame-primary text-white rounded-full flex items-center justify-center border-4 border-dogame-bg hover:scale-110 transition-transform shadow-glow">
                                 <i className="fa-solid fa-camera"></i>
                             </button>
                         )}
@@ -116,7 +143,7 @@ const ProfileView: React.FC<ProfileViewProps> = ({
                         <div className="flex items-center justify-between">
                             <div className="text-right">
                                 <h3 className="text-white font-bold text-lg mb-1">האוסף שלי</h3>
-                                <p className="text-dogame-muted text-sm">{ownedBackgrounds.length} רקעים שנרכשו</p>
+                                <p className="text-dogame-muted text-sm">{ownedBackgrounds.length} פריטי סטייל</p>
                             </div>
                             <button 
                                 onClick={() => setIsCollectionModalOpen(true)}
@@ -218,7 +245,7 @@ const ProfileView: React.FC<ProfileViewProps> = ({
                             className="w-full py-4 bg-gradient-to-r from-dogame-primary to-dogame-accent text-white font-black italic uppercase rounded-[20px] shadow-glow hover:scale-[1.01] transition-all flex items-center justify-center gap-3"
                         >
                             <i className="fa-solid fa-palette"></i>
-                            <span>שנה רקע פרופיל מהאוסף</span>
+                            <span>שנה סטייל מהאוסף</span>
                         </button>
                         <button className="w-full py-4 text-dogame-danger font-black italic uppercase hover:bg-dogame-danger/10 rounded-[20px] transition-colors border border-dogame-danger/10">
                             התנתק מהמערכת

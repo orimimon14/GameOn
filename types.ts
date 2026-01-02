@@ -5,6 +5,7 @@ export interface GamerProfile {
   age: number;
   image: string;
   bannerImage?: string;
+  avatarBorder?: string; // CSS background/gradient for the border
   bio: string;
   games: { name: string; icon: string; lookingFor: string; }[];
   platforms: string[];
@@ -23,10 +24,11 @@ export interface BackgroundItem {
   name: string;
   price: number;
   previewUrl: string;
+  itemType: 'background' | 'avatar-border';
   isAnimated: boolean;
   rarity: 'Common' | 'Rare' | 'Epic' | 'Legendary';
   animationClass?: string;
-  category: 'Cyber' | 'Nature' | 'Space' | 'Abstract';
+  category: 'Cyber' | 'Nature' | 'Space' | 'Abstract' | 'Borders';
 }
 
 export interface Persona {

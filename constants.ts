@@ -34,7 +34,8 @@ export const currentUserProfile: GamerProfile = {
     name: 'ישראל ישראלי',
     age: 26,
     image: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=1780&auto=format&fit=crop',
-    bannerImage: 'https://images.unsplash.com/photo-1580327344181-c1163234e5a0?q=80&w=2532&auto=format&fit=crop',
+    bannerImage: 'linear-gradient(135deg, #0F172A 0%, #1E293B 100%)',
+    avatarBorder: 'linear-gradient(135deg, #6366F1 0%, #22D3EE 100%)',
     bio: 'גיימר בנשמה, מחפש אנשים טובים למשחקים בערב.',
     games: [
       { name: 'Call of Duty: Warzone', icon: 'fa-crosshairs', lookingFor: 'משחק בעיקר בסופ"שים.' },
@@ -44,173 +45,106 @@ export const currentUserProfile: GamerProfile = {
 };
 
 export const backgroundShopItems: BackgroundItem[] = [
-  // --- CYBER ---
+  // --- BACKGROUNDS ---
   {
-    id: 'cyber-1',
-    name: 'Cyber Neon City',
+    id: 'color-1',
+    name: 'Cyber Purple Neon',
     price: 850,
-    previewUrl: 'https://images.unsplash.com/photo-1605810230434-7631ac76ec81?q=80&w=2070&auto=format&fit=crop',
+    previewUrl: 'linear-gradient(135deg, #6366F1 0%, #A855F7 100%)',
+    itemType: 'background',
     isAnimated: true,
     rarity: 'Legendary',
     animationClass: 'bg-moving',
     category: 'Cyber'
   },
   {
-    id: 'cyber-2',
-    name: 'Glitch Matrix',
+    id: 'color-2',
+    name: 'Electric Cyan',
     price: 1500,
-    previewUrl: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=2070&auto=format&fit=crop',
+    previewUrl: 'linear-gradient(135deg, #22D3EE 0%, #0EA5E9 100%)',
+    itemType: 'background',
     isAnimated: true,
     rarity: 'Legendary',
     animationClass: 'animate-pulse-slow',
     category: 'Cyber'
   },
   {
-    id: 'cyber-3',
-    name: 'Cyber Alleyway',
+    id: 'color-3',
+    name: 'Dark Matter',
     price: 400,
-    previewUrl: 'https://images.unsplash.com/photo-1514467953516-778898144f7d?q=80&w=1932&auto=format&fit=crop',
+    previewUrl: '#0F172A',
+    itemType: 'background',
     isAnimated: false,
     rarity: 'Common',
     category: 'Cyber'
   },
-
-  // --- SPACE ---
   {
-    id: 'space-1',
-    name: 'Infinite Galaxy',
+    id: 'color-4',
+    name: 'Deep Space Violet',
     price: 950,
-    previewUrl: 'https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?q=80&w=2072&auto=format&fit=crop',
+    previewUrl: 'linear-gradient(135deg, #1E1B4B 0%, #312E81 100%)',
+    itemType: 'background',
     isAnimated: true,
     rarity: 'Legendary',
     animationClass: 'bg-moving',
-    category: 'Space'
-  },
-  {
-    id: 'space-2',
-    name: 'Starship Bridge',
-    price: 2200,
-    previewUrl: 'https://images.unsplash.com/photo-1614728263952-84ea206f99b6?q=80&w=1974&auto=format&fit=crop',
-    isAnimated: true,
-    rarity: 'Epic',
-    animationClass: 'bg-moving',
-    category: 'Space'
-  },
-  {
-    id: 'space-3',
-    name: 'Mars Horizon',
-    price: 350,
-    previewUrl: 'https://images.unsplash.com/photo-1614728894747-a83421e2b9c9?q=80&w=1974&auto=format&fit=crop',
-    isAnimated: false,
-    rarity: 'Common',
     category: 'Space'
   },
 
-  // --- ABSTRACT ---
+  // --- AVATAR BORDERS ---
   {
-    id: 'abstract-1',
-    name: 'Liquid Gold',
-    price: 1200,
-    previewUrl: 'https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=2070&auto=format&fit=crop',
-    isAnimated: true,
-    rarity: 'Legendary',
-    animationClass: 'bg-moving',
-    category: 'Abstract'
-  },
-  {
-    id: 'abstract-2',
-    name: 'Vaporwave Sunset',
-    price: 600,
-    previewUrl: 'https://images.unsplash.com/photo-1614850523296-d8c1af93d400?q=80&w=2070&auto=format&fit=crop',
-    isAnimated: false,
-    rarity: 'Rare',
-    category: 'Abstract'
-  },
-  {
-    id: 'abstract-3',
-    name: 'Prism Geometry',
-    price: 800,
-    previewUrl: 'https://images.unsplash.com/photo-1550684376-efcbd6e3f031?q=80&w=2070&auto=format&fit=crop',
-    isAnimated: true,
-    rarity: 'Epic',
-    animationClass: 'animate-pulse-slow',
-    category: 'Abstract'
-  },
-
-  // --- NATURE ---
-  {
-    id: 'nature-1',
-    name: 'Cherry Blossom Rain',
-    price: 1800,
-    previewUrl: 'https://images.unsplash.com/photo-1522383225653-ed111181a951?q=80&w=2076&auto=format&fit=crop',
-    isAnimated: true,
-    rarity: 'Legendary',
-    animationClass: 'bg-moving',
-    category: 'Nature'
-  },
-  {
-    id: 'nature-2',
-    name: 'Northern Lights',
-    price: 1300,
-    previewUrl: 'https://images.unsplash.com/photo-1531366930477-4f20958149b1?q=80&w=2070&auto=format&fit=crop',
-    isAnimated: true,
-    rarity: 'Epic',
-    animationClass: 'bg-moving',
-    category: 'Nature'
-  },
-  {
-    id: 'nature-3',
-    name: 'Deep Forest',
-    price: 300,
-    previewUrl: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=2071&auto=format&fit=crop',
-    isAnimated: false,
-    rarity: 'Common',
-    category: 'Nature'
-  },
-  {
-    id: 'nature-4',
-    name: 'Enchanted Waterfall',
+    id: 'border-1',
+    name: 'Gold Royal Ring',
     price: 2500,
-    previewUrl: 'https://images.unsplash.com/photo-1433086566547-82d55d24a3f1?q=80&w=1974&auto=format&fit=crop',
+    previewUrl: 'linear-gradient(135deg, #F59E0B 0%, #78350F 100%)',
+    itemType: 'avatar-border',
     isAnimated: true,
     rarity: 'Legendary',
     animationClass: 'bg-moving',
-    category: 'Nature'
+    category: 'Borders'
   },
-
-  // --- MORE ---
   {
-    id: 'extra-1',
-    name: 'Retro Arcade',
-    price: 1100,
-    previewUrl: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=2070&auto=format&fit=crop',
+    id: 'border-2',
+    name: 'Neon Pulse Rose',
+    price: 1200,
+    previewUrl: 'linear-gradient(135deg, #F43F5E 0%, #881337 100%)',
+    itemType: 'avatar-border',
     isAnimated: true,
     rarity: 'Epic',
     animationClass: 'animate-pulse-slow',
-    category: 'Cyber'
+    category: 'Borders'
   },
   {
-    id: 'extra-2',
-    name: 'Steam Engine',
-    price: 550,
-    previewUrl: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=2070&auto=format&fit=crop',
+    id: 'border-3',
+    name: 'Cyber Cyan Core',
+    price: 900,
+    previewUrl: 'linear-gradient(135deg, #22D3EE 0%, #0369A1 100%)',
+    itemType: 'avatar-border',
     isAnimated: false,
     rarity: 'Rare',
-    category: 'Abstract'
+    category: 'Borders'
   },
   {
-    id: 'extra-3',
-    name: 'Dragon Lair',
-    price: 3000,
-    previewUrl: 'https://images.unsplash.com/photo-1577493379412-17724e3f126c?q=80&w=1964&auto=format&fit=crop',
-    isAnimated: true,
-    rarity: 'Legendary',
-    animationClass: 'bg-moving',
-    category: 'Abstract'
+    id: 'border-4',
+    name: 'Poison Ivy Green',
+    price: 600,
+    previewUrl: 'linear-gradient(135deg, #10B981 0%, #064E3B 100%)',
+    itemType: 'avatar-border',
+    isAnimated: false,
+    rarity: 'Rare',
+    category: 'Borders'
+  },
+  {
+    id: 'border-5',
+    name: 'Common Gray Rim',
+    price: 200,
+    previewUrl: '#475569',
+    itemType: 'avatar-border',
+    isAnimated: false,
+    rarity: 'Common',
+    category: 'Borders'
   }
 ];
 
-// Seed some data for testing
 export const profilesWhoLikedUser: GamerProfile[] = [
     {...gamerProfiles[0], id: 101, name: 'רוני'},
     {...gamerProfiles[1], id: 102, name: 'שני'}
