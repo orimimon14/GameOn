@@ -7,16 +7,14 @@ import ProfileView from './components/ProfileView';
 import ChatView from './components/ChatView';
 import ShopView from './components/ShopView';
 import SettingsView from './components/SettingsView';
-import GeminiSquadEngine from './components/GeminiSquadEngine';
 import SubscriptionsView from './components/SubscriptionsView';
 import GamesView from './components/GamesView';
 
 // --- Types ---
-type ActiveView = 'swipe' | 'likes-you' | 'games' | 'profile' | 'chat' | 'shop' | 'settings' | 'subscriptions' | 'squad-engine';
+type ActiveView = 'swipe' | 'likes-you' | 'games' | 'profile' | 'chat' | 'shop' | 'settings' | 'subscriptions';
 
 // --- Sub-components ---
 
-// Fix for missing SwipeView component (Error on line 211)
 const SwipeView: React.FC<{ onLike: (p: GamerProfile) => void }> = ({ onLike }) => {
     const [currentIndex, setCurrentIndex] = useState(0);
     const profiles = gamerProfiles;
@@ -125,7 +123,6 @@ const LikesGrid: React.FC<{ profiles: GamerProfile[]; onProfileClick: (p: GamerP
 const SideNav: React.FC<{ activeView: ActiveView; userProfile: GamerProfile; onNavigate: (v: ActiveView) => void }> = ({ activeView, userProfile, onNavigate }) => {
     const items = [
         { id: 'swipe', icon: 'fa-gamepad', label: 'התאמות', bg: 'hover:bg-indigo-500' },
-        { id: 'squad-engine', icon: 'fa-microchip', label: 'מנוע סקוואד', bg: 'hover:bg-violet-500' },
         { id: 'games', icon: 'fa-layer-group', label: 'משחקים', bg: 'hover:bg-emerald-500' },
         { id: 'shop', icon: 'fa-shopping-bag', label: 'חנות', bg: 'hover:bg-yellow-500' },
         { id: 'likes-you', icon: 'fa-heart', label: 'לייקים', bg: 'hover:bg-rose-500' },
@@ -202,7 +199,6 @@ const App: React.FC = () => {
             case 'profile': return 'פרופיל אישי';
             case 'games': return 'בחירת משחק';
             case 'subscriptions': return 'שדרג ל-Premium';
-            case 'squad-engine': return 'מנוע סקוואד (AI)';
             default: return 'swish & game';
         }
     };
@@ -279,7 +275,6 @@ const App: React.FC = () => {
                     {activeView === 'likes-you' && <LikesGrid profiles={profilesWhoLikedUser} onProfileClick={(p) => {setViewingProfile(p); setActiveView('profile');}} onMatch={(p) => {alert(`התאמת עם ${p.name}!`); handleNavigate('chat');}} />}
                     {activeView === 'games' && <GamesView onSelectGame={() => handleNavigate('swipe')} />}
                     {activeView === 'subscriptions' && <SubscriptionsView onSelectPlan={(plan) => alert(`נרשמת בהצלחה לתוכנית ${plan}!`)} />}
-                    {activeView === 'squad-engine' && <GeminiSquadEngine />}
                     {activeView === 'settings' && (
                         <SettingsView 
                             isDarkMode={isDarkMode} 
