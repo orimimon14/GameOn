@@ -14,6 +14,7 @@ export const gamerProfiles: GamerProfile[] = [
     ],
     platforms: ['PlayStation 5', 'PC'],
     skillLevel: 'תחרותי',
+    rank: 'Platinum IV',
   },
   {
     id: 2,
@@ -26,6 +27,7 @@ export const gamerProfiles: GamerProfile[] = [
     ],
     platforms: ['PC', 'Nintendo Switch'],
     skillLevel: 'קז\'ואל',
+    rank: 'Silver II',
   },
   {
     id: 3,
@@ -39,6 +41,7 @@ export const gamerProfiles: GamerProfile[] = [
     ],
     platforms: ['PlayStation 5'],
     skillLevel: 'תחרותי',
+    rank: 'Gold I',
   },
   {
     id: 4,
@@ -52,6 +55,7 @@ export const gamerProfiles: GamerProfile[] = [
     ],
     platforms: ['PC'],
     skillLevel: 'מקצוען',
+    rank: 'Diamond III',
   },
   {
     id: 5,
@@ -65,6 +69,7 @@ export const gamerProfiles: GamerProfile[] = [
     ],
     platforms: ['PC'],
     skillLevel: 'קז\'ואל',
+    rank: 'Bronze V',
   },
   {
     id: 6,
@@ -78,6 +83,7 @@ export const gamerProfiles: GamerProfile[] = [
     ],
     platforms: ['PC', 'Xbox Series X'],
     skillLevel: 'תחרותי',
+    rank: 'Platinum I',
   },
   {
     id: 7,
@@ -90,6 +96,7 @@ export const gamerProfiles: GamerProfile[] = [
     ],
     platforms: ['PlayStation 5', 'Xbox Series X'],
     skillLevel: 'תחרותי',
+    rank: 'Gold III',
   },
   {
     id: 8,
@@ -103,6 +110,7 @@ export const gamerProfiles: GamerProfile[] = [
     ],
     platforms: ['PC'],
     skillLevel: 'קז\'ואל',
+    rank: 'Bronze I',
   },
   {
     id: 9,
@@ -116,6 +124,7 @@ export const gamerProfiles: GamerProfile[] = [
     ],
     platforms: ['PC'],
     skillLevel: 'מקצוען',
+    rank: 'Grandmaster',
   },
   {
     id: 10,
@@ -129,6 +138,7 @@ export const gamerProfiles: GamerProfile[] = [
     ],
     platforms: ['Nintendo Switch'],
     skillLevel: 'קז\'ואל',
+    rank: 'Silver IV',
   },
   {
     id: 11,
@@ -141,6 +151,7 @@ export const gamerProfiles: GamerProfile[] = [
     ],
     platforms: ['PC', 'Mobile'],
     skillLevel: 'תחרותי',
+    rank: 'Platinum II',
   },
   {
     id: 12,
@@ -154,6 +165,7 @@ export const gamerProfiles: GamerProfile[] = [
     ],
     platforms: ['PC', 'PlayStation 5'],
     skillLevel: 'תחרותי',
+    rank: 'Diamond I',
   },
   {
     id: 13,
@@ -166,6 +178,7 @@ export const gamerProfiles: GamerProfile[] = [
     ],
     platforms: ['PC'],
     skillLevel: 'מקצוען',
+    rank: 'Master II',
   },
   {
     id: 14,
@@ -179,6 +192,7 @@ export const gamerProfiles: GamerProfile[] = [
     ],
     platforms: ['PC'],
     skillLevel: 'קז\'ואל',
+    rank: 'Gold II',
   },
   {
     id: 15,
@@ -192,6 +206,7 @@ export const gamerProfiles: GamerProfile[] = [
     ],
     platforms: ['PC'],
     skillLevel: 'קז\'ואל',
+    rank: 'Silver III',
   },
   {
     id: 16,
@@ -204,6 +219,7 @@ export const gamerProfiles: GamerProfile[] = [
     ],
     platforms: ['PC', 'Xbox'],
     skillLevel: 'תחרותי',
+    rank: 'Platinum III',
   },
   {
     id: 17,
@@ -230,6 +246,7 @@ export const gamerProfiles: GamerProfile[] = [
     ],
     platforms: ['PC', 'PlayStation 5'],
     skillLevel: 'תחרותי',
+    rank: 'Diamond II',
   },
   {
     id: 19,
@@ -242,6 +259,7 @@ export const gamerProfiles: GamerProfile[] = [
     ],
     platforms: ['PC'],
     skillLevel: 'מקצוען',
+    rank: 'Grandmaster I',
   },
   {
     id: 20,
@@ -255,6 +273,7 @@ export const gamerProfiles: GamerProfile[] = [
     ],
     platforms: ['PC', 'Nintendo Switch'],
     skillLevel: 'קז\'ואל',
+    rank: 'Silver V',
   },
   {
     id: 21,
@@ -268,6 +287,7 @@ export const gamerProfiles: GamerProfile[] = [
     ],
     platforms: ['PC', 'Arcade'],
     skillLevel: 'תחרותי',
+    rank: 'Gold IV',
   },
   {
     id: 22,
@@ -280,6 +300,7 @@ export const gamerProfiles: GamerProfile[] = [
     ],
     platforms: ['PC'],
     skillLevel: 'קז\'ואל',
+    rank: 'Bronze II',
   },
   {
     id: 23,
@@ -293,6 +314,7 @@ export const gamerProfiles: GamerProfile[] = [
     ],
     platforms: ['PC'],
     skillLevel: 'תחרותי',
+    rank: 'Platinum V',
   },
   {
     id: 24,
@@ -305,6 +327,7 @@ export const gamerProfiles: GamerProfile[] = [
     ],
     platforms: ['VR'],
     skillLevel: 'תחרותי',
+    rank: 'Diamond IV',
   },
   {
     id: 25,
@@ -757,6 +780,7 @@ export const currentUserProfile: GamerProfile = {
     ],
     platforms: ['PC', 'PlayStation 5'],
     skillLevel: 'תחרותי',
+    rank: 'Master',
 };
 
 export const backgroundShopItems: BackgroundItem[] = [

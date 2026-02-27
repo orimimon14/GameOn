@@ -15,7 +15,7 @@ type ActiveView = 'swipe' | 'likes-you' | 'games' | 'profile' | 'chat' | 'shop' 
 
 // --- Sub-components ---
 
-const SwipeView: React.FC<{ onLike: (p: GamerProfile) => void }> = ({ onLike }) => {
+const SwipeView: React.FC<{ onLike: (p: GamerProfile) => void; onViewProfile: (p: GamerProfile) => void; selectedGame: string | null }> = ({ onLike, onViewProfile, selectedGame }) => {
     const [currentIndex, setCurrentIndex] = useState(0);
     const profiles = gamerProfiles;
 
@@ -38,12 +38,44 @@ const SwipeView: React.FC<{ onLike: (p: GamerProfile) => void }> = ({ onLike }) 
 
     const currentProfile = profiles[currentIndex];
 
+    // Find the skill level for the selected game if it exists, otherwise use general skill level
+    const displaySkill = useMemo(() => {
+        if (!selectedGame) return currentProfile.skillLevel;
+        // In a real app, we might have per-game skill levels. 
+        // For now, we'll just show the general skill level but label it for the game.
+        return currentProfile.skillLevel;
+    }, [currentProfile, selectedGame]);
+
     return (
         <div className="h-full flex flex-col items-center justify-center p-6 relative z-10">
             <div className="relative w-full max-w-md aspect-[3/4.5] rounded-[40px] overflow-hidden shadow-2xl border-2 dark:border-white/10 border-gray-200 group bg-dogame-surface/20 backdrop-blur-md">
                 <img src={currentProfile.image} alt={currentProfile.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"></div>
                 
+                {/* Top Bar Info */}
+                <div className="absolute top-6 left-6 right-6 flex items-center justify-between z-20">
+                    {/* View Profile Button (Magnifying Glass - Left) */}
+                    <button 
+                        onClick={() => onViewProfile(currentProfile)}
+                        className="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/10 text-white flex items-center justify-center text-xl hover:bg-dogame-primary hover:scale-110 transition-all active:scale-95 shadow-lg"
+                        title="צפה בפרופיל"
+                    >
+                        <i className="fa-solid fa-magnifying-glass"></i>
+                    </button>
+
+                    {/* Skill Level (Center) */}
+                    <div className="px-4 py-1.5 rounded-xl bg-dogame-primary/90 backdrop-blur-md border border-white/20 text-[10px] font-black text-white uppercase tracking-widest shadow-glow flex items-center gap-2">
+                        <i className="fa-solid fa-trophy text-yellow-400"></i>
+                        <span>{displaySkill} {selectedGame ? `ב-${selectedGame}` : ''}</span>
+                    </div>
+
+                    {/* Rank (Right) */}
+                    <div className="px-3 py-1.5 rounded-xl bg-black/40 backdrop-blur-md border border-white/10 text-[9px] font-black text-white/80 uppercase tracking-widest flex items-center gap-2">
+                        <i className="fa-solid fa-ranking-star text-dogame-primary"></i>
+                        <span>ראנק: {currentProfile.rank || 'Bronze'}</span>
+                    </div>
+                </div>
+
                 <div className="absolute inset-0 p-8 flex flex-col justify-end text-right">
                     <h2 className="text-4xl font-black text-white italic uppercase tracking-tighter mb-2">{currentProfile.name}, {currentProfile.age}</h2>
                     <p className="text-white/80 font-bold mb-6 line-clamp-2">{currentProfile.bio}</p>
@@ -68,7 +100,7 @@ const SwipeView: React.FC<{ onLike: (p: GamerProfile) => void }> = ({ onLike }) 
                             onClick={() => handleSwipe('right')}
                             className="flex-1 h-16 rounded-2xl bg-dogame-primary text-white flex items-center justify-center text-2xl hover:scale-105 transition-all active:scale-95 shadow-glow"
                         >
-                            <i className="fa-solid fa-heart"></i>
+                            <i className="fa-solid fa-check"></i>
                         </button>
                     </div>
                 </div>
@@ -131,10 +163,10 @@ const SideNav: React.FC<{ activeView: ActiveView; userProfile: GamerProfile; onN
     ];
     
     return (
-        <div className="fixed top-0 right-0 bottom-0 w-[72px] dark:bg-[#1E1F22]/95 bg-white/95 backdrop-blur-xl z-[60] flex flex-col items-center py-5 gap-3 border-l dark:border-white/5 border-gray-200 shadow-2xl">
+        <div className="fixed top-0 right-0 bottom-0 w-[100px] dark:bg-[#1E1F22]/95 bg-white/95 backdrop-blur-xl z-[60] flex flex-col items-center py-8 gap-5 border-l dark:border-white/5 border-gray-200 shadow-2xl">
              <button
                 onClick={() => onNavigate('profile')}
-                className={`w-12 h-12 rounded-[24px] overflow-hidden transition-all duration-300 hover:rounded-[16px] mb-4 relative p-0.5 ${activeView === 'profile' ? 'rounded-[16px] ring-2 ring-dogame-primary shadow-glow' : 'opacity-80 hover:opacity-100'}`}
+                className={`w-16 h-16 rounded-[24px] overflow-hidden transition-all duration-300 hover:rounded-[16px] mb-6 relative p-0.5 ${activeView === 'profile' ? 'rounded-[16px] ring-2 ring-dogame-primary shadow-glow' : 'opacity-80 hover:opacity-100'}`}
             >
                 {userProfile.avatarBorder && (
                     <div 
@@ -147,20 +179,23 @@ const SideNav: React.FC<{ activeView: ActiveView; userProfile: GamerProfile; onN
                 </div>
             </button>
 
-             <div className="w-8 h-[2px] dark:bg-white/10 bg-gray-200 rounded-full mb-2"></div>
+             <div className="w-12 h-[2px] dark:bg-white/10 bg-gray-200 rounded-full mb-4"></div>
 
              {items.map(item => {
                  const isActive = activeView === item.id;
                  return (
-                    <div key={item.id} className="relative flex items-center justify-center group w-full">
+                    <div key={item.id} className="relative flex flex-col items-center justify-center group w-full px-2">
                         <button
                             onClick={() => onNavigate(item.id as ActiveView)}
-                            className={`w-12 h-12 flex items-center justify-center transition-all duration-300 
+                            className={`w-16 h-16 flex items-center justify-center transition-all duration-300 
                                 ${isActive ? 'rounded-[16px] bg-dogame-primary text-white shadow-glow' : 'rounded-[24px] dark:bg-dogame-surface bg-gray-100 dark:text-gray-400 text-gray-500 hover:rounded-[16px] ' + item.bg + ' hover:text-white'}`}
                         >
-                            <i className={`fa-solid ${item.icon} text-xl`}></i>
+                            <i className={`fa-solid ${item.icon} text-2xl`}></i>
                         </button>
-                        <div className={`absolute right-0 w-1 bg-dogame-primary rounded-l-lg transition-all duration-300 ${isActive ? 'h-8 opacity-100' : 'h-0 opacity-0 group-hover:h-4 group-hover:opacity-50'}`}></div>
+                        <span className={`text-[10px] font-black mt-1.5 transition-all duration-300 uppercase tracking-tighter ${isActive ? 'text-dogame-primary opacity-100' : 'text-dogame-muted opacity-0 group-hover:opacity-100'}`}>
+                            {item.label}
+                        </span>
+                        <div className={`absolute right-0 w-1 bg-dogame-primary rounded-l-lg transition-all duration-300 ${isActive ? 'h-10 opacity-100' : 'h-0 opacity-0 group-hover:h-5 group-hover:opacity-50'}`}></div>
                     </div>
                  )
              })}
@@ -175,6 +210,7 @@ const App: React.FC = () => {
     const [userProfile, setUserProfile] = useState<GamerProfile>(currentUserProfile);
     const [isDarkMode, setIsDarkMode] = useState(true);
     const [userCoins, setUserCoins] = useState(1000000); 
+    const [selectedGame, setSelectedGame] = useState<string | null>(null);
     const [globalBackground, setGlobalBackground] = useState<string | null>(null);
     const [isGlobalBgEnabled, setIsGlobalBgEnabled] = useState(true);
     const [ownedItems, setOwnedItems] = useState<BackgroundItem[]>([]);
@@ -256,7 +292,7 @@ const App: React.FC = () => {
 
             <SideNav activeView={activeView} userProfile={userProfile} onNavigate={handleNavigate} />
 
-            <div className="h-full w-full mr-[72px] flex flex-col relative z-10">
+            <div className="h-full w-full mr-[100px] flex flex-col relative z-10">
                 <Header 
                     viewTitle={getViewTitle(activeView)} 
                     userProfile={userProfile}
@@ -269,12 +305,32 @@ const App: React.FC = () => {
                 />
 
                 <main className="flex-1 w-full overflow-hidden relative">
-                    {activeView === 'swipe' && <SwipeView onLike={(p) => setLikedProfiles([...likedProfiles, p])} />}
+                    {activeView === 'swipe' && (
+                        <SwipeView 
+                            onLike={(p) => setLikedProfiles([...likedProfiles, p])} 
+                            onViewProfile={(p) => {
+                                setViewingProfile(p);
+                                setActiveView('profile');
+                            }}
+                            selectedGame={selectedGame}
+                        />
+                    )}
                     {activeView === 'shop' && <ShopView onPurchase={handlePurchase} userCoins={userCoins} ownedItems={ownedItems} />}
                     {activeView === 'chat' && <ChatView matches={matchedProfiles} onBack={() => handleNavigate('swipe')} />}
                     {activeView === 'likes-you' && <LikesGrid profiles={profilesWhoLikedUser} onProfileClick={(p) => {setViewingProfile(p); setActiveView('profile');}} onMatch={(p) => {alert(`התאמת עם ${p.name}!`); handleNavigate('chat');}} />}
-                    {activeView === 'games' && <GamesView onSelectGame={() => handleNavigate('swipe')} />}
-                    {activeView === 'subscriptions' && <SubscriptionsView onSelectPlan={(plan) => alert(`נרשמת בהצלחה לתוכנית ${plan}!`)} />}
+                    {activeView === 'games' && (
+                        <GamesView onSelectGame={(gameName) => {
+                            setSelectedGame(gameName);
+                            handleNavigate('swipe');
+                        }} />
+                    )}
+                    {activeView === 'subscriptions' && (
+                        <SubscriptionsView 
+                            onSelectPlan={(plan) => alert(`נרשמת בהצלחה לתוכנית ${plan}!`)} 
+                            userCoins={userCoins}
+                            onUpdateCoins={(amount) => setUserCoins(prev => prev + amount)}
+                        />
+                    )}
                     {activeView === 'settings' && (
                         <SettingsView 
                             isDarkMode={isDarkMode} 

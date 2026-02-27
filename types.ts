@@ -10,6 +10,7 @@ export interface GamerProfile {
   games: { name: string; icon: string; lookingFor: string; }[];
   platforms: string[];
   skillLevel: 'קז\'ואל' | 'תחרותי' | 'מקצוען';
+  rank?: string;
 }
 
 export interface Message {

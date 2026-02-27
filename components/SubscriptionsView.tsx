@@ -3,12 +3,21 @@ import React, { useState } from 'react';
 
 interface SubscriptionsViewProps {
     onSelectPlan: (planName: string) => void;
+    userCoins: number;
+    onUpdateCoins: (amount: number) => void;
 }
 
-const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ onSelectPlan }) => {
+const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ onSelectPlan, userCoins, onUpdateCoins }) => {
     const [boostTarget, setBoostTarget] = useState(100);
-    const costPerTen = 1; // 1 dollar per 10 people
-    const totalCost = (boostTarget / 10) * costPerTen;
+    const coinsPerTen = 100; // 100 coins per 10 people (1 dollar = 100 coins)
+    const totalCoinCost = (boostTarget / 10) * coinsPerTen;
+
+    const coinPackages = [
+        { amount: 100, price: 1, label: 'חבילת בסיס' },
+        { amount: 550, price: 5, label: 'חבילת גיימר', bonus: '50+ בונוס' },
+        { amount: 1200, price: 10, label: 'חבילת פרו', bonus: '200+ בונוס' },
+        { amount: 3000, price: 20, label: 'חבילת סקוואד', bonus: '1000+ בונוס' },
+    ];
 
     const comparisonPlans = [
         {
@@ -128,10 +137,10 @@ const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ onSelectPlan }) =
                             לא רוצה מנוי? אין בעיה. שלם רק כשאתה צריך חשיפה מטורפת לזמן מוגבל.
                         </p>
                         <div className="bg-black/20 p-6 rounded-[24px] border border-white/5 flex items-center justify-between">
-                            <span className="text-2xl font-black text-dogame-primary tracking-tight">PAY PER USE</span>
+                            <span className="text-2xl font-black text-dogame-primary tracking-tight">COIN POWERED</span>
                             <div className="text-right">
                                 <span className="text-[10px] text-dogame-muted font-black uppercase block mb-1">מחיר הוגן</span>
-                                <span className="text-xl font-black text-white">$1 / 10 חשיפות</span>
+                                <span className="text-xl font-black text-white">100 מטבעות / 10 חשיפות</span>
                             </div>
                         </div>
                     </div>
@@ -151,17 +160,67 @@ const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ onSelectPlan }) =
                             className="w-full h-4 bg-white/10 rounded-full appearance-none cursor-pointer accent-dogame-primary mb-10"
                         />
                         <div className="flex items-center justify-between mb-8 bg-white/5 p-5 rounded-2xl">
-                            <span className="text-2xl font-black text-white">${totalCost.toFixed(2)}</span>
-                            <span className="text-sm font-bold text-dogame-muted">סה"כ לתשלום</span>
+                            <div className="flex items-center gap-2">
+                                <span className="text-2xl font-black text-white">{totalCoinCost.toLocaleString()}</span>
+                                <i className="fa-solid fa-coins text-yellow-400"></i>
+                            </div>
+                            <span className="text-sm font-bold text-dogame-muted">סה"כ במטבעות</span>
                         </div>
                         <button 
-                            onClick={() => alert(`הקפצת את הפרופיל ל-${boostTarget} משתמשים!`)}
-                            className="w-full py-6 bg-gradient-to-r from-dogame-primary to-dogame-accent text-white font-black text-2xl italic uppercase rounded-2xl shadow-glow hover:scale-[1.02] transition-all flex items-center justify-center gap-4"
+                            onClick={() => {
+                                if (userCoins >= totalCoinCost) {
+                                    onUpdateCoins(-totalCoinCost);
+                                    alert(`הקפצת את הפרופיל ל-${boostTarget} משתמשים!`);
+                                } else {
+                                    alert('אין לך מספיק מטבעות! רכוש מטבעות למטה.');
+                                }
+                            }}
+                            className={`w-full py-6 font-black text-2xl italic uppercase rounded-2xl shadow-glow transition-all flex items-center justify-center gap-4 ${
+                                userCoins >= totalCoinCost 
+                                ? 'bg-gradient-to-r from-dogame-primary to-dogame-accent text-white hover:scale-[1.02]' 
+                                : 'bg-white/5 text-dogame-muted cursor-not-allowed border border-white/10'
+                            }`}
                         >
-                            <span>הקפץ עכשיו</span>
+                            <span>{userCoins >= totalCoinCost ? 'הקפץ עכשיו' : 'אין מספיק מטבעות'}</span>
                             <i className="fa-solid fa-rocket"></i>
                         </button>
                     </div>
+                </div>
+            </div>
+
+            {/* Buy Coins Section */}
+            <div className="mb-16">
+                <div className="text-right mb-8">
+                    <h3 className="text-3xl font-black text-white italic uppercase tracking-tighter mb-2">קנה מטבעות</h3>
+                    <p className="text-dogame-muted font-bold">המר דולרים למטבעות (1$ = 100 מטבעות)</p>
+                </div>
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+                    {coinPackages.map((pkg, i) => (
+                        <button
+                            key={i}
+                            onClick={() => {
+                                onUpdateCoins(pkg.amount);
+                                alert(`רכשת ${pkg.amount} מטבעות ב-$${pkg.price}!`);
+                            }}
+                            className="group relative bg-dogame-surface/40 backdrop-blur-md p-6 rounded-[32px] border border-white/5 hover:border-dogame-primary/50 transition-all text-right flex flex-col items-center lg:items-end overflow-hidden"
+                        >
+                            <div className="absolute -left-4 -top-4 w-20 h-20 bg-dogame-primary/10 rounded-full blur-2xl group-hover:bg-dogame-primary/20 transition-all"></div>
+                            
+                            <div className="relative z-10 flex items-center gap-3 mb-4">
+                                <span className="text-3xl font-black text-white">{pkg.amount.toLocaleString()}</span>
+                                <i className="fa-solid fa-coins text-yellow-400 text-2xl drop-shadow-[0_0_8px_rgba(234,179,8,0.5)]"></i>
+                            </div>
+                            
+                            <div className="relative z-10 text-right mb-6">
+                                <span className="text-xs font-black text-dogame-muted uppercase block">{pkg.label}</span>
+                                {pkg.bonus && <span className="text-[10px] font-black text-dogame-success uppercase">{pkg.bonus}</span>}
+                            </div>
+
+                            <div className="relative z-10 w-full py-3 bg-white text-dogame-bg rounded-xl font-black text-center group-hover:bg-dogame-primary group-hover:text-white transition-all">
+                                ${pkg.price}
+                            </div>
+                        </button>
+                    ))}
                 </div>
             </div>
 
