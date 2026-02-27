@@ -52,27 +52,35 @@ const SwipeView: React.FC<{ onLike: (p: GamerProfile) => void; onViewProfile: (p
                 <img src={currentProfile.image} alt={currentProfile.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"></div>
                 
-                {/* Top Bar Info */}
-                <div className="absolute top-6 left-6 right-6 flex items-center justify-between z-20">
-                    {/* View Profile Button (Magnifying Glass - Left) */}
-                    <button 
-                        onClick={() => onViewProfile(currentProfile)}
-                        className="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/10 text-white flex items-center justify-center text-xl hover:bg-dogame-primary hover:scale-110 transition-all active:scale-95 shadow-lg"
-                        title="צפה בפרופיל"
-                    >
-                        <i className="fa-solid fa-magnifying-glass"></i>
-                    </button>
+                {/* Top Bar Info Rectangle */}
+                <div className="absolute top-0 left-0 right-0 z-20 p-4">
+                    <div className="bg-black/60 backdrop-blur-xl border border-white/10 rounded-2xl p-3 flex items-center justify-between shadow-2xl">
+                        {/* View Profile Button (Magnifying Glass - Left) */}
+                        <button 
+                            onClick={() => onViewProfile(currentProfile)}
+                            className="w-10 h-10 rounded-xl bg-white/10 text-white flex items-center justify-center text-lg hover:bg-dogame-primary hover:scale-105 transition-all active:scale-95"
+                            title="צפה בפרופיל"
+                        >
+                            <i className="fa-solid fa-magnifying-glass"></i>
+                        </button>
 
-                    {/* Skill Level (Center) */}
-                    <div className="px-4 py-1.5 rounded-xl bg-dogame-primary/90 backdrop-blur-md border border-white/20 text-[10px] font-black text-white uppercase tracking-widest shadow-glow flex items-center gap-2">
-                        <i className="fa-solid fa-trophy text-yellow-400"></i>
-                        <span>{displaySkill} {selectedGame ? `ב-${selectedGame}` : ''}</span>
-                    </div>
+                        {/* Skill Level (Center) */}
+                        <div className="flex flex-col items-center">
+                            <span className="text-[8px] font-black text-dogame-muted uppercase tracking-widest mb-0.5">רמת מיומנות</span>
+                            <div className="px-3 py-1 rounded-lg bg-dogame-primary/20 border border-dogame-primary/30 text-[10px] font-black text-white uppercase tracking-tight flex items-center gap-1.5">
+                                <i className="fa-solid fa-trophy text-yellow-400 text-[8px]"></i>
+                                <span>{displaySkill} {selectedGame ? `ב-${selectedGame}` : ''}</span>
+                            </div>
+                        </div>
 
-                    {/* Rank (Right) */}
-                    <div className="px-3 py-1.5 rounded-xl bg-black/40 backdrop-blur-md border border-white/10 text-[9px] font-black text-white/80 uppercase tracking-widest flex items-center gap-2">
-                        <i className="fa-solid fa-ranking-star text-dogame-primary"></i>
-                        <span>ראנק: {currentProfile.rank || 'Bronze'}</span>
+                        {/* Rank (Right) */}
+                        <div className="flex flex-col items-end">
+                            <span className="text-[8px] font-black text-dogame-muted uppercase tracking-widest mb-0.5">דירוג נוכחי</span>
+                            <div className="px-3 py-1 rounded-lg bg-white/5 border border-white/10 text-[13px] font-black text-dogame-primary uppercase tracking-tighter flex items-center gap-2 shadow-glow">
+                                <i className="fa-solid fa-ranking-star"></i>
+                                <span>{currentProfile.rank || 'Bronze'}</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
