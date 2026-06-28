@@ -335,7 +335,6 @@ const App: React.FC = () => {
                     {activeView === 'subscriptions' && (
                         <SubscriptionsView 
                             onSelectPlan={(plan) => alert(`נרשמת בהצלחה לתוכנית ${plan}!`)} 
-                            userCoins={userCoins}
                             onUpdateCoins={(amount) => setUserCoins(prev => prev + amount)}
                         />
                     )}

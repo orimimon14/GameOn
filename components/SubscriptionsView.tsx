@@ -1,17 +1,12 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 
 interface SubscriptionsViewProps {
     onSelectPlan: (planName: string) => void;
-    userCoins: number;
     onUpdateCoins: (amount: number) => void;
 }
 
-const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ onSelectPlan, userCoins, onUpdateCoins }) => {
-    const [boostTarget, setBoostTarget] = useState(100);
-    const coinsPerTen = 100; // 100 coins per 10 people (1 dollar = 100 coins)
-    const totalCoinCost = (boostTarget / 10) * coinsPerTen;
-
+const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ onSelectPlan, onUpdateCoins }) => {
     const coinPackages = [
         { amount: 100, price: 1, label: 'חבילת בסיס' },
         { amount: 550, price: 5, label: 'חבילת גיימר', bonus: '50+ בונוס' },
@@ -122,70 +117,6 @@ const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ onSelectPlan, use
                         </button>
                     </div>
                 ))}
-            </div>
-
-            {/* Profile Boost: Separate action */}
-            <div className="relative overflow-hidden dark:bg-dogame-surface/80 bg-white/90 backdrop-blur-2xl rounded-[40px] p-8 lg:p-14 border border-white/10 shadow-2xl mb-16">
-                <div className="relative z-10 flex flex-col lg:flex-row items-center gap-16">
-                    <div className="lg:w-1/2 text-right">
-                        <div className="inline-flex items-center gap-2 bg-dogame-primary/20 text-dogame-primary px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest mb-4">
-                            <i className="fa-solid fa-bolt"></i>
-                            <span>BOOST YOUR PROFILE</span>
-                        </div>
-                        <h3 className="text-4xl font-black text-white italic uppercase tracking-tighter mb-4">הקפצה חד פעמית</h3>
-                        <p className="text-dogame-muted text-lg font-bold leading-relaxed mb-8">
-                            לא רוצה מנוי? אין בעיה. שלם רק כשאתה צריך חשיפה מטורפת לזמן מוגבל.
-                        </p>
-                        <div className="bg-black/20 p-6 rounded-[24px] border border-white/5 flex items-center justify-between">
-                            <span className="text-2xl font-black text-dogame-primary tracking-tight">COIN POWERED</span>
-                            <div className="text-right">
-                                <span className="text-[10px] text-dogame-muted font-black uppercase block mb-1">מחיר הוגן</span>
-                                <span className="text-xl font-black text-white">100 מטבעות / 10 חשיפות</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="lg:w-1/2 w-full bg-black/30 backdrop-blur-md p-10 rounded-[36px] border border-white/5 shadow-inner">
-                        <div className="text-center mb-8">
-                            <div className="text-6xl font-black text-white italic tracking-tighter mb-2">{boostTarget}</div>
-                            <p className="text-dogame-primary font-bold uppercase text-xs tracking-widest">חשיפות ממוקדות</p>
-                        </div>
-                        <input 
-                            type="range" 
-                            min="10" 
-                            max="1000" 
-                            step="10" 
-                            value={boostTarget} 
-                            onChange={(e) => setBoostTarget(parseInt(e.target.value))}
-                            className="w-full h-4 bg-white/10 rounded-full appearance-none cursor-pointer accent-dogame-primary mb-10"
-                        />
-                        <div className="flex items-center justify-between mb-8 bg-white/5 p-5 rounded-2xl">
-                            <div className="flex items-center gap-2">
-                                <span className="text-2xl font-black text-white">{totalCoinCost.toLocaleString()}</span>
-                                <i className="fa-solid fa-coins text-yellow-400"></i>
-                            </div>
-                            <span className="text-sm font-bold text-dogame-muted">סה"כ במטבעות</span>
-                        </div>
-                        <button 
-                            onClick={() => {
-                                if (userCoins >= totalCoinCost) {
-                                    onUpdateCoins(-totalCoinCost);
-                                    alert(`הקפצת את הפרופיל ל-${boostTarget} משתמשים!`);
-                                } else {
-                                    alert('אין לך מספיק מטבעות! רכוש מטבעות למטה.');
-                                }
-                            }}
-                            className={`w-full py-6 font-black text-2xl italic uppercase rounded-2xl shadow-glow transition-all flex items-center justify-center gap-4 ${
-                                userCoins >= totalCoinCost 
-                                ? 'bg-gradient-to-r from-dogame-primary to-dogame-accent text-white hover:scale-[1.02]' 
-                                : 'bg-white/5 text-dogame-muted cursor-not-allowed border border-white/10'
-                            }`}
-                        >
-                            <span>{userCoins >= totalCoinCost ? 'הקפץ עכשיו' : 'אין מספיק מטבעות'}</span>
-                            <i className="fa-solid fa-rocket"></i>
-                        </button>
-                    </div>
-                </div>
             </div>
 
             {/* Buy Coins Section */}
