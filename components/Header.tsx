@@ -218,7 +218,7 @@ const Header: React.FC<HeaderProps> = ({
                   </button>
                   
                   <div className="mt-4 p-4 rounded-2xl bg-black/5 dark:bg-white/5">
-                    <p className="text-[10px] text-center font-bold text-dogame-muted italic uppercase">swish & game v2.5.5</p>
+                    <p className="text-[10px] text-center font-bold text-dogame-muted italic uppercase">Swish & Game v2.5.5</p>
                   </div>
                 </div>
             </div>

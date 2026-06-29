@@ -1,17 +1,12 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
-</div>
+# Swish & Game
 
-# Run and deploy your AI Studio app
+A mobile-first, swipe-based matchmaking web app for gamers to find teammates, duos, and squads — featuring game-based discovery, real-time chat, a cosmetic shop and coin economy, a Pro subscription tier, and AI-powered squad tools.
 
-This contains everything you need to run your app locally.
-
-View your app in AI Studio: https://ai.studio/apps/cad22452-cf5f-4625-a6e5-9b755e06486d
+Built with React + Vite + TypeScript. Originally scaffolded from Google AI Studio.
 
 ## Run Locally
 
-**Prerequisites:**  Node.js
-
+**Prerequisites:** Node.js
 
 1. Install dependencies:
    `npm install`

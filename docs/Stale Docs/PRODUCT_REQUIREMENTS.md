@@ -1,4 +1,4 @@
-# Product Requirements Document (PRD): Swish & Game (GameOn)
+# Product Requirements Document (PRD): Swish & Game
 
 **Version:** 1.1  
 **Status:** In-Development  

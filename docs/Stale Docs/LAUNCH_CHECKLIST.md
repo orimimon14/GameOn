@@ -1,5 +1,8 @@
 # Launch & Go-to-Market Checklist
 
+> ⚠️ **Superseded by `docs/product/ROADMAP.md` §9 (Launch Readiness / Go-Live Checklist).**
+> Do not use this document as the source of truth.
+
 ## 1. Technical Readiness
 - [ ] **Infrastructure**: Firebase project promoted to "Pay-as-you-go" (Blaze plan) for scalability.
 - [ ] **Security**: Final audit of Firestore Rules and Cloud Functions.

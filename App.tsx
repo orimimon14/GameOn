@@ -243,7 +243,7 @@ const App: React.FC = () => {
             case 'profile': return 'פרופיל אישי';
             case 'games': return 'בחירת משחק';
             case 'subscriptions': return 'שדרג ל-Premium';
-            default: return 'swish & game';
+            default: return 'Swish & Game';
         }
     };
 

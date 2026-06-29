@@ -1,5 +1,8 @@
 # Development Plan & Roadmap - Swish & Game
 
+> ⚠️ **Superseded by `docs/product/ROADMAP.md`.**
+> Do not use this document as the source of truth.
+
 ## 1. Current Status Analysis
 האפליקציה נמצאת כרגע בשלב ה-Prototype. רוב ה-Views קיימים ברמת ה-UI, אך המידע הוא סטטי (Mock Data) ואין בסיס נתונים חי שמחבר בין משתמשים שונים.
 

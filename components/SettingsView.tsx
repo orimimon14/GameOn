@@ -71,7 +71,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({
             </div>
 
             <div className="mt-12 text-center opacity-30">
-                <p className="text-xs dark:text-white text-dogame-lightText uppercase font-black italic">swish & game v2.4.0</p>
+                <p className="text-xs dark:text-white text-dogame-lightText uppercase font-black italic">Swish & Game v2.4.0</p>
             </div>
         </div>
     );
