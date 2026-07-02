@@ -86,7 +86,7 @@ Read the relevant document before changing its area. Do not invent contracts tha
 7. Never use the invalid prototype model ID:
    - `gemini-3-flash-preview`
 8. Data and enum values are English. Hebrew belongs in UI label maps only.
-9. UI is Hebrew-first and RTL.
+9. UI is Hebrew-first (RTL default); English (LTR) is supported via i18n (ADR-035). All UI strings go through i18n catalogs — no hardcoded strings.
 10. Client-created chat messages may only be `type: "text"`. Image/media messages are created only by `sendChatMediaMessage`.
 11. Checkout redirect does not grant Pro. Only verified `paymentWebhook` provider events update entitlement.
 12. `verifiedBadge` means Pro member only.

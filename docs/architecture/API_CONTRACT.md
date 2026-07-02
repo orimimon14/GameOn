@@ -1609,7 +1609,7 @@ export type DeleteAccountOutput = {
 | Type | HTTP/Webhook Function |
 | Scope | MVP |
 | Auth requirement | No Firebase Auth; provider signature required |
-| Description | מקבל events מספק התשלומים, מאמת signature, ומסנכרן Pro entitlement ל-Firestore. Provider עדיין TBD לפי ADR-017 ולכן החוזה provider-agnostic. |
+| Description | מקבל events מספק התשלומים (RevenueCat abstraction, ADR-037), מאמת signature, ומסנכרן Pro entitlement ל-Firestore. הספק הבסיסי עדיין TBD לפי ADR-017, ולכן החוזה provider-agnostic. |
 
 #### Request
 

@@ -39,17 +39,15 @@
 
 ### 2.1 MVP Strategy
 
-Swish & Game is Hebrew-first and RTL-first for the initial Israel launch.
+Swish & Game is Hebrew-first (RTL default) for the initial Israel launch, with English (LTR) as a supported second language via i18n (ADR-035).
 
 MVP language rules:
 
-- Primary UI language: Hebrew.
-- Primary locale: `he-IL`.
-- Primary direction: `rtl`.
+- Default UI language: Hebrew (`he-IL`, RTL). Second language: English (`en`, LTR).
 - Currency: `ILS`.
 - Stored enum/data values: English only.
-- Labels shown to users: Hebrew through canonical label maps.
-- No additional languages are injected into MVP unless ADR-026 is updated.
+- User-facing strings: via i18n message catalogs (`he`, `en`) + canonical label maps per locale.
+- Additional languages beyond he/en require a future ADR (architecture is i18n-ready).
 
 ### 2.2 Bidirectional & i18n Strategy (ADR-035)
 
@@ -939,10 +937,10 @@ Error copy must be Hebrew, clear, and field-specific.
 
 | Item | Status | Impact |
 |---|---|---|
-| Future English/bilingual support | Open via ADR-026 | May require i18n library and locale routing. |
+| Additional languages beyond he/en | Open | he+en delivered under ADR-035; more locales need a future ADR + catalogs. |
 | Final copy tone guide | Open | May refine button labels, empty states, and safety copy. |
 | Final label wording | Open but this document is current source of truth | Product/design may revise Hebrew labels later. |
-| i18n library for V1 | Open | Could introduce `react-i18next`, FormatJS, or custom typed dictionaries. |
+| i18n library selection | Open | `react-i18next` or FormatJS per ADR-035; final choice TBD. |
 | Tailwind RTL plugin | Open | Decide whether to add plugin or rely on logical utilities. |
 | Pluralization framework | Open | Needed for polished bilingual/multi-locale support. |
 | Font finalization | Open / prototype uses `Rubik` | Confirm in `DESIGN_SYSTEM.md`. |

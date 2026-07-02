@@ -315,7 +315,7 @@ There is a clear opportunity to build a dedicated, mobile-first, gamer-native pr
 6. **Server owns trust-sensitive state.** The client may request actions, but coins, Pro status, match creation, and AI calls are validated and controlled by backend services.
 7. **Monetization should enhance identity and convenience.** Pro and cosmetics should create value without making Basic users feel excluded from the core match-and-chat loop.
 8. **AI should assist, not dominate.** Gemini helps users improve profiles and squad strategy but does not replace human matching or social connection.
-9. **Hebrew-first experience.** The UI is Hebrew-first and RTL, while stored enum values remain canonical English.
+9. **Hebrew-first, bidirectional experience.** The UI is Hebrew-first (RTL default) with English (LTR) supported via i18n (ADR-035), while stored enum values remain canonical English.
 
 ---
 
@@ -1695,7 +1695,7 @@ The MVP is ready for private beta when:
 22. What is the data retention policy for deleted accounts?
 23. What is the report review process before a full admin dashboard exists?
 24. What countries are included in the initial launch?
-25. Is English support included in MVP, or is MVP Hebrew-only?
+25. ~~Is English support included in MVP, or is MVP Hebrew-only?~~ **Resolved (ADR-035):** MVP is bidirectional — Hebrew (RTL, default) + English (LTR).
 
 ---
 
