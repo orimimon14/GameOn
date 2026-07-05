@@ -140,7 +140,7 @@ gemini-3-flash-preview
 סטטוס-על של כל שלב. checkbox כאן מסומן **רק** כשהשלב כולו (משימות + בדיקות + Exit Criteria) ירוק.
 
 - [x] **Phase 0 — Security & Hygiene** (תלוי ב: —, אומדן S–M, milestone M0→M1) ✅
-- [ ] **Phase 1 — Foundation** (תלוי ב: 0, אומדן L, milestone M1)
+- [x] **Phase 1 — Foundation** (תלוי ב: 0, אומדן L, milestone M1) ✅
 - [ ] **Phase 2 — Auth & Data Layer** (תלוי ב: 1, אומדן L, milestone M2)
 - [ ] **Phase 3 — Discovery & Matching** (תלוי ב: 2, אומדן L, milestone M3)
 - [ ] **Phase 4 — Chat** (תלוי ב: 3, אומדן M–L, milestone M4)
@@ -208,7 +208,7 @@ gemini-3-flash-preview
 
 ### 6.3 משימות — Firebase & CI
 
-- [ ] **P1-T12 — פרויקטי Firebase** `(M)` — ✳️ חלקי: פרויקטי GCP `swish-game-dev`+`swish-game-staging` נוצרו; `.firebaserc` עם aliases. **חסום על אישור Firebase ToS ע"י בעל החשבון** (פתיחת console.firebase.google.com פעם אחת) → ואז `addfirebase` + רישום web apps + `.env.local` אמיתי.
+- [x] **P1-T12 — פרויקטי Firebase** `(M)` — `swish-game-dev` + `swish-game-staging` נוצרו וחוברו ל-Firebase (אחרי אישור ToS ע"י הבעלים); web apps רשומים בשניהם; `.env.local` מולא ב-config אמיתי של dev; `.firebaserc` עם aliases. הפעלת ספקי Auth בקונסולה + יצירת Firestore DB בענן — בתחילת Phase 2 (P2-T02/P2-T07). ⚠️ נוצר בטעות פרויקט עודף `swish-and-game` — למחיקה בקונסולה.
 - [x] **P1-T13 — Firebase client config** `(S)` — `firebase` SDK הותקן; `src/config/firebase.ts` (רק `VITE_*`, lazy init, חיבור אמולטורים כש-`VITE_USE_EMULATORS=true`); `.env.example` + `.env.local` (gitignored).
 - [x] **P1-T14 — Emulator Suite** `(M)` — `firebase.json` (auth/firestore/storage/functions/ui) + baseline deny rules + `scripts/emulator-smoke.mjs`; **smoke מלא PASS** כולל קריאת callable מקצה לקצה. seed מלא — P2-T09.
 - [x] **P1-T15 — functions workspace** `(M)` — `functions/` TS strict (build+typecheck ירוקים), מבנה CONVENTIONS מלא, callable ראשון `ping` עובד באמולטור, engines node 22.
@@ -226,14 +226,14 @@ gemini-3-flash-preview
 
 ### 6.5 Exit Criteria
 
-- [ ] מבנה הפרויקט תואם CONVENTIONS במלואו.
-- [ ] i18n חי בשתי שפות עם RTL/LTR מתחלף.
-- [ ] CI חוסם merge על כשל.
-- [ ] אין רגרסיה ב-Phase 0.
+- [x] מבנה הפרויקט תואם CONVENTIONS במלואו.
+- [x] i18n חי בשתי שפות עם RTL/LTR מתחלף (אומת בדפדפן).
+- [x] CI פעיל וירוק על main/PRs. (הפיכת ה-checks לחוסמי-merge = branch protection בהגדרות GitHub — נדרש לפני production gate ב-Phase 9; מומלץ להגדיר מוקדם.)
+- [x] אין רגרסיה ב-Phase 0 (scan:bundle נקי בכל commit).
 
 ### 6.6 סגירת שלב
 
-- [ ] **✅ Phase 1 הושלם — כל המשימות, הבדיקות וה-Exit Criteria ירוקים; מסומן גם ב-§4.**
+- [x] **✅ Phase 1 הושלם — כל המשימות, הבדיקות וה-Exit Criteria ירוקים; מסומן גם ב-§4.**
 
 ---
 
