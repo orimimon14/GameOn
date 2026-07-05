@@ -21,6 +21,11 @@ jobs:
       - run: npm run typecheck
       - run: npm run lint
       - run: npm run test
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/firebase/emulators
+          key: firebase-emulators-${{ runner.os }}
+      - run: npm run test:rules
       - run: npm run build
       - run: npm run scan:bundle
 
