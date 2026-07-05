@@ -4,8 +4,8 @@
 
 | Field | Value |
 |---|---|
-| Version | 1.0 |
-| Status | Canonical Development Execution Plan |
+| Version | 1.1 |
+| Status | Canonical Development Execution Plan — **Live Progress Tracker** |
 | Repository Path | `docs/engineering/WORK_PLAN.md` |
 | Product | Swish & Game |
 | Source of Truth | `docs/engineering/MIGRATION_PLAN.md`, `docs/product/ROADMAP.md`, `docs/quality/TEST_STRATEGY.md`, `docs/quality/TEST_CASES.md`, `docs/quality/DEFINITION_OF_DONE.md`, `docs/quality/CI_CD.md`, `docs/product/DECISIONS.md` |
@@ -13,6 +13,7 @@
 | Scope Covered | כל 39 ה-ADRs, כולל ADR-035 (bidi i18n), ADR-037 (RevenueCat), ADR-038 (deleteAccount), ADR-039 (Motion & FX) |
 | Date Policy | אין תאריכים; אומדני מאמץ יחסיים בלבד (S/M/L) |
 | Working Principle | שום שלב לא נסגר בלי שער בדיקות (Verification Gate) ירוק מלא |
+| Tracking Rule | קובץ זה הוא ה-progress tracker החי: checkbox מסומן = בוצע ואומת. עדכון הסימון נעשה באותו commit שסוגר את המשימה/השלב. |
 
 **מקרא אומדני מאמץ:** `S` = עד יום עבודה · `M` = 2–4 ימי עבודה · `L` = 5+ ימי עבודה. האומדנים יחסיים ולא התחייבות.
 
@@ -23,7 +24,7 @@
 - [1. Document Metadata](#1-document-metadata)
 - [2. שיטת העבודה](#2-שיטת-העבודה)
 - [3. ערכת האימות (Verification Toolkit)](#3-ערכת-האימות-verification-toolkit)
-- [4. טבלת השלבים הראשית](#4-טבלת-השלבים-הראשית)
+- [4. מעקב התקדמות ראשי](#4-מעקב-התקדמות-ראשי)
 - [5. Phase 0 — Security & Hygiene](#5-phase-0--security--hygiene)
 - [6. Phase 1 — Foundation](#6-phase-1--foundation)
 - [7. Phase 2 — Auth & Data Layer](#7-phase-2--auth--data-layer)
@@ -58,6 +59,7 @@ DoR check (DEFINITION_OF_DONE §2)
   → PR review
   → CI ירוק
   → merge
+  → סימון ה-checkbox של המשימה בקובץ זה
 ```
 
 ### 2.2 כללי יסוד (אין לעבור עליהם)
@@ -70,17 +72,26 @@ DoR check (DEFINITION_OF_DONE §2)
 6. **Emulators בלבד לפיתוח** — `firebase emulators:start --project swish-game-dev`. לעולם לא `swish-game-prod`.
 7. **כל PR קטן וממוקד** — משימה אחת או שתיים לכל היותר.
 
-### 2.3 הגדרת "שלב הושלם בצורה מושלמת"
+### 2.3 פרוטוקול סימון התקדמות (מחייב)
+
+1. checkbox של **משימה** (`P#-T##`) מסומן רק כשהמשימה הושלמה **והבדיקות שלה עוברות**.
+2. checkbox של **בדיקת אימות** מסומן רק כשהבדיקה נכתבה, רצה, ועברה בפועל.
+3. checkbox של **Exit Criteria** מסומן רק אחרי אימות מפורש.
+4. checkbox של **שלב** (במעקב הראשי §4 ובסוף השלב) מסומן רק כשכל המשימות + כל הבדיקות + כל ה-Exit Criteria של השלב ירוקים.
+5. **אין מעבר לשלב הבא לפני סימון סגירת השלב הנוכחי.**
+6. עדכון הסימונים נעשה בקובץ זה, באותו commit שסוגר את העבודה.
+
+### 2.4 הגדרת "שלב הושלם בצורה מושלמת"
 
 שלב נחשב הושלם רק אם:
 
-- [ ] כל המשימות בוצעו וה-deliverables קיימים.
-- [ ] כל בדיקות השלב (unit/component/integration/rules/E2E לפי הרשימה בשלב) עוברות.
-- [ ] כל בדיקות השלבים הקודמים עדיין עוברות (regression).
-- [ ] `npm run typecheck && npm run lint && npm run test && npm run test:rules && npm run build` ירוקים.
-- [ ] bundle scan נקי (מ-Phase 1 ואילך).
-- [ ] המסמכים הקנוניים מסונכרנים.
-- [ ] אין TODO קריטי פתוח בקוד השלב.
+- כל המשימות בוצעו וה-deliverables קיימים.
+- כל בדיקות השלב (unit/component/integration/rules/E2E לפי הרשימה בשלב) עוברות.
+- כל בדיקות השלבים הקודמים עדיין עוברות (regression).
+- `npm run typecheck && npm run lint && npm run test && npm run test:rules && npm run build` ירוקים.
+- bundle scan נקי (מ-Phase 1 ואילך).
+- המסמכים הקנוניים מסונכרנים.
+- אין TODO קריטי פתוח בקוד השלב.
 
 ---
 
@@ -124,20 +135,20 @@ gemini-3-flash-preview
 
 ---
 
-## 4. טבלת השלבים הראשית
+## 4. מעקב התקדמות ראשי
 
-| Phase | שם | תלוי ב- | אומדן | Milestone (ROADMAP) |
-|---|---|---|---:|---|
-| 0 | Security & Hygiene | — | S–M | M0→M1 |
-| 1 | Foundation (tooling, i18n, CI, Firebase) | 0 | L | M1 |
-| 2 | Auth & Data Layer | 1 | L | M2 |
-| 3 | Discovery & Matching | 2 | L | M3 |
-| 4 | Chat | 3 | M–L | M4 |
-| 5 | Economy & Cosmetics (+Motion & FX) | 2 (UI: 3) | L | M5 |
-| 6 | Subscription (RevenueCat) | 5 | L | M5 |
-| 7 | AI Hub | 2 | M | M6 |
-| 8 | Safety, Account Lifecycle & Hardening | 3, 4 | L | M6 |
-| 9 | QA, Observability & Launch Readiness | הכל | L | M7–M8 |
+סטטוס-על של כל שלב. checkbox כאן מסומן **רק** כשהשלב כולו (משימות + בדיקות + Exit Criteria) ירוק.
+
+- [ ] **Phase 0 — Security & Hygiene** (תלוי ב: —, אומדן S–M, milestone M0→M1)
+- [ ] **Phase 1 — Foundation** (תלוי ב: 0, אומדן L, milestone M1)
+- [ ] **Phase 2 — Auth & Data Layer** (תלוי ב: 1, אומדן L, milestone M2)
+- [ ] **Phase 3 — Discovery & Matching** (תלוי ב: 2, אומדן L, milestone M3)
+- [ ] **Phase 4 — Chat** (תלוי ב: 3, אומדן M–L, milestone M4)
+- [ ] **Phase 5 — Economy & Cosmetics** (תלוי ב: 2; UI: 3, אומדן L, milestone M5)
+- [ ] **Phase 6 — Subscription (RevenueCat)** (תלוי ב: 5, אומדן L, milestone M5)
+- [ ] **Phase 7 — AI Hub** (תלוי ב: 2, אומדן M, milestone M6)
+- [ ] **Phase 8 — Safety, Account Lifecycle & Hardening** (תלוי ב: 3, 4, אומדן L, milestone M6)
+- [ ] **Phase 9 — QA, Observability & Launch Readiness** (תלוי ב: הכל, אומדן L, milestone M7–M8)
 
 הערה: Phases 5–7 ניתנים למקבול חלקי אחרי Phase 2, כל עוד ה-dependency chain של ROADMAP §8 נשמר.
 
@@ -150,12 +161,10 @@ gemini-3-flash-preview
 
 ### 5.1 משימות
 
-| ID | משימה | פירוט | אומדן |
-|---|---|---|---:|
-| P0-T01 | הסרת Gemini מה-client | מחיקת `services/geminiService.ts`, הסרת `@google/genai` מ-`package.json`, ניקוי `process.env.API_KEY` מ-`vite.config.ts` | S |
-| P0-T02 | ביטול מזהה מודל שגוי | אין `gemini-3-flash-preview` בשום מקום בקוד | S |
-| P0-T03 | ניקוי קוד מת | הסרת קומפוננטות prototype שלא ימשיכו (לפי MIGRATION_PLAN §0.3), הסרת שם `GameOn`/`dogame` משמות/קלאסים שנשארו | S |
-| P0-T04 | rotate API key | ביטול/החלפת ה-key שנחשף ב-Google AI Studio (פעולה ידנית בקונסולה) | S |
+- [ ] **P0-T01 — הסרת Gemini מה-client** `(S)` — מחיקת `services/geminiService.ts`, הסרת `@google/genai` מ-`package.json`, ניקוי `process.env.API_KEY` מ-`vite.config.ts`.
+- [ ] **P0-T02 — ביטול מזהה מודל שגוי** `(S)` — אין `gemini-3-flash-preview` בשום מקום בקוד.
+- [ ] **P0-T03 — ניקוי קוד מת** `(S)` — הסרת קומפוננטות prototype שלא ימשיכו (MIGRATION_PLAN §0.3); הסרת `GameOn`/`dogame` משמות/קלאסים שנשארו.
+- [ ] **P0-T04 — rotate API key** `(S)` — ביטול/החלפת ה-key שנחשף ב-Google AI Studio (פעולה ידנית בקונסולה).
 
 ### 5.2 בדיקות ואימות
 
@@ -169,6 +178,10 @@ gemini-3-flash-preview
 - [ ] ה-key הישן בוטל בפועל.
 - [ ] commit נקי נדחף.
 
+### 5.4 סגירת שלב
+
+- [ ] **✅ Phase 0 הושלם — כל המשימות, הבדיקות וה-Exit Criteria ירוקים; מסומן גם ב-§4.**
+
 ---
 
 ## 6. Phase 1 — Foundation
@@ -178,34 +191,28 @@ gemini-3-flash-preview
 
 ### 6.1 משימות — Tooling & Project Structure
 
-| ID | משימה | פירוט | אומדן |
-|---|---|---|---:|
-| P1-T01 | Tailwind כ-build dependency | הסרת CDN; התקנת Tailwind + config עם ה-design tokens מ-DESIGN_SYSTEM (Dark Matter, amber `#F59E0B`, Rubik) | M |
-| P1-T02 | ESLint + Prettier | כללי CONVENTIONS (named exports, no `any`, import order); script `npm run lint` אמיתי (לא רק tsc) | S |
-| P1-T03 | Vitest + Testing Library | הקמת `npm run test`, קובץ בדיקה ראשון עובר | S |
-| P1-T04 | מבנה feature-based | יצירת `src/app`, `src/config`, `src/features/*`, `src/shared` לפי CONVENTIONS §2; העברת קוד prototype רלוונטי | M |
-| P1-T05 | React Router | routes בסיסיים: `/login`, `/onboarding`, `/discover`, `/matches`, `/chat/:chatId`, `/shop`, `/profile`, `/ai`, `/settings` + route guards ריקים | M |
-| P1-T06 | Zustand + Zod + React Hook Form | התקנה, יצירת store בסיסי ו-schema לדוגמה עם בדיקות | S |
-| P1-T07 | bundle scan script | `npm run scan:bundle` שסורק את `dist/` על כל ה-forbidden strings (רשימה §3.2) ונכשל אם נמצאו | S |
+- [ ] **P1-T01 — Tailwind כ-build dependency** `(M)` — הסרת CDN; התקנת Tailwind + config עם ה-design tokens מ-DESIGN_SYSTEM (Dark Matter, amber `#F59E0B`, Rubik).
+- [ ] **P1-T02 — ESLint + Prettier** `(S)` — כללי CONVENTIONS (named exports, no `any`, import order); script `npm run lint` אמיתי (לא רק tsc).
+- [ ] **P1-T03 — Vitest + Testing Library** `(S)` — הקמת `npm run test`, קובץ בדיקה ראשון עובר.
+- [ ] **P1-T04 — מבנה feature-based** `(M)` — יצירת `src/app`, `src/config`, `src/features/*`, `src/shared` לפי CONVENTIONS §2; העברת קוד prototype רלוונטי.
+- [ ] **P1-T05 — React Router** `(M)` — routes בסיסיים: `/login`, `/onboarding`, `/discover`, `/matches`, `/chat/:chatId`, `/shop`, `/profile`, `/ai`, `/settings` + route guards ריקים.
+- [ ] **P1-T06 — Zustand + Zod + React Hook Form** `(S)` — התקנה, store בסיסי ו-schema לדוגמה עם בדיקות.
+- [ ] **P1-T07 — bundle scan script** `(S)` — `npm run scan:bundle` שסורק את `dist/` על כל ה-forbidden strings (§3.2) ונכשל אם נמצאו.
 
 ### 6.2 משימות — i18n & RTL/LTR (ADR-035)
 
-| ID | משימה | פירוט | אומדן |
-|---|---|---|---:|
-| P1-T08 | בחירת ספריית i18n | `react-i18next` או FormatJS (החלטה מתועדת ב-LOCALIZATION open item) | S |
-| P1-T09 | תשתית catalogs | קבצי `he` + `en`, `dir`/`lang` דינמיים על `<html>`, hook `useLocale()`, persistence ל-`preferredLocale` | M |
-| P1-T10 | label maps typed | `Record<Enum, string>` לכל enum קנוני, per locale, עם בדיקת כיסוי (TC-X-002) | M |
-| P1-T11 | RTL/LTR foundations | logical properties בלבד (`start`/`end`), בדיקת mirror לאייקונים כיווניים | S |
+- [ ] **P1-T08 — בחירת ספריית i18n** `(S)` — `react-i18next` או FormatJS (החלטה מתועדת ב-LOCALIZATION open item).
+- [ ] **P1-T09 — תשתית catalogs** `(M)` — קבצי `he` + `en`, `dir`/`lang` דינמיים על `<html>`, hook `useLocale()`, persistence ל-`preferredLocale`.
+- [ ] **P1-T10 — label maps typed** `(M)` — `Record<Enum, string>` לכל enum קנוני, per locale, עם בדיקת כיסוי (TC-X-002).
+- [ ] **P1-T11 — RTL/LTR foundations** `(S)` — logical properties בלבד (`start`/`end`), בדיקת mirror לאייקונים כיווניים.
 
 ### 6.3 משימות — Firebase & CI
 
-| ID | משימה | פירוט | אומדן |
-|---|---|---|---:|
-| P1-T12 | פרויקטי Firebase | יצירת `swish-game-dev` + `swish-game-staging` (prod נדחה עד Phase 9); הפעלת Auth/Firestore/Storage/Functions | M |
-| P1-T13 | Firebase client config | `src/config/firebase.ts` עם `VITE_*` env vars בלבד; `.env.example` | S |
-| P1-T14 | Emulator Suite | `firebase.json` עם Auth/Firestore/Storage/Functions emulators + seed script בסיסי | M |
-| P1-T15 | functions workspace | `functions/` עם TypeScript strict, מבנה `callable/http/triggers/shared/repositories/services/schemas/types` (CONVENTIONS) | M |
-| P1-T16 | CI pipeline (GitHub Actions) | workflow PR: typecheck→lint→test→build→scan:bundle לפי CI_CD §5; ללא deploy עדיין | M |
+- [ ] **P1-T12 — פרויקטי Firebase** `(M)` — יצירת `swish-game-dev` + `swish-game-staging` (prod נדחה עד Phase 9); הפעלת Auth/Firestore/Storage/Functions.
+- [ ] **P1-T13 — Firebase client config** `(S)` — `src/config/firebase.ts` עם `VITE_*` env vars בלבד; `.env.example`.
+- [ ] **P1-T14 — Emulator Suite** `(M)` — `firebase.json` עם Auth/Firestore/Storage/Functions emulators + seed script בסיסי.
+- [ ] **P1-T15 — functions workspace** `(M)` — `functions/` עם TypeScript strict, מבנה `callable/http/triggers/shared/repositories/services/schemas/types` (CONVENTIONS).
+- [ ] **P1-T16 — CI pipeline (GitHub Actions)** `(M)` — workflow PR: typecheck→lint→test→build→scan:bundle לפי CI_CD §5; ללא deploy עדיין.
 
 ### 6.4 בדיקות ואימות
 
@@ -224,6 +231,10 @@ gemini-3-flash-preview
 - [ ] CI חוסם merge על כשל.
 - [ ] אין רגרסיה ב-Phase 0.
 
+### 6.6 סגירת שלב
+
+- [ ] **✅ Phase 1 הושלם — כל המשימות, הבדיקות וה-Exit Criteria ירוקים; מסומן גם ב-§4.**
+
 ---
 
 ## 7. Phase 2 — Auth & Data Layer
@@ -233,33 +244,35 @@ gemini-3-flash-preview
 
 ### 7.1 משימות
 
-| ID | משימה | פירוט | אומדן |
-|---|---|---|---:|
-| P2-T01 | טיפוסי הליבה | `types/` נגזרים 1:1 מ-DATA_MODEL (UserDocument, PublicProfileDocument, enums…) + Zod schemas | M |
-| P2-T02 | Firebase Auth | Google + email/password; מסכי login/signup; מיפוי שגיאות ל-i18n (בלי raw Firebase errors) | M |
-| P2-T03 | User bootstrap | יצירת `users/{uid}` + `users/{uid}/private/account` בהרשמה, idempotent (retry-safe) | M |
-| P2-T04 | Onboarding flow | steps: basics → game (מ-`gameCatalog` seeded) → completion; חסימת `/discover` עד השלמה; `skillLevel` enum אנגלית | L |
-| P2-T05 | `syncPublicProfile` | callable + triggers `onUserProfileUpdated`/`onUserGameUpdated`; אין שדות פרטיים ב-public | M |
-| P2-T06 | Profile view/edit | מסך פרופיל עם קריאה/עדכון שדות מותרים בלבד; `preferredLocale` setting | M |
-| P2-T07 | Security Rules v1 | rules מלאים ל-`users`, `publicProfiles`, `gameCatalog` לפי SECURITY, כולל חסימת כל ה-server-owned fields | L |
-| P2-T08 | rules test harness | `npm run test:rules` עם deny/allow matrix ראשוני | M |
-| P2-T09 | Emulator seed | סקריפט seed: משתמשים, gameCatalog, פרופילים discoverable | S |
+- [ ] **P2-T01 — טיפוסי הליבה** `(M)` — `types/` נגזרים 1:1 מ-DATA_MODEL (UserDocument, PublicProfileDocument, enums…) + Zod schemas.
+- [ ] **P2-T02 — Firebase Auth** `(M)` — Google + email/password; מסכי login/signup; מיפוי שגיאות ל-i18n (בלי raw Firebase errors).
+- [ ] **P2-T03 — User bootstrap** `(M)` — יצירת `users/{uid}` + `users/{uid}/private/account` בהרשמה, idempotent (retry-safe).
+- [ ] **P2-T04 — Onboarding flow** `(L)` — steps: basics → game (מ-`gameCatalog` seeded) → completion; חסימת `/discover` עד השלמה; `skillLevel` enum אנגלית.
+- [ ] **P2-T05 — `syncPublicProfile`** `(M)` — callable + triggers `onUserProfileUpdated`/`onUserGameUpdated`; אין שדות פרטיים ב-public.
+- [ ] **P2-T06 — Profile view/edit** `(M)` — מסך פרופיל עם קריאה/עדכון שדות מותרים בלבד; `preferredLocale` setting.
+- [ ] **P2-T07 — Security Rules v1** `(L)` — rules מלאים ל-`users`, `publicProfiles`, `gameCatalog` לפי SECURITY, כולל חסימת כל ה-server-owned fields.
+- [ ] **P2-T08 — rules test harness** `(M)` — `npm run test:rules` עם deny/allow matrix ראשוני.
+- [ ] **P2-T09 — Emulator seed** `(S)` — סקריפט seed: משתמשים, gameCatalog, פרופילים discoverable.
 
 ### 7.2 בדיקות ואימות
 
 **Test cases (TEST_CASES):** `TC-AUTH-001…008`, `TC-ONB-001…006`, `TC-PROF-001…004`, `TC-SEC-012`, `TC-SEC-019`.
 
-- [ ] כל בדיקות ה-rules: user לא כותב `coins`/`isPro`/`subscription*`/`verifiedBadge`/`isSuspended` (TC-SEC-001…006 ברמת user doc).
-- [ ] `skillLevel = "expert"` נדחה ב-Zod וב-rules (TC-ONB-006).
-- [ ] user לא קורא `private/account` של אחר (TC-SEC-012).
+- [ ] TC-AUTH-001…008 עוברים (signup Google/email, routing, logout, שגיאות, bootstrap כפול idempotent).
+- [ ] TC-ONB-001…006 עוברים, כולל `skillLevel = "expert"` נדחה ב-Zod וב-rules (TC-ONB-006).
+- [ ] TC-PROF-001…004 עוברים, כולל rules: user לא כותב `coins`/`isPro`/`subscription*`/`verifiedBadge`/`isSuspended`.
+- [ ] user לא קורא `private/account` של אחר (TC-SEC-012); client לא כותב `gameCatalog` (TC-SEC-019).
 - [ ] E2E: signup→onboarding→profile מלא בשתי השפות (he RTL / en LTR).
-- [ ] bootstrap כפול לא יוצר כפילויות (TC-AUTH-008).
 
 ### 7.3 Exit Criteria
 
 - [ ] משתמש חדש עובר מקצה לקצה עד פרופיל discoverable.
 - [ ] deny matrix ירוקה במלואה על הקולקציות הקיימות.
 - [ ] אפס mock data במסלול auth/onboarding/profile.
+
+### 7.4 סגירת שלב
+
+- [ ] **✅ Phase 2 הושלם — כל המשימות, הבדיקות וה-Exit Criteria ירוקים; מסומן גם ב-§4.**
 
 ---
 
@@ -270,31 +283,35 @@ gemini-3-flash-preview
 
 ### 8.1 משימות
 
-| ID | משימה | פירוט | אומדן |
-|---|---|---|---:|
-| P3-T01 | Deck query (MVP) | שאילתת client מסוננת על `publicProfiles` לפי `gameId` (ADR-021); סינון self/swiped/matched/blocked | M |
-| P3-T02 | `submitSwipe` | callable: Zod, auth, self-swipe reject, daily limit (`system/config.limits.basicDailySwipeLimit`), transaction, deterministic IDs | L |
-| P3-T03 | Match creation | reciprocal like → `matches/{matchId}` + `chats/{chatId}` באותה transaction; idempotent | M |
-| P3-T04 | Swipe UI | SwipeCard/SwipeHud/SwipeActions עם Framer Motion; optimistic UI מתואם לתוצאת backend; disable על double-tap | M |
-| P3-T05 | MatchCelebration | overlay + CTA לצ'אט | S |
-| P3-T06 | Likes You | לפי ADR-033 (פתוח לכולם ב-MVP) | M |
-| P3-T07 | Rules — swipes/matches | client לא יוצר `swipes`/`matches` ישירות; קריאת match למשתתפים בלבד | M |
-| P3-T08 | `system/config` seed | מסמך config עם featureFlags + limits בסביבת dev | S |
+- [ ] **P3-T01 — Deck query (MVP)** `(M)` — שאילתת client מסוננת על `publicProfiles` לפי `gameId` (ADR-021); סינון self/swiped/matched/blocked.
+- [ ] **P3-T02 — `submitSwipe`** `(L)` — callable: Zod, auth, self-swipe reject, daily limit (`system/config.limits.basicDailySwipeLimit`), transaction, deterministic IDs.
+- [ ] **P3-T03 — Match creation** `(M)` — reciprocal like → `matches/{matchId}` + `chats/{chatId}` באותה transaction; idempotent.
+- [ ] **P3-T04 — Swipe UI** `(M)` — SwipeCard/SwipeHud/SwipeActions עם Framer Motion; optimistic UI מתואם לתוצאת backend; disable על double-tap.
+- [ ] **P3-T05 — MatchCelebration** `(S)` — overlay + CTA לצ'אט.
+- [ ] **P3-T06 — Likes You** `(M)` — לפי ADR-033 (פתוח לכולם ב-MVP).
+- [ ] **P3-T07 — Rules — swipes/matches** `(M)` — client לא יוצר `swipes`/`matches` ישירות; קריאת match למשתתפים בלבד.
+- [ ] **P3-T08 — `system/config` seed** `(S)` — מסמך config עם featureFlags + limits בסביבת dev.
 
 ### 8.2 בדיקות ואימות
 
-**Test cases:** `TC-DISC-001…010`, `TC-MATCH-001…005`, `TC-SEC-008…011`.
+**Test cases:** `TC-DISC-001…010`, `TC-MATCH-001…005`, `TC-SEC-008…011`, `TC-SEC-020`.
 
+- [ ] TC-DISC-001…007 עוברים (deck, filter, skip/like, empty, no-games, blocked exclusion).
 - [ ] race: שני swipes הדדיים במקביל → match/chat יחיד (TC-DISC-010, TC-MATCH-004) — בדיקת emulator חובה.
-- [ ] self-swipe → `self_action_forbidden` (TC-DISC-008).
+- [ ] self-swipe → `self_action_forbidden` (TC-DISC-008); double-submit חסום (TC-DISC-009).
 - [ ] daily limit → `resource_exhausted` אחרי ה-limit.
+- [ ] TC-MATCH-001…003/005 עוברים (match, celebration, duplicate no-op).
+- [ ] rules: יצירת swipe/match ישירה נדחית (TC-SEC-008/009); suspended user נדחה (TC-SEC-011); client לא כותב `system/config` (TC-SEC-020).
 - [ ] E2E: userA like → userB like → celebration → chat route.
-- [ ] rules: יצירת swipe/match ישירה נדחית (TC-SEC-008/009).
 
 ### 8.3 Exit Criteria
 
 - [ ] לולאת discovery→swipe→match עובדת מקצה לקצה על emulators עם שני משתמשים אמיתיים.
 - [ ] אפס יצירת match כפול תחת עומס (בדיקה חוזרת ×20 ריצות).
+
+### 8.4 סגירת שלב
+
+- [ ] **✅ Phase 3 הושלם — כל המשימות, הבדיקות וה-Exit Criteria ירוקים; מסומן גם ב-§4.**
 
 ---
 
@@ -305,20 +322,19 @@ gemini-3-flash-preview
 
 ### 9.1 משימות
 
-| ID | משימה | פירוט | אומדן |
-|---|---|---|---:|
-| P4-T01 | Chat list | רשימת שיחות עם `lastMessage` denormalized (trigger `onMessageCreated`) | M |
-| P4-T02 | Real-time messages | subscription על `chats/{chatId}/messages`; pagination בסיסי | M |
-| P4-T03 | Text send | כתיבה ישירה של `type:"text"` תחת rules (participant, גודל, rate) | M |
-| P4-T04 | Media Pro gating | `sendChatMediaMessage` callable + Storage Rules (MIME/size); Basic → `UpgradeModal` + `pro_required` | M |
-| P4-T05 | Block awareness hooks | סכמת chat תומכת `blocked` state; אכיפה מלאה תושלם ב-Phase 8 | S |
-| P4-T06 | Rules — chats/messages | participants-only read/write; image ישיר נדחה (רק דרך function) | M |
+- [ ] **P4-T01 — Chat list** `(M)` — רשימת שיחות עם `lastMessage` denormalized (trigger `onMessageCreated`).
+- [ ] **P4-T02 — Real-time messages** `(M)` — subscription על `chats/{chatId}/messages`; pagination בסיסי.
+- [ ] **P4-T03 — Text send** `(M)` — כתיבה ישירה של `type:"text"` תחת rules (participant, גודל, rate).
+- [ ] **P4-T04 — Media Pro gating** `(M)` — `sendChatMediaMessage` callable + Storage Rules (MIME/size); Basic → `UpgradeModal` + `pro_required`.
+- [ ] **P4-T05 — Block awareness hooks** `(S)` — סכמת chat תומכת `blocked` state; אכיפה מלאה תושלם ב-Phase 8.
+- [ ] **P4-T06 — Rules — chats/messages** `(M)` — participants-only read/write; image ישיר נדחה (רק דרך function).
 
 ### 9.2 בדיקות ואימות
 
 **Test cases:** `TC-CHAT-001…005`, `TC-CHAT-007…009`, `TC-SEC-013…017` (TC-CHAT-006 יאומת שוב ב-Phase 8).
 
-- [ ] non-participant לא קורא chat/messages (TC-SEC-013/014).
+- [ ] TC-CHAT-001/002/004/005 עוברים (פתיחה, שליחת text, empty/long message).
+- [ ] non-participant לא קורא chat/messages (TC-CHAT-007, TC-SEC-013/014); participant text תקין מותר (TC-SEC-015).
 - [ ] message `type:"image"` ישיר נדחה (TC-SEC-016).
 - [ ] Basic media → `pro_required` בשרת, לא רק UI (TC-SEC-017, TC-CHAT-003).
 - [ ] קובץ גדול/MIME שגוי נדחים ב-Storage Rules (TC-CHAT-008/009).
@@ -329,6 +345,10 @@ gemini-3-flash-preview
 - [ ] שני matched users משוחחים real-time על emulators.
 - [ ] כל גייטי ה-media נאכפים server-side.
 
+### 9.4 סגירת שלב
+
+- [ ] **✅ Phase 4 הושלם — כל המשימות, הבדיקות וה-Exit Criteria ירוקים; מסומן גם ב-§4.**
+
 ---
 
 ## 10. Phase 5 — Economy & Cosmetics
@@ -338,34 +358,31 @@ gemini-3-flash-preview
 
 ### 10.1 משימות — Economy
 
-| ID | משימה | פירוט | אומדן |
-|---|---|---|---:|
-| P5-T01 | הסרת coins מקומיים | ביטול ה-1,000,000 placeholder; `coins` נקרא מ-`users/{uid}` בלבד | S |
-| P5-T02 | Signup bonus | הענקת coins חד-פעמית ב-bootstrap לפי `system/config` (ADR-034) + `transactions` audit | M |
-| P5-T03 | `shopItems` seed | קטלוג לפי הטקסונומיה (category/rarity/renderType) כולל `renderConfig` לפריטים מונפשים | M |
-| P5-T04 | `purchaseShopItem` | callable: transaction, `insufficient_coins`, `pro_required`, idempotency, audit, מניעת balance שלילי | L |
-| P5-T05 | `equipItem` | callable: ownership check, עדכון `users` + sync ל-`publicProfiles` | M |
-| P5-T06 | Shop UI | grid, קטגוריות, `ShopItemPreview`, `PurchaseConfirmModal` | M |
+- [ ] **P5-T01 — הסרת coins מקומיים** `(S)` — ביטול ה-1,000,000 placeholder; `coins` נקרא מ-`users/{uid}` בלבד.
+- [ ] **P5-T02 — Signup bonus** `(M)` — הענקת coins חד-פעמית ב-bootstrap לפי `system/config` (ADR-034) + `transactions` audit.
+- [ ] **P5-T03 — `shopItems` seed** `(M)` — קטלוג לפי הטקסונומיה (category/rarity/renderType) כולל `renderConfig` לפריטים מונפשים.
+- [ ] **P5-T04 — `purchaseShopItem`** `(L)` — callable: transaction, `insufficient_coins`, `pro_required`, idempotency, audit, מניעת balance שלילי.
+- [ ] **P5-T05 — `equipItem`** `(M)` — callable: ownership check, עדכון `users` + sync ל-`publicProfiles`.
+- [ ] **P5-T06 — Shop UI** `(M)` — grid, קטגוריות, `ShopItemPreview`, `PurchaseConfirmModal`.
 
 ### 10.2 משימות — Motion & FX (ADR-039)
 
-| ID | משימה | פירוט | אומדן |
-|---|---|---|---:|
-| P5-T07 | `CosmeticRenderer` | קומפוננטת שער עם החלטת rendering לפי `renderType`/tier/reduced-motion (MOTION_AND_FX §11) | M |
-| P5-T08 | Static + Lottie renderers | `static_image` (poster/fallback) + lottie micro-animations; lazy import | M |
-| P5-T09 | Rive renderer | `.riv` עם artboard/state machine; pause off-screen (IntersectionObserver) | M |
-| P5-T10 | Video/Particle renderers | alpha-video dual-format (HEVC+WebM) + PixiJS particles; quality tiers + fallback | L |
-| P5-T11 | Sound controller | Howler audio sprites; off by default; mute/volume settings (MOTION_AND_FX §9) | M |
-| P5-T12 | Rules — shop/economy | `shopItems` read-only ל-client; `transactions`/`ownedItems` server-only | M |
+- [ ] **P5-T07 — `CosmeticRenderer`** `(M)` — קומפוננטת שער עם החלטת rendering לפי `renderType`/tier/reduced-motion (MOTION_AND_FX §11).
+- [ ] **P5-T08 — Static + Lottie renderers** `(M)` — `static_image` (poster/fallback) + lottie micro-animations; lazy import.
+- [ ] **P5-T09 — Rive renderer** `(M)` — `.riv` עם artboard/state machine; pause off-screen (IntersectionObserver).
+- [ ] **P5-T10 — Video/Particle renderers** `(L)` — alpha-video dual-format (HEVC+WebM) + PixiJS particles; quality tiers + fallback.
+- [ ] **P5-T11 — Sound controller** `(M)` — Howler audio sprites; off by default; mute/volume settings (MOTION_AND_FX §9).
+- [ ] **P5-T12 — Rules — shop/economy** `(M)` — `shopItems` read-only ל-client; `transactions`/`ownedItems` server-only.
 
 ### 10.3 בדיקות ואימות
 
-**Test cases:** `TC-SHOP-001…009`, `TC-SEC-001`, `TC-SEC-007`, `TC-SEC-018`, `TC-SEC-021`.
+**Test cases:** `TC-SHOP-001…009`, `TC-SEC-001`, `TC-SEC-007`, `TC-SEC-018`, `TC-SEC-021` + MOTION_AND_FX QA §12.
 
+- [ ] TC-SHOP-001…005/007/008 עוברים (browse, view, purchase, equip, insufficient, inactive, pro-required).
 - [ ] double-purchase במקביל → חיוב יחיד (TC-SHOP-006) — emulator, ריצות חוזרות.
 - [ ] שתי רכישות מקבילות מעל היתרה → לכל היותר אחת מצליחה, אין שלילי (TC-SHOP-009).
-- [ ] `transactions` audit נכתב על כל שינוי coins (ADR-005).
-- [ ] FX: כל renderer מציג fallback static כשצריך; `prefers-reduced-motion` מכבד; אנימציות offscreen מושהות (MOTION_AND_FX QA §12).
+- [ ] `transactions` audit נכתב על כל שינוי coins (ADR-005); client לא יוצר transactions/כותב shopItems (TC-SEC-007/018); inactive item נדחה (TC-SEC-021); client לא משנה coins (TC-SEC-001).
+- [ ] FX: כל renderer מציג fallback static כשצריך; `prefers-reduced-motion` מכובד; אנימציות offscreen מושהות (MOTION_AND_FX QA §12.1–12.3).
 - [ ] FPS על מכשיר mid-tier ≥ 30 בפרופיל עם cosmetic כבד.
 - [ ] סאונד לא מתנגן לפני user gesture.
 
@@ -374,6 +391,10 @@ gemini-3-flash-preview
 - [ ] רכישה+ציוד עובדים מקצה לקצה עם audit מלא.
 - [ ] פריט Rive אחד + פריט video אחד + פריט static רצים בייצוגיות מלאה כולל fallbacks.
 - [ ] אפס דרך לשנות coins מה-client (rules ירוקות).
+
+### 10.5 סגירת שלב
+
+- [ ] **✅ Phase 5 הושלם — כל המשימות, הבדיקות וה-Exit Criteria ירוקים; מסומן גם ב-§4.**
 
 ---
 
@@ -384,25 +405,25 @@ gemini-3-flash-preview
 
 ### 11.1 משימות
 
-| ID | משימה | פירוט | אומדן |
-|---|---|---|---:|
-| P6-T01 | RevenueCat project setup | חשבון, product `pro` ‏29.90 ILS/חודש, entitlement mapping, sandbox | M |
-| P6-T02 | `createCheckoutSession` | callable לפי API_CONTRACT §3.13; חסימת מנוי כפול (`failed_precondition`) | M |
-| P6-T03 | `paymentWebhook` | HTTP: אימות signature, נורמליזציית events, idempotency לפי event ID, כתיבת `subscriptions/{uid}` | L |
-| P6-T04 | Entitlement sync | trigger `onSubscriptionUpdated` → `users` (`isPro`, tier, status, expiresAt) → `publicProfiles.verifiedBadge` | M |
-| P6-T05 | Pro gating אחיד | hook `useEntitlement()`; אכיפה כפולה — UI + functions/rules | M |
-| P6-T06 | UpgradeModal + subscription screen | מחיר, חידוש, ביטול; מצבי active/past_due/cancelled/expired | M |
-| P6-T07 | lifecycle handling | renewal, cancellation, expiration, refund/chargeback לפי PAYMENTS state machine | M |
+- [ ] **P6-T01 — RevenueCat project setup** `(M)` — חשבון, product `pro` ‏29.90 ILS/חודש, entitlement mapping, sandbox.
+- [ ] **P6-T02 — `createCheckoutSession`** `(M)` — callable לפי API_CONTRACT §3.13; חסימת מנוי כפול (`failed_precondition`).
+- [ ] **P6-T03 — `paymentWebhook`** `(L)` — HTTP: אימות signature, נורמליזציית events, idempotency לפי event ID, כתיבת `subscriptions/{uid}`.
+- [ ] **P6-T04 — Entitlement sync** `(M)` — trigger `onSubscriptionUpdated` → `users` (`isPro`, tier, status, expiresAt) → `publicProfiles.verifiedBadge`.
+- [ ] **P6-T05 — Pro gating אחיד** `(M)` — hook `useEntitlement()`; אכיפה כפולה — UI + functions/rules.
+- [ ] **P6-T06 — UpgradeModal + subscription screen** `(M)` — מחיר, חידוש, ביטול; מצבי active/past_due/cancelled/expired.
+- [ ] **P6-T07 — Lifecycle handling** `(M)` — renewal, cancellation, expiration, refund/chargeback לפי PAYMENTS state machine.
 
 ### 11.2 בדיקות ואימות
 
 **Test cases:** `TC-SUB-001…009`, `TC-SEC-002…006`, `TC-SEC-022/023/025`.
 
+- [ ] TC-SUB-001/002/005 עוברים (upgrade modal, checkout session, כפל מנוי חסום).
 - [ ] webhook עם signature שגוי → 401/400, אפס שינוי entitlement (TC-SUB-009/TC-SEC-022).
 - [ ] webhook כפול (replay) → idempotent (TC-SEC-023).
 - [ ] redirect/success URL בלי webhook → נשאר Basic (TC-SUB-004). **בדיקה קריטית.**
-- [ ] sandbox purchase מלא: checkout → webhook → `isPro=true` → `verifiedBadge` מוצג.
-- [ ] cancellation/refund → entitlement יורד בהתאם (TC-SUB-007/008).
+- [ ] sandbox purchase מלא: checkout → webhook → `isPro=true` → `verifiedBadge` מוצג (TC-SUB-003).
+- [ ] expiry/cancellation/refund → entitlement יורד בהתאם (TC-SUB-006/007/008).
+- [ ] rules: client לא כותב `isPro`/`subscriptionTier`/`subscriptionStatus`/`subscriptionExpiresAt`/`verifiedBadge` (TC-SEC-002…006).
 - [ ] scan:bundle: אפס payment secrets (TC-SEC-025).
 
 ### 11.3 Exit Criteria
@@ -410,6 +431,10 @@ gemini-3-flash-preview
 - [ ] רכישת Pro אמיתית ב-sandbox עובדת מקצה לקצה.
 - [ ] כל מסלולי ה-lifecycle מכוסים בבדיקות integration.
 - [ ] אין שום דרך ל-Pro בלי webhook מאומת.
+
+### 11.4 סגירת שלב
+
+- [ ] **✅ Phase 6 הושלם — כל המשימות, הבדיקות וה-Exit Criteria ירוקים; מסומן גם ב-§4.**
 
 ---
 
@@ -420,22 +445,21 @@ gemini-3-flash-preview
 
 ### 12.1 משימות
 
-| ID | משימה | פירוט | אומדן |
-|---|---|---|---:|
-| P7-T01 | Secret Manager | `GEMINI_API_KEY` ב-Secret Manager; אימות מזהה מודל production (לא `gemini-3-flash-preview`) | S |
-| P7-T02 | `sendAIProfileReview` | callable: Zod, guardrails, קריאת Gemini server-side, `aiRequests` audit | M |
-| P7-T03 | `sendAISquadAdvice` | כנ"ל לפי החוזה | M |
-| P7-T04 | Rate limits | לפי `system/config.limits.ai*` → `resource_exhausted` (ADR-027 placeholder) | S |
-| P7-T05 | AI Hub UI | `/ai` עם loading/result/refusal/error states; `AIRefusalState` | M |
-| P7-T06 | Safe logging | אפס prompts/responses בלוגים/analytics; normalized errors בלבד | S |
+- [ ] **P7-T01 — Secret Manager** `(S)` — `GEMINI_API_KEY` ב-Secret Manager; אימות מזהה מודל production (לא `gemini-3-flash-preview`).
+- [ ] **P7-T02 — `sendAIProfileReview`** `(M)` — callable: Zod, guardrails, קריאת Gemini server-side, `aiRequests` audit.
+- [ ] **P7-T03 — `sendAISquadAdvice`** `(M)` — כנ"ל לפי החוזה.
+- [ ] **P7-T04 — Rate limits** `(S)` — לפי `system/config.limits.ai*` → `resource_exhausted` (ADR-027 placeholder).
+- [ ] **P7-T05 — AI Hub UI** `(M)` — `/ai` עם loading/result/refusal/error states; `AIRefusalState`.
+- [ ] **P7-T06 — Safe logging** `(S)` — אפס prompts/responses בלוגים/analytics; normalized errors בלבד.
 
 ### 12.2 בדיקות ואימות
 
 **Test cases:** `TC-AI-001…007`, `TC-SEC-024`, `TC-SEC-026`.
 
+- [ ] TC-AI-001…003 עוברים (hub, profile review, squad advice — דרך callables בלבד).
 - [ ] provider failure → error בטוח + `aiRequests.status="failed"` (TC-AI-004).
 - [ ] unsafe input → refusal/blocked + audit (TC-AI-005).
-- [ ] ספאם → `resource_exhausted` (TC-AI-006).
+- [ ] ספאם → `resource_exhausted` (TC-AI-006); input ארוך נדחה לפני provider (TC-AI-007).
 - [ ] scan:bundle: אפס `@google/genai`/key (TC-SEC-024).
 - [ ] בדיקת log capture: אפס prompt בלוגים (TC-SEC-026).
 
@@ -443,6 +467,10 @@ gemini-3-flash-preview
 
 - [ ] שני הפיצ'רים עובדים עם Gemini אמיתי ב-dev, עם audit מלא.
 - [ ] feature flag `aiHubEnabled` מכבה את ה-Hub בפועל.
+
+### 12.4 סגירת שלב
+
+- [ ] **✅ Phase 7 הושלם — כל המשימות, הבדיקות וה-Exit Criteria ירוקים; מסומן גם ב-§4.**
 
 ---
 
@@ -453,21 +481,20 @@ gemini-3-flash-preview
 
 ### 13.1 משימות
 
-| ID | משימה | פירוט | אומדן |
-|---|---|---|---:|
-| P8-T01 | `blockUser` | callable + `onBlockCreated`: block doc, סגירת match/chat, הוצאה מ-discovery | M |
-| P8-T02 | `createReport` | callable: reasons enum (8), sources, `reports/{id}` status=open; פרטיות מלאה | M |
-| P8-T03 | Safety UI | ReportModal, BlockConfirmModal, safety menu בפרופיל/צ'אט | M |
-| P8-T04 | `deleteAccount` (ADR-038) | callable לפי API_CONTRACT §3.14: confirm, ביטול מנוי, מחיקה/anonymization, `isDeleted=true`, retention exceptions | L |
-| P8-T05 | Settings → Delete flow | UI מחיקה עם אזהרות מנוי/נתונים; עמוד web ציבורי למחיקה (דרישת Google עתידית) | M |
-| P8-T06 | suspended/deleted enforcement | כל ה-callables דוחים `isSuspended`/`isDeleted`; route guard ל-account state | M |
-| P8-T07 | Rules hardening סופי | מעבר מלא על SECURITY §9 deny matrix; Storage Rules סופיים; chat blocked enforcement (השלמת P4-T05) | L |
-| P8-T08 | Moderation review מינימלי | תהליך פנימי לצפייה ב-reports (אפילו קונסולה) + escalation owner | S |
+- [ ] **P8-T01 — `blockUser`** `(M)` — callable + `onBlockCreated`: block doc, סגירת match/chat, הוצאה מ-discovery.
+- [ ] **P8-T02 — `createReport`** `(M)` — callable: reasons enum (8), sources, `reports/{id}` status=open; פרטיות מלאה.
+- [ ] **P8-T03 — Safety UI** `(M)` — ReportModal, BlockConfirmModal, safety menu בפרופיל/צ'אט.
+- [ ] **P8-T04 — `deleteAccount` (ADR-038)** `(L)` — callable לפי API_CONTRACT §3.14: confirm, ביטול מנוי, מחיקה/anonymization, `isDeleted=true`, retention exceptions.
+- [ ] **P8-T05 — Settings → Delete flow** `(M)` — UI מחיקה עם אזהרות מנוי/נתונים; עמוד web ציבורי למחיקה (דרישת Google עתידית).
+- [ ] **P8-T06 — suspended/deleted enforcement** `(M)` — כל ה-callables דוחים `isSuspended`/`isDeleted`; route guard ל-account state.
+- [ ] **P8-T07 — Rules hardening סופי** `(L)` — מעבר מלא על SECURITY §9 deny matrix; Storage Rules סופיים; chat blocked enforcement (השלמת P4-T05).
+- [ ] **P8-T08 — Moderation review מינימלי** `(S)` — תהליך פנימי לצפייה ב-reports + escalation owner.
 
 ### 13.2 בדיקות ואימות
 
 **Test cases:** `TC-SAFE-001…006`, `TC-CHAT-006`, `TC-DISC-007`, `TC-SEC-001…026` (ריצה מלאה).
 
+- [ ] TC-SAFE-001…004/006 עוברים (report, block, duplicate report, block-after-report, moderation path).
 - [ ] block → target נעלם מ-discovery (TC-DISC-007) + צ'אט נחסם (TC-CHAT-006).
 - [ ] self-report/self-block → `self_action_forbidden` (TC-SAFE-005).
 - [ ] reports לא קריאים למשתמש רגיל; block list פרטי.
@@ -481,6 +508,10 @@ gemini-3-flash-preview
 - [ ] מחיקת חשבון עומדת ב-ADR-038 מקצה לקצה.
 - [ ] אפס פערי rules ידועים.
 
+### 13.4 סגירת שלב
+
+- [ ] **✅ Phase 8 הושלם — כל המשימות, הבדיקות וה-Exit Criteria ירוקים; מסומן גם ב-§4.**
+
 ---
 
 ## 14. Phase 9 — QA, Observability & Launch Readiness
@@ -490,17 +521,15 @@ gemini-3-flash-preview
 
 ### 14.1 משימות
 
-| ID | משימה | פירוט | אומדן |
-|---|---|---|---:|
-| P9-T01 | E2E suite מלא | Playwright: כל ה-core journeys (signup→onboarding→discover→match→chat→shop→pro→ai→report/block→delete) בשתי השפות + viewports ניידים | L |
-| P9-T02 | Analytics events | כל האירועים מ-ANALYTICS מחוברים; בדיקת no-PII (TC-X-008) | M |
-| P9-T03 | Observability | structured logging בכל function; dashboards + alerts לפי ROADMAP §9.9 (webhook failures, negative coins, rule denials, AI cost) | L |
-| P9-T04 | סביבת staging מלאה | deploy pipeline ל-staging (CI_CD §6–8), smoke suite אוטומטי | M |
-| P9-T05 | סביבת production | יצירת `swish-game-prod`, secrets, protected environment, manual approval gate | M |
-| P9-T06 | Accessibility & RTL/LTR QA | TC-X-001…007 מלאים; keyboard/focus/contrast; `prefers-reduced-motion` | M |
-| P9-T07 | Performance QA | Lighthouse mobile, bundle size, FX budgets (MOTION_AND_FX §6) על מכשירים אמיתיים | M |
-| P9-T08 | Legal gate | אישור עו"ד ל-Privacy/ToS/גיל 16+/refunds; פרסום ב-URL ציבורי | תלוי-חיצוני |
-| P9-T09 | Go/No-Go review | מעבר מלא על ROADMAP §9.11 + DEFINITION_OF_DONE §6 | S |
+- [ ] **P9-T01 — E2E suite מלא** `(L)` — Playwright: כל ה-core journeys (signup→onboarding→discover→match→chat→shop→pro→ai→report/block→delete) בשתי השפות + viewports ניידים.
+- [ ] **P9-T02 — Analytics events** `(M)` — כל האירועים מ-ANALYTICS מחוברים; בדיקת no-PII (TC-X-008).
+- [ ] **P9-T03 — Observability** `(L)` — structured logging בכל function; dashboards + alerts לפי ROADMAP §9.9 (webhook failures, negative coins, rule denials, AI cost).
+- [ ] **P9-T04 — סביבת staging מלאה** `(M)` — deploy pipeline ל-staging (CI_CD §6–8), smoke suite אוטומטי.
+- [ ] **P9-T05 — סביבת production** `(M)` — יצירת `swish-game-prod`, secrets, protected environment, manual approval gate.
+- [ ] **P9-T06 — Accessibility & RTL/LTR QA** `(M)` — TC-X-001…007 מלאים; keyboard/focus/contrast; `prefers-reduced-motion`.
+- [ ] **P9-T07 — Performance QA** `(M)` — Lighthouse mobile, bundle size, FX budgets (MOTION_AND_FX §6) על מכשירים אמיתיים.
+- [ ] **P9-T08 — Legal gate** `(תלוי-חיצוני)` — אישור עו"ד ל-Privacy/ToS/גיל 16+/refunds; פרסום ב-URL ציבורי.
+- [ ] **P9-T09 — Go/No-Go review** `(S)` — מעבר מלא על ROADMAP §9.11 + DEFINITION_OF_DONE §6.
 
 ### 14.2 בדיקות ואימות
 
@@ -515,6 +544,10 @@ gemini-3-flash-preview
 - [ ] כל סעיפי ROADMAP §9.1–§9.10 מסומנים.
 - [ ] אף אחד מתנאי ה-No-Go (§9.11) לא מתקיים.
 - [ ] legal sign-off התקבל.
+
+### 14.4 סגירת שלב
+
+- [ ] **✅ Phase 9 הושלם — המוצר מוכן ל-production launch; מסומן גם ב-§4.**
 
 ---
 
@@ -531,6 +564,7 @@ gemini-3-flash-preview
 | Observability | כל function מקבלת structured logging מהיום הראשון | code review |
 | Regression | כל שלב מריץ את כל בדיקות השלבים הקודמים | CI מלא |
 | FX budget | כל cosmetic חדש עובר את ה-Asset Review Checklist (MOTION_AND_FX §4.7) | catalog governance |
+| **Progress tracking** | **סימון checkboxes בקובץ זה לפי הפרוטוקול ב-§2.3, באותו commit שסוגר את העבודה** | **review** |
 
 ---
 
