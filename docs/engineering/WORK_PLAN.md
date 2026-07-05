@@ -161,22 +161,22 @@ gemini-3-flash-preview
 
 ### 5.1 משימות
 
-- [ ] **P0-T01 — הסרת Gemini מה-client** `(S)` — מחיקת `services/geminiService.ts`, הסרת `@google/genai` מ-`package.json`, ניקוי `process.env.API_KEY` מ-`vite.config.ts`.
-- [ ] **P0-T02 — ביטול מזהה מודל שגוי** `(S)` — אין `gemini-3-flash-preview` בשום מקום בקוד.
-- [ ] **P0-T03 — ניקוי קוד מת** `(S)` — הסרת קומפוננטות prototype שלא ימשיכו (MIGRATION_PLAN §0.3); הסרת `GameOn`/`dogame` משמות/קלאסים שנשארו.
-- [ ] **P0-T04 — rotate API key** `(S)` — ביטול/החלפת ה-key שנחשף ב-Google AI Studio (פעולה ידנית בקונסולה).
+- [x] **P0-T01 — הסרת Gemini מה-client** `(S)` — `services/geminiService.ts` הוחלף ב-safe stub; `@google/genai` הוסר מ-`package.json`, מ-`index.html` importmap ומ-node_modules; `define` של `process.env.API_KEY`/`GEMINI_API_KEY` הוסר מ-`vite.config.ts`.
+- [x] **P0-T02 — ביטול מזהה מודל שגוי** `(S)` — אפס מופעי `gemini-3-flash-preview` בקוד (אומת ב-grep).
+- [x] **P0-T03 — ניקוי קוד מת** `(S)` — נמחקו FeatureTable, GeminiFeatureIdeation, Roadmap, Section, PersonaCard + הטיפוסים Persona/Feature/RoadmapItem/GeneratedIdea. (החלפת `dogame` classes — ב-Phase 1.2 לפי MIGRATION_PLAN.)
+- [ ] **P0-T04 — rotate API key** `(S)` — ביטול/החלפת ה-key שנחשף ב-Google AI Studio (פעולה ידנית של בעל החשבון בקונסולה).
 
 ### 5.2 בדיקות ואימות
 
-- [ ] `grep` על הריפו: אפס תוצאות ל-`@google/genai`, `GEMINI_API_KEY`, `process.env.API_KEY`, `gemini-3-flash-preview` בקוד client.
-- [ ] `npm run build` עובר; חיפוש ב-`dist/` מאשר שאין את המחרוזות האסורות.
-- [ ] האפליקציה עדיין עולה (`npm run dev`) גם אם פיצ'רי AI מנוטרלים זמנית.
+- [x] `grep` על הריפו: אפס תוצאות ל-`@google/genai`, `GEMINI_API_KEY`, `process.env.API_KEY`, `gemini-3-flash-preview` בקוד client.
+- [x] `npm run build` עובר (566ms, bundle זהה); `tsc --noEmit` נקי; חיפוש ב-`dist/` מאשר שאין את המחרוזות האסורות.
+- [x] האפליקציה עדיין עולה (`npm run dev` + preview) — UI מלא נטען, אפס שגיאות console.
 
 ### 5.3 Exit Criteria
 
-- [ ] אפס secrets בקוד וב-bundle.
-- [ ] ה-key הישן בוטל בפועל.
-- [ ] commit נקי נדחף.
+- [x] אפס secrets בקוד וב-bundle.
+- [ ] ה-key הישן בוטל בפועל (ממתין לפעולת בעל החשבון — ראה P0-T04).
+- [x] commit נקי נדחף.
 
 ### 5.4 סגירת שלב
 

@@ -32,30 +32,3 @@ export interface BackgroundItem {
   category: 'Cyber' | 'Nature' | 'Space' | 'Abstract' | 'Borders';
 }
 
-export interface Persona {
-  image: string;
-  name: string;
-  age: number;
-  title: string;
-  motivation: string;
-  needs: string;
-  frustrations: string;
-}
-
-export interface Feature {
-  epic: string;
-  userStory: string;
-  priority: 'High' | 'Medium' | 'Low';
-}
-
-export interface RoadmapItem {
-  quarter: string;
-  title: string;
-  description: string;
-}
-
-export interface GeneratedIdea {
-  featureName: string;
-  description: string;
-  targetPersona: string;
-}
