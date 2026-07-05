@@ -8,7 +8,7 @@ interface SettingsViewProps {
     onToggleGlobalBg: () => void;
 }
 
-const SettingsView: React.FC<SettingsViewProps> = ({ 
+export const SettingsView: React.FC<SettingsViewProps> = ({ 
     isDarkMode, 
     onToggleTheme, 
     isGlobalBgEnabled, 
@@ -77,4 +77,3 @@ const SettingsView: React.FC<SettingsViewProps> = ({
     );
 };
 
-export default SettingsView;

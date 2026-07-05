@@ -35,5 +35,14 @@ export default tseslint.config(
       'import/order': ['warn', { 'newlines-between': 'always' }],
     },
   },
+  {
+    // CONVENTIONS: feature code uses named exports and strict import order (P1-T04).
+    files: ['src/**/*.{ts,tsx}'],
+    plugins: { import: importPlugin },
+    rules: {
+      'import/no-default-export': 'error',
+      'import/order': ['error', { 'newlines-between': 'always' }],
+    },
+  },
   prettier,
 );

@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 
-import { GamerProfile } from '../types';
+import { GamerProfile } from '@/shared/types';
 
 interface HeaderProps {
   viewTitle: string;
@@ -14,7 +14,7 @@ interface HeaderProps {
   onBack?: () => void;
 }
 
-const Header: React.FC<HeaderProps> = ({
+export const Header: React.FC<HeaderProps> = ({
   viewTitle,
   onOpenSubscriptions,
   onOpenProfile, 
@@ -228,4 +228,3 @@ const Header: React.FC<HeaderProps> = ({
   );
 };
 
-export default Header;

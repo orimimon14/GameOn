@@ -1,10 +1,12 @@
 
 import React, { useState } from 'react';
 
-import { GamerProfile, BackgroundItem } from '../types';
 
-import ImageEditModal from './ImageEditModal';
-import BackgroundCollectionModal from './BackgroundCollectionModal';
+import { ImageEditModal } from './ImageEditModal';
+import { BackgroundCollectionModal } from './BackgroundCollectionModal';
+import { profileEditSchema } from './profileSchema';
+
+import { GamerProfile, BackgroundItem } from '@/shared/types';
 
 interface ProfileViewProps {
     profile: GamerProfile;
@@ -16,7 +18,7 @@ interface ProfileViewProps {
     ownedBackgrounds: BackgroundItem[];
 }
 
-const ProfileView: React.FC<ProfileViewProps> = ({
+export const ProfileView: React.FC<ProfileViewProps> = ({
     profile,
     onSave,
     isOwnProfile,
@@ -31,6 +33,15 @@ const ProfileView: React.FC<ProfileViewProps> = ({
     const [imageTarget, setImageTarget] = useState<'image' | 'bannerImage'>('image');
 
     const handleSave = () => {
+        const validation = profileEditSchema.safeParse({
+            name: editedProfile.name,
+            age: editedProfile.age,
+            bio: editedProfile.bio,
+        });
+        if (!validation.success) {
+            alert(validation.error.issues[0]?.message ?? 'הנתונים שהוזנו אינם תקינים');
+            return;
+        }
         onSave(editedProfile);
         setIsEditing(false);
     }
@@ -258,4 +269,3 @@ const ProfileView: React.FC<ProfileViewProps> = ({
     );
 };
 
-export default ProfileView;

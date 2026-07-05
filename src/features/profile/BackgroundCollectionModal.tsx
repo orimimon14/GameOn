@@ -1,7 +1,7 @@
 
 import React from 'react';
 
-import { BackgroundItem } from '../types';
+import { BackgroundItem } from '@/shared/types';
 
 interface BackgroundCollectionModalProps {
     isOpen: boolean;
@@ -11,7 +11,7 @@ interface BackgroundCollectionModalProps {
     currentEquippedUrl?: string;
 }
 
-const BackgroundCollectionModal: React.FC<BackgroundCollectionModalProps> = ({ 
+export const BackgroundCollectionModal: React.FC<BackgroundCollectionModalProps> = ({ 
     isOpen, 
     onClose, 
     ownedItems, 
@@ -119,4 +119,3 @@ const BackgroundCollectionModal: React.FC<BackgroundCollectionModalProps> = ({
     );
 };
 
-export default BackgroundCollectionModal;

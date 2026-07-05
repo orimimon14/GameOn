@@ -6,7 +6,7 @@ interface ImageEditModalProps {
     onSave: (url: string) => void;
 }
 
-const ImageEditModal: React.FC<ImageEditModalProps> = ({ isOpen, onClose, onSave }) => {
+export const ImageEditModal: React.FC<ImageEditModalProps> = ({ isOpen, onClose, onSave }) => {
     const [activeTab, setActiveTab] = useState<'upload' | 'url'>('upload');
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const [urlInput, setUrlInput] = useState('');
@@ -113,4 +113,3 @@ const ImageEditModal: React.FC<ImageEditModalProps> = ({ isOpen, onClose, onSave
     );
 };
 
-export default ImageEditModal;

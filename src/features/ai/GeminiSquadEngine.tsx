@@ -1,9 +1,9 @@
 
 import React, { useState } from 'react';
 
-import { generateSquadStrategy, SquadStrategy } from '../services/geminiService';
+import { generateSquadStrategy, SquadStrategy } from './geminiService';
 
-const GeminiSquadEngine: React.FC = () => {
+export const GeminiSquadEngine: React.FC = () => {
     const [input, setInput] = useState('');
     const [loading, setLoading] = useState(false);
     const [result, setResult] = useState<SquadStrategy | null>(null);
@@ -139,4 +139,3 @@ const GeminiSquadEngine: React.FC = () => {
     );
 };
 
-export default GeminiSquadEngine;

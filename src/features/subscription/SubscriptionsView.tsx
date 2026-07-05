@@ -6,7 +6,7 @@ interface SubscriptionsViewProps {
     onUpdateCoins: (amount: number) => void;
 }
 
-const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ onSelectPlan, onUpdateCoins }) => {
+export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ onSelectPlan, onUpdateCoins }) => {
     const coinPackages = [
         { amount: 100, price: 1, label: 'חבילת בסיס' },
         { amount: 550, price: 5, label: 'חבילת גיימר', bonus: '50+ בונוס' },
@@ -172,4 +172,3 @@ const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ onSelectPlan, onU
     );
 };
 
-export default SubscriptionsView;

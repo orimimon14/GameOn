@@ -1,8 +1,8 @@
 
 import React, { useState, useMemo } from 'react';
 
-import { backgroundShopItems } from '../constants';
-import { BackgroundItem } from '../types';
+import { backgroundShopItems } from '@/shared/mockData';
+import { BackgroundItem } from '@/shared/types';
 
 interface ShopViewProps {
     onPurchase: (item: BackgroundItem) => void;
@@ -12,7 +12,7 @@ interface ShopViewProps {
 
 type Category = 'All' | 'Borders' | 'Cyber' | 'Space' | 'Nature' | 'Abstract';
 
-const ShopView: React.FC<ShopViewProps> = ({ onPurchase, userCoins, ownedItems }) => {
+export const ShopView: React.FC<ShopViewProps> = ({ onPurchase, userCoins, ownedItems }) => {
     const [previewItem, setPreviewItem] = useState<BackgroundItem | null>(null);
     const [selectedCategory, setSelectedCategory] = useState<Category>('All');
 
@@ -230,4 +230,3 @@ const ShopView: React.FC<ShopViewProps> = ({ onPurchase, userCoins, ownedItems }
     );
 };
 
-export default ShopView;

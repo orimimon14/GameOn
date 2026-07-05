@@ -1,15 +1,15 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 
-import { GamerProfile, Message } from '../types';
-import { mockConversations, currentUserProfile } from '../constants';
+import { GamerProfile, Message } from '@/shared/types';
+import { mockConversations, currentUserProfile } from '@/shared/mockData';
 
 interface ChatViewProps {
     matches: GamerProfile[];
     onBack: () => void;
 }
 
-const ChatView: React.FC<ChatViewProps> = ({ matches }) => {
+export const ChatView: React.FC<ChatViewProps> = ({ matches }) => {
     const [selectedMatchId, setSelectedMatchId] = useState<number | null>(null);
     const [conversations, setConversations] = useState(mockConversations);
     const [newMessage, setNewMessage] = useState('');
@@ -154,4 +154,3 @@ const ChatView: React.FC<ChatViewProps> = ({ matches }) => {
     );
 };
 
-export default ChatView;

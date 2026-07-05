@@ -3,13 +3,7 @@ import type { Config } from "tailwindcss";
 // Canonical design tokens — docs/design/DESIGN_SYSTEM.md §13 (ADR-009).
 export default {
   darkMode: "class",
-  content: [
-    "./index.html",
-    "./*.{ts,tsx}",
-    "./components/**/*.{ts,tsx}",
-    "./services/**/*.{ts,tsx}",
-    "./src/**/*.{ts,tsx}",
-  ],
+  content: ["./index.html", "./src/**/*.{ts,tsx}"],
   theme: {
     extend: {
       colors: {

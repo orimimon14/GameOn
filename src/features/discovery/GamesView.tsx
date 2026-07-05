@@ -5,7 +5,7 @@ interface GamesViewProps {
     onSelectGame: (gameName: string) => void;
 }
 
-const GamesView: React.FC<GamesViewProps> = ({ onSelectGame }) => {
+export const GamesView: React.FC<GamesViewProps> = ({ onSelectGame }) => {
     const popularGames = [
         {
             name: 'Call of Duty: Warzone',
@@ -95,4 +95,3 @@ const GamesView: React.FC<GamesViewProps> = ({ onSelectGame }) => {
     );
 };
 
-export default GamesView;
