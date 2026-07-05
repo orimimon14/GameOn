@@ -1,5 +1,8 @@
 
 import React from 'react';
+import { useTranslation } from 'react-i18next';
+
+import { useLocale } from '@/shared/i18n/useLocale';
 
 interface SettingsViewProps {
     isDarkMode: boolean;
@@ -8,12 +11,15 @@ interface SettingsViewProps {
     onToggleGlobalBg: () => void;
 }
 
-export const SettingsView: React.FC<SettingsViewProps> = ({ 
-    isDarkMode, 
-    onToggleTheme, 
-    isGlobalBgEnabled, 
-    onToggleGlobalBg 
+export const SettingsView: React.FC<SettingsViewProps> = ({
+    isDarkMode,
+    onToggleTheme,
+    isGlobalBgEnabled,
+    onToggleGlobalBg
 }) => {
+    const { t } = useTranslation();
+    const { locale, setLocale } = useLocale();
+
     return (
         <div className="pt-24 px-6 h-full overflow-y-auto pb-32 max-w-2xl mx-auto relative z-10">
             <div className="text-right mb-10">
@@ -49,6 +55,28 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                     <div className="text-right">
                         <h4 className="dark:text-white text-text-inverse font-bold text-lg">רקע גלובלי</h4>
                         <p className="dark:text-text-muted text-gray-500 text-sm">הצג את רקע הפרופיל שלך בכל דפי האתר</p>
+                    </div>
+                </div>
+
+                {/* Language Switcher (ADR-035) */}
+                <div className="dark:bg-surface/60 bg-white/80 backdrop-blur-xl p-6 rounded-[32px] border dark:border-white/10 border-gray-200 shadow-xl flex items-center justify-between">
+                    <div className="flex gap-2" data-testid="language-switcher">
+                        <button
+                            onClick={() => setLocale('he')}
+                            className={`px-5 py-2.5 rounded-xl font-bold transition-all ${locale === 'he' ? 'bg-primary text-white shadow-glow' : 'dark:bg-white/5 bg-gray-100 dark:text-text-muted text-gray-500 hover:bg-white/10'}`}
+                        >
+                            {t('settings.hebrew')}
+                        </button>
+                        <button
+                            onClick={() => setLocale('en')}
+                            className={`px-5 py-2.5 rounded-xl font-bold transition-all ${locale === 'en' ? 'bg-primary text-white shadow-glow' : 'dark:bg-white/5 bg-gray-100 dark:text-text-muted text-gray-500 hover:bg-white/10'}`}
+                        >
+                            {t('settings.english')}
+                        </button>
+                    </div>
+                    <div className="text-start">
+                        <h4 className="dark:text-white text-text-inverse font-bold text-lg">{t('settings.language')}</h4>
+                        <p className="dark:text-text-muted text-gray-500 text-sm">{t('settings.languageNote')}</p>
                     </div>
                 </div>
 

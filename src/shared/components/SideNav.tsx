@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { GamerProfile } from '@/shared/types';
 
@@ -9,17 +10,19 @@ interface SideNavProps {
 }
 
 const NAV_ITEMS = [
-  { path: '/discover', icon: 'fa-gamepad', label: 'התאמות', bg: 'hover:bg-indigo-500' },
-  { path: '/games', icon: 'fa-layer-group', label: 'משחקים', bg: 'hover:bg-emerald-500' },
-  { path: '/shop', icon: 'fa-shopping-bag', label: 'חנות', bg: 'hover:bg-yellow-500' },
-  { path: '/likes', icon: 'fa-heart', label: 'לייקים', bg: 'hover:bg-rose-500' },
-  { path: '/chat', icon: 'fa-comment', label: 'צ׳אט', bg: 'hover:bg-sky-500' },
-  { path: '/settings', icon: 'fa-gear', label: 'הגדרות', bg: 'hover:bg-gray-500' },
+  { path: '/discover', icon: 'fa-gamepad', labelKey: 'nav.discover', bg: 'hover:bg-indigo-500' },
+  { path: '/games', icon: 'fa-layer-group', labelKey: 'nav.games', bg: 'hover:bg-emerald-500' },
+  { path: '/shop', icon: 'fa-shopping-bag', labelKey: 'nav.shop', bg: 'hover:bg-yellow-500' },
+  { path: '/likes', icon: 'fa-heart', labelKey: 'nav.likes', bg: 'hover:bg-rose-500' },
+  { path: '/chat', icon: 'fa-comment', labelKey: 'nav.chat', bg: 'hover:bg-sky-500' },
+  { path: '/settings', icon: 'fa-gear', labelKey: 'nav.settings', bg: 'hover:bg-gray-500' },
 ];
 
 export const SideNav: React.FC<SideNavProps> = ({ activePath, userProfile, onNavigate }) => {
+  const { t } = useTranslation();
+
   return (
-    <div className="fixed top-0 right-0 bottom-0 w-[100px] dark:bg-[#1E1F22]/95 bg-white/95 backdrop-blur-xl z-[60] flex flex-col items-center py-8 gap-5 border-l dark:border-white/5 border-gray-200 shadow-2xl">
+    <div className="fixed top-0 end-0 bottom-0 w-[100px] dark:bg-[#1E1F22]/95 bg-white/95 backdrop-blur-xl z-[60] flex flex-col items-center py-8 gap-5 border-s dark:border-white/5 border-gray-200 shadow-2xl">
       <button
         onClick={() => onNavigate('/profile')}
         className={`w-16 h-16 rounded-[24px] overflow-hidden transition-all duration-300 hover:rounded-[16px] mb-6 relative p-0.5 ${activePath === '/profile' ? 'rounded-[16px] ring-2 ring-primary shadow-glow' : 'opacity-80 hover:opacity-100'}`}
@@ -46,9 +49,9 @@ export const SideNav: React.FC<SideNavProps> = ({ activePath, userProfile, onNav
               <i className={`fa-solid ${item.icon} text-2xl`}></i>
             </button>
             <span className={`text-[10px] font-black mt-1.5 transition-all duration-300 uppercase tracking-tighter ${isActive ? 'text-primary opacity-100' : 'text-text-muted opacity-0 group-hover:opacity-100'}`}>
-              {item.label}
+              {t(item.labelKey)}
             </span>
-            <div className={`absolute right-0 w-1 bg-primary rounded-l-lg transition-all duration-300 ${isActive ? 'h-10 opacity-100' : 'h-0 opacity-0 group-hover:h-5 group-hover:opacity-50'}`}></div>
+            <div className={`absolute end-0 w-1 bg-primary rounded-s-lg transition-all duration-300 ${isActive ? 'h-10 opacity-100' : 'h-0 opacity-0 group-hover:h-5 group-hover:opacity-50'}`}></div>
           </div>
         );
       })}

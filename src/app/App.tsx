@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 
 import { GeminiSquadEngine } from '@/features/ai/GeminiSquadEngine';
@@ -15,25 +16,37 @@ import { ShopView } from '@/features/shop/ShopView';
 import { SubscriptionsView } from '@/features/subscription/SubscriptionsView';
 import { Header } from '@/shared/components/Header';
 import { SideNav } from '@/shared/components/SideNav';
+import { useLocale } from '@/shared/i18n/useLocale';
 import { currentUserProfile, matchedProfiles, profilesWhoLikedUser } from '@/shared/mockData';
 import { useUiStore } from '@/shared/store/uiStore';
 import { BackgroundItem, GamerProfile } from '@/shared/types';
 
-const VIEW_TITLES: Record<string, string> = {
-  '/discover': 'התאמות חדשות',
-  '/likes': 'מי אהב אותך',
-  '/shop': 'חנות סטייל',
-  '/chat': 'הודעות',
-  '/settings': 'הגדרות',
-  '/profile': 'פרופיל אישי',
-  '/games': 'בחירת משחק',
-  '/subscriptions': 'שדרג ל-Premium',
-  '/ai': 'מנוע הסקוואד',
+const TITLE_KEYS: Record<string, string> = {
+  '/discover': 'titles.discover',
+  '/likes': 'titles.likes',
+  '/shop': 'titles.shop',
+  '/chat': 'titles.chat',
+  '/settings': 'titles.settings',
+  '/profile': 'titles.profile',
+  '/games': 'titles.games',
+  '/subscriptions': 'titles.subscriptions',
+  '/ai': 'titles.ai',
+};
+
+// Keeps <html lang/dir> in sync with the active locale (ADR-035).
+const LocaleSync: React.FC = () => {
+  const { locale, dir } = useLocale();
+  useEffect(() => {
+    document.documentElement.lang = locale;
+    document.documentElement.dir = dir;
+  }, [locale, dir]);
+  return null;
 };
 
 const AppShell: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useTranslation();
 
   const [viewingProfile, setViewingProfile] = useState<GamerProfile | null>(null);
   const [likedProfiles, setLikedProfiles] = useState<GamerProfile[]>([]);
@@ -54,7 +67,7 @@ const AppShell: React.FC = () => {
   }, [isDarkMode]);
 
   const path = location.pathname;
-  const viewTitle = VIEW_TITLES[path] ?? 'Swish & Game';
+  const viewTitle = t(TITLE_KEYS[path] ?? 'common.appName');
 
   const handleNavigate = (to: string) => {
     setViewingProfile(null);
@@ -110,7 +123,7 @@ const AppShell: React.FC = () => {
 
       <SideNav activePath={path} userProfile={userProfile} onNavigate={handleNavigate} />
 
-      <div className="h-full w-full mr-[100px] flex flex-col relative z-10">
+      <div className="h-full w-full me-[100px] flex flex-col relative z-10">
         <Header
           viewTitle={viewTitle}
           userProfile={userProfile}
@@ -216,11 +229,14 @@ const AppShell: React.FC = () => {
 };
 
 export const App: React.FC = () => (
-  <Routes>
-    <Route path="/login" element={<LoginPage />} />
-    <Route path="/onboarding" element={<OnboardingPage />} />
-    <Route element={<RequireAuth />}>
-      <Route path="/*" element={<AppShell />} />
-    </Route>
-  </Routes>
+  <>
+    <LocaleSync />
+    <Routes>
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/onboarding" element={<OnboardingPage />} />
+      <Route element={<RequireAuth />}>
+        <Route path="/*" element={<AppShell />} />
+      </Route>
+    </Routes>
+  </>
 );

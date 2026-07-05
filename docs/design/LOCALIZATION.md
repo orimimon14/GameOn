@@ -940,7 +940,7 @@ Error copy must be Hebrew, clear, and field-specific.
 | Additional languages beyond he/en | Open | he+en delivered under ADR-035; more locales need a future ADR + catalogs. |
 | Final copy tone guide | Open | May refine button labels, empty states, and safety copy. |
 | Final label wording | Open but this document is current source of truth | Product/design may revise Hebrew labels later. |
-| i18n library selection | Open | `react-i18next` or FormatJS per ADR-035; final choice TBD. |
+| i18n library selection | **Resolved** | **react-i18next** נבחר ויושם (P1-T08, `src/config/i18n.ts`). |
 | Tailwind RTL plugin | Open | Decide whether to add plugin or rely on logical utilities. |
 | Pluralization framework | Open | Needed for polished bilingual/multi-locale support. |
 | Font finalization | Open / prototype uses `Rubik` | Confirm in `DESIGN_SYSTEM.md`. |

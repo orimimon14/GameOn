@@ -201,10 +201,10 @@ gemini-3-flash-preview
 
 ### 6.2 משימות — i18n & RTL/LTR (ADR-035)
 
-- [ ] **P1-T08 — בחירת ספריית i18n** `(S)` — `react-i18next` או FormatJS (החלטה מתועדת ב-LOCALIZATION open item).
-- [ ] **P1-T09 — תשתית catalogs** `(M)` — קבצי `he` + `en`, `dir`/`lang` דינמיים על `<html>`, hook `useLocale()`, persistence ל-`preferredLocale`.
-- [ ] **P1-T10 — label maps typed** `(M)` — `Record<Enum, string>` לכל enum קנוני, per locale, עם בדיקת כיסוי (TC-X-002).
-- [ ] **P1-T11 — RTL/LTR foundations** `(S)` — logical properties בלבד (`start`/`end`), בדיקת mirror לאייקונים כיווניים.
+- [x] **P1-T08 — בחירת ספריית i18n** `(S)` — נבחר **react-i18next** (עודכן ב-LOCALIZATION open items).
+- [x] **P1-T09 — תשתית catalogs** `(M)` — `src/config/i18n.ts` + catalogs he/en (typed — key חסר נכשל ב-typecheck); `LocaleSync` מעדכן `lang`/`dir` על `<html>`; hook `useLocale()`; persistence ל-localStorage (`preferredLocale`; sync ל-Firestore ב-Phase 2); מחליף שפה חי ב-Settings. אומת בלייב: en→ltr+"Shop", he→rtl+"חנות". מסכי prototype ישנים יעברו ל-catalogs כשייבנו מחדש (workstream).
+- [x] **P1-T10 — label maps typed** `(M)` — enums קנוניים ב-`src/shared/enums.ts` (SkillLevel/Platform/LookingFor/ShopItemCategory/Rarity/ReportReason); `src/shared/labels/` he+en לפי LOCALIZATION §4 + hook `useLabels()`; 12 בדיקות כיסוי (TC-X-002).
+- [x] **P1-T11 — RTL/LTR foundations** `(S)` — shell הומר ל-logical properties (`end-0`/`border-s`/`me-`/`rounded-s`/`text-start`); ה-nav עובר צד אוטומטית עם `dir`. המרת ה-views הישנים — עם בנייתם מחדש.
 
 ### 6.3 משימות — Firebase & CI
 
