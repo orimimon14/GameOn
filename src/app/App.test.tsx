@@ -1,12 +1,18 @@
 import { render, screen } from '@testing-library/react';
 import type { User } from 'firebase/auth';
 import { MemoryRouter } from 'react-router-dom';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { App } from './App';
 
 import { useAuthStore } from '@/features/auth/authStore';
 
+// Stub the real auth listener: in CI there is no .env.local, so the unconfigured
+// path would force the store to 'unauthenticated' and override test state.
+vi.mock('@/features/auth/authStore', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/features/auth/authStore')>();
+  return { ...actual, initAuthListener: vi.fn() };
+});
 
 const testUser = { uid: 'test-uid' } as unknown as User;
 
