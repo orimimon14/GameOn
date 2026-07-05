@@ -139,7 +139,7 @@ gemini-3-flash-preview
 
 סטטוס-על של כל שלב. checkbox כאן מסומן **רק** כשהשלב כולו (משימות + בדיקות + Exit Criteria) ירוק.
 
-- [ ] **Phase 0 — Security & Hygiene** (תלוי ב: —, אומדן S–M, milestone M0→M1)
+- [x] **Phase 0 — Security & Hygiene** (תלוי ב: —, אומדן S–M, milestone M0→M1) ✅
 - [ ] **Phase 1 — Foundation** (תלוי ב: 0, אומדן L, milestone M1)
 - [ ] **Phase 2 — Auth & Data Layer** (תלוי ב: 1, אומדן L, milestone M2)
 - [ ] **Phase 3 — Discovery & Matching** (תלוי ב: 2, אומדן L, milestone M3)
@@ -164,7 +164,7 @@ gemini-3-flash-preview
 - [x] **P0-T01 — הסרת Gemini מה-client** `(S)` — `services/geminiService.ts` הוחלף ב-safe stub; `@google/genai` הוסר מ-`package.json`, מ-`index.html` importmap ומ-node_modules; `define` של `process.env.API_KEY`/`GEMINI_API_KEY` הוסר מ-`vite.config.ts`.
 - [x] **P0-T02 — ביטול מזהה מודל שגוי** `(S)` — אפס מופעי `gemini-3-flash-preview` בקוד (אומת ב-grep).
 - [x] **P0-T03 — ניקוי קוד מת** `(S)` — נמחקו FeatureTable, GeminiFeatureIdeation, Roadmap, Section, PersonaCard + הטיפוסים Persona/Feature/RoadmapItem/GeneratedIdea. (החלפת `dogame` classes — ב-Phase 1.2 לפי MIGRATION_PLAN.)
-- [ ] **P0-T04 — rotate API key** `(S)` — ביטול/החלפת ה-key שנחשף ב-Google AI Studio (פעולה ידנית של בעל החשבון בקונסולה).
+- [x] **P0-T04 — rotate API key** `(S)` — ה-key שנחשף נמחק על ידי בעל החשבון ב-Google AI Studio (אושר 2026-07-05).
 
 ### 5.2 בדיקות ואימות
 
@@ -175,12 +175,12 @@ gemini-3-flash-preview
 ### 5.3 Exit Criteria
 
 - [x] אפס secrets בקוד וב-bundle.
-- [ ] ה-key הישן בוטל בפועל (ממתין לפעולת בעל החשבון — ראה P0-T04).
+- [x] ה-key הישן בוטל בפועל (נמחק ב-Google AI Studio).
 - [x] commit נקי נדחף.
 
 ### 5.4 סגירת שלב
 
-- [ ] **✅ Phase 0 הושלם — כל המשימות, הבדיקות וה-Exit Criteria ירוקים; מסומן גם ב-§4.**
+- [x] **✅ Phase 0 הושלם — כל המשימות, הבדיקות וה-Exit Criteria ירוקים; מסומן גם ב-§4.**
 
 ---
 
