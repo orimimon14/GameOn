@@ -1,6 +1,8 @@
 
 import React, { useState } from 'react';
+
 import { GamerProfile, BackgroundItem } from '../types';
+
 import ImageEditModal from './ImageEditModal';
 import BackgroundCollectionModal from './BackgroundCollectionModal';
 
@@ -14,11 +16,10 @@ interface ProfileViewProps {
     ownedBackgrounds: BackgroundItem[];
 }
 
-const ProfileView: React.FC<ProfileViewProps> = ({ 
-    profile, 
-    onSave, 
-    isOwnProfile, 
-    onReturnToLobby, 
+const ProfileView: React.FC<ProfileViewProps> = ({
+    profile,
+    onSave,
+    isOwnProfile,
     isGlobalBackground,
     onSetGlobalBackground,
     ownedBackgrounds

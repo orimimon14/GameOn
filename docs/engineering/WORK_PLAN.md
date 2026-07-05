@@ -192,12 +192,12 @@ gemini-3-flash-preview
 ### 6.1 משימות — Tooling & Project Structure
 
 - [x] **P1-T01 — Tailwind כ-build dependency** `(M)` — CDN הוסר; Tailwind v3 + PostCSS מותקנים; `tailwind.config.ts` עם הטוקנים הקנוניים (DESIGN_SYSTEM §13); כל 231 מופעי `dogame-*` הוחלפו בטוקנים סמנטיים (MIGRATION_PLAN §1.2 בוצע יחד); importmap CDN של React הוסר. אומת: typecheck+build ירוקים, preview מציג צבעים קנוניים מדויקים (#0F172A/#6366F1/#1E293B), Rubik נטען, אפס אזהרות console.
-- [ ] **P1-T02 — ESLint + Prettier** `(S)` — כללי CONVENTIONS (named exports, no `any`, import order); script `npm run lint` אמיתי (לא רק tsc).
-- [ ] **P1-T03 — Vitest + Testing Library** `(S)` — הקמת `npm run test`, קובץ בדיקה ראשון עובר.
+- [x] **P1-T02 — ESLint + Prettier** `(S)` — ESLint 9 flat config + typescript-eslint + react-hooks + import/order + Prettier; `no-explicit-any` error; scripts הופרדו (`typecheck`=tsc, `lint`=eslint); **`strict: true` הופעל ב-tsconfig** (עבר נקי); תוקנו 2 `any`, 3 unused, ובאג rules-of-hooks אמיתי (useMemo מותנה ב-SwipeView). lint נקי לחלוטין. (אכיפת named-exports תתווסף ב-P1-T04.)
+- [x] **P1-T03 — Vitest + Testing Library** `(S)` — Vitest + @testing-library/react + jest-dom + jsdom; setup עם matchMedia stub; 2 בדיקות עוברות (unit ל-stub + component ל-App בעברית).
 - [ ] **P1-T04 — מבנה feature-based** `(M)` — יצירת `src/app`, `src/config`, `src/features/*`, `src/shared` לפי CONVENTIONS §2; העברת קוד prototype רלוונטי.
 - [ ] **P1-T05 — React Router** `(M)` — routes בסיסיים: `/login`, `/onboarding`, `/discover`, `/matches`, `/chat/:chatId`, `/shop`, `/profile`, `/ai`, `/settings` + route guards ריקים.
 - [ ] **P1-T06 — Zustand + Zod + React Hook Form** `(S)` — התקנה, store בסיסי ו-schema לדוגמה עם בדיקות.
-- [ ] **P1-T07 — bundle scan script** `(S)` — `npm run scan:bundle` שסורק את `dist/` על כל ה-forbidden strings (§3.2) ונכשל אם נמצאו.
+- [x] **P1-T07 — bundle scan script** `(S)` — `scripts/scan-bundle.mjs` + `npm run scan:bundle`; סורק את כל dist/ על 7 המחרוזות האסורות; PASS.
 
 ### 6.2 משימות — i18n & RTL/LTR (ADR-035)
 

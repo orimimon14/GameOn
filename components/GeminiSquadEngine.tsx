@@ -1,11 +1,12 @@
 
 import React, { useState } from 'react';
-import { generateSquadStrategy } from '../services/geminiService';
+
+import { generateSquadStrategy, SquadStrategy } from '../services/geminiService';
 
 const GeminiSquadEngine: React.FC = () => {
     const [input, setInput] = useState('');
     const [loading, setLoading] = useState(false);
-    const [result, setResult] = useState<any>(null);
+    const [result, setResult] = useState<SquadStrategy | null>(null);
 
     const handleGenerate = async () => {
         if (!input.trim()) return;
@@ -90,7 +91,7 @@ const GeminiSquadEngine: React.FC = () => {
 
                     {/* Roles Grid */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {result.roles.map((role: any, idx: number) => (
+                        {result.roles.map((role, idx) => (
                             <div key={idx} className="group dark:bg-surface/40 bg-white/70 p-8 rounded-[32px] border dark:border-white/5 border-gray-100 text-right hover:border-primary transition-all duration-500 hover:shadow-2xl">
                                 <div className="flex justify-between items-center mb-5">
                                     <div className="bg-primary/10 text-primary px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider group-hover:bg-primary group-hover:text-white transition-colors">

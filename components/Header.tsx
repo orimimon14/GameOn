@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+
 import { GamerProfile } from '../types';
 
 interface HeaderProps {
@@ -13,10 +14,9 @@ interface HeaderProps {
   onBack?: () => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ 
-  viewTitle, 
-  userProfile,
-  onOpenSubscriptions, 
+const Header: React.FC<HeaderProps> = ({
+  viewTitle,
+  onOpenSubscriptions,
   onOpenProfile, 
   onOpenChat, 
   onOpenSearch,

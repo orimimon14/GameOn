@@ -1,5 +1,6 @@
 
 import React, { useState, useMemo } from 'react';
+
 import { backgroundShopItems } from '../constants';
 import { BackgroundItem } from '../types';
 

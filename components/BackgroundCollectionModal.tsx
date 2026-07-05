@@ -1,5 +1,6 @@
 
 import React from 'react';
+
 import { BackgroundItem } from '../types';
 
 interface BackgroundCollectionModalProps {

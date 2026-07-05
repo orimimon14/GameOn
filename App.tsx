@@ -1,6 +1,7 @@
 
-import React, { useState, useMemo, useEffect } from 'react';
-import { gamerProfiles, currentUserProfile, profilesWhoLikedUser, matchedProfiles, backgroundShopItems } from './constants';
+import React, { useState, useEffect } from 'react';
+
+import { gamerProfiles, currentUserProfile, profilesWhoLikedUser, matchedProfiles } from './constants';
 import { GamerProfile, BackgroundItem } from './types';
 import Header from './components/Header';
 import ProfileView from './components/ProfileView';
@@ -37,14 +38,7 @@ const SwipeView: React.FC<{ onLike: (p: GamerProfile) => void; onViewProfile: (p
     }
 
     const currentProfile = profiles[currentIndex];
-
-    // Find the skill level for the selected game if it exists, otherwise use general skill level
-    const displaySkill = useMemo(() => {
-        if (!selectedGame) return currentProfile.skillLevel;
-        // In a real app, we might have per-game skill levels. 
-        // For now, we'll just show the general skill level but label it for the game.
-        return currentProfile.skillLevel;
-    }, [currentProfile, selectedGame]);
+    const displaySkill = currentProfile.skillLevel;
 
     return (
         <div className="h-full flex flex-col items-center justify-center p-6 relative z-10">

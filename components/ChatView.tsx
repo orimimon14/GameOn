@@ -1,5 +1,6 @@
 
 import React, { useState, useRef, useEffect } from 'react';
+
 import { GamerProfile, Message } from '../types';
 import { mockConversations, currentUserProfile } from '../constants';
 
@@ -8,7 +9,7 @@ interface ChatViewProps {
     onBack: () => void;
 }
 
-const ChatView: React.FC<ChatViewProps> = ({ matches, onBack }) => {
+const ChatView: React.FC<ChatViewProps> = ({ matches }) => {
     const [selectedMatchId, setSelectedMatchId] = useState<number | null>(null);
     const [conversations, setConversations] = useState(mockConversations);
     const [newMessage, setNewMessage] = useState('');
