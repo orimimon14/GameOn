@@ -1,8 +1,14 @@
 import { render, screen } from '@testing-library/react';
+import type { User } from 'firebase/auth';
 import { MemoryRouter } from 'react-router-dom';
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 import { App } from './App';
+
+import { useAuthStore } from '@/features/auth/authStore';
+
+
+const testUser = { uid: 'test-uid' } as unknown as User;
 
 const renderApp = (initialPath = '/discover') =>
   render(
@@ -12,7 +18,11 @@ const renderApp = (initialPath = '/discover') =>
   );
 
 describe('App', () => {
-  it('renders the main navigation in Hebrew', () => {
+  beforeEach(() => {
+    useAuthStore.setState({ user: testUser, status: 'authenticated' });
+  });
+
+  it('renders the main navigation in Hebrew for authenticated users', () => {
     renderApp();
 
     expect(screen.getAllByText('משחקים').length).toBeGreaterThan(0);
@@ -26,9 +36,18 @@ describe('App', () => {
     expect(screen.getAllByText('התאמות חדשות').length).toBeGreaterThan(0);
   });
 
-  it('renders the login placeholder outside the shell', () => {
+  it('redirects unauthenticated users from the shell to the login page', () => {
+    useAuthStore.setState({ user: null, status: 'unauthenticated' });
+    renderApp('/discover');
+
+    expect(screen.getByText('המשך עם Google')).toBeInTheDocument();
+    expect(screen.queryByText('התאמות חדשות')).not.toBeInTheDocument();
+  });
+
+  it('renders the login page on /login for signed-out users', () => {
+    useAuthStore.setState({ user: null, status: 'unauthenticated' });
     renderApp('/login');
 
-    expect(screen.getByText('כניסה לאפליקציה')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'התחבר' })).toBeInTheDocument();
   });
 });

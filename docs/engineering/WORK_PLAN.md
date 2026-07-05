@@ -245,7 +245,7 @@ gemini-3-flash-preview
 ### 7.1 משימות
 
 - [x] **P2-T01 — טיפוסי הליבה** `(M)` — `src/shared/enums.ts` הושלם לכל 21 ה-enums הקנוניים (עם runtime arrays ל-Zod/tests); `src/shared/models.ts` — UserDocument, PrivateAccountDocument, PublicProfileDocument, UserGameDocument, GameCatalogDocument נגזרים 1:1 מ-DATA_MODEL §4; `src/shared/schemas/userSchemas.ts` — Zod לשדות client-writable (גיל 16+, enums אנגלית בלבד) עם 12 בדיקות כולל דחיית `"expert"` ועברית כ-enum. מודלים של matches/chat/shop יתווספו בשלבים שלהם.
-- [ ] **P2-T02 — Firebase Auth** `(M)` — Google + email/password; מסכי login/signup; מיפוי שגיאות ל-i18n (בלי raw Firebase errors).
+- [x] **P2-T02 — Firebase Auth** `(M)` — `authService` (email/password + Google popup + signOut) עם מיפוי שגיאות מלא ל-i18n (12 קודים, אפס raw errors); `authStore` (Zustand) עם listener יחיד; `LoginPage` אמיתי (RHF+Zod, דו-לשוני, מצבי login/signup, loading/error states); `RequireAuth` אוכף בפועל (loading/redirect/outlet); logout מחווט ב-Settings. 19 בדיקות חדשות (58 סה"כ) + תוקן באג cleanup ב-Testing Library. **E2E חי מול Auth Emulator: guard→signup→כניסה לאפליקציה→logout→חזרה ל-login, אפס שגיאות console.**
 - [ ] **P2-T03 — User bootstrap** `(M)` — יצירת `users/{uid}` + `users/{uid}/private/account` בהרשמה, idempotent (retry-safe).
 - [ ] **P2-T04 — Onboarding flow** `(L)` — steps: basics → game (מ-`gameCatalog` seeded) → completion; חסימת `/discover` עד השלמה; `skillLevel` enum אנגלית.
 - [ ] **P2-T05 — `syncPublicProfile`** `(M)` — callable + triggers `onUserProfileUpdated`/`onUserGameUpdated`; אין שדות פרטיים ב-public.

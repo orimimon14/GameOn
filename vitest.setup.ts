@@ -1,6 +1,14 @@
 import '@testing-library/jest-dom/vitest';
 import '@/config/i18n';
 
+import { cleanup } from '@testing-library/react';
+import { afterEach } from 'vitest';
+
+// Without vitest globals, Testing Library cannot auto-register its cleanup — do it explicitly.
+afterEach(() => {
+  cleanup();
+});
+
 // jsdom does not implement matchMedia; provide a minimal stub for components that query it.
 if (!window.matchMedia) {
   window.matchMedia = (query: string): MediaQueryList =>

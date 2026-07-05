@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 
 import { GeminiSquadEngine } from '@/features/ai/GeminiSquadEngine';
+import { signOutUser } from '@/features/auth/authService';
+import { initAuthListener } from '@/features/auth/authStore';
 import { LoginPage } from '@/features/auth/LoginPage';
 import { RequireAuth } from '@/features/auth/RequireAuth';
 import { ChatView } from '@/features/chat/ChatView';
@@ -202,6 +204,7 @@ const AppShell: React.FC = () => {
                   onToggleTheme={toggleDarkMode}
                   isGlobalBgEnabled={isGlobalBgEnabled}
                   onToggleGlobalBg={() => setIsGlobalBgEnabled(!isGlobalBgEnabled)}
+                  onLogout={() => void signOutUser()}
                 />
               }
             />
@@ -228,15 +231,21 @@ const AppShell: React.FC = () => {
   );
 };
 
-export const App: React.FC = () => (
-  <>
-    <LocaleSync />
-    <Routes>
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/onboarding" element={<OnboardingPage />} />
-      <Route element={<RequireAuth />}>
-        <Route path="/*" element={<AppShell />} />
-      </Route>
-    </Routes>
-  </>
-);
+export const App: React.FC = () => {
+  useEffect(() => {
+    initAuthListener();
+  }, []);
+
+  return (
+    <>
+      <LocaleSync />
+      <Routes>
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/onboarding" element={<OnboardingPage />} />
+        <Route element={<RequireAuth />}>
+          <Route path="/*" element={<AppShell />} />
+        </Route>
+      </Routes>
+    </>
+  );
+};

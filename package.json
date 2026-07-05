@@ -14,6 +14,7 @@
     "scan:bundle": "node scripts/scan-bundle.mjs"
   },
   "dependencies": {
+    "@hookform/resolvers": "^5.4.0",
     "firebase": "^12.15.0",
     "i18next": "^26.3.4",
     "react": "^19.2.0",

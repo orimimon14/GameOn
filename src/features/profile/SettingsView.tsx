@@ -9,13 +9,15 @@ interface SettingsViewProps {
     onToggleTheme: () => void;
     isGlobalBgEnabled: boolean;
     onToggleGlobalBg: () => void;
+    onLogout: () => void;
 }
 
 export const SettingsView: React.FC<SettingsViewProps> = ({
     isDarkMode,
     onToggleTheme,
     isGlobalBgEnabled,
-    onToggleGlobalBg
+    onToggleGlobalBg,
+    onLogout
 }) => {
     const { t } = useTranslation();
     const { locale, setLocale } = useLocale();
@@ -91,9 +93,9 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                         <i className="fa-solid fa-chevron-left text-xs opacity-30"></i>
                         <span>הגדרות פרטיות</span>
                     </button>
-                    <button className="w-full text-right py-4 px-2 text-danger hover:bg-danger/10 rounded-xl transition-colors flex items-center justify-between">
+                    <button onClick={onLogout} className="w-full text-right py-4 px-2 text-danger hover:bg-danger/10 rounded-xl transition-colors flex items-center justify-between">
                          <i className="fa-solid fa-right-from-bracket text-xs"></i>
-                         <span>התנתק</span>
+                         <span>{t('auth.logout')}</span>
                     </button>
                 </div>
             </div>
