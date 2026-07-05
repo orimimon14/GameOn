@@ -37,6 +37,7 @@ Read the relevant document before changing its area. Do not invent contracts tha
 | Environments | env vars, secrets, Firebase projects, local setup | `docs/engineering/ENVIRONMENTS.md` |
 | Conventions | code style, folder structure, workflow | `docs/engineering/CONVENTIONS.md` |
 | Migration Plan | prototype → Firebase production phases | `docs/engineering/MIGRATION_PLAN.md` |
+| Work Plan | detailed execution plan with per-phase verification gates | `docs/engineering/WORK_PLAN.md` |
 | Trust & Safety | moderation, reports/blocks, enforcement, escalation | `docs/operations/TRUST_AND_SAFETY.md` |
 | Store Compliance | App Store / Google Play distribution & IAP (forward-looking) | `docs/operations/STORE_COMPLIANCE.md` |
 | Motion & FX | cosmetic rendering, animation/sound stack, formats, performance | `docs/design/MOTION_AND_FX.md` |
