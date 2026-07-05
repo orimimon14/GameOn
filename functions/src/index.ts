@@ -1,4 +1,7 @@
+import { initializeApp } from 'firebase-admin/app';
 import { onCall } from 'firebase-functions/v2/https';
+
+initializeApp();
 
 // Health-check callable — proves the functions emulator wiring end to end.
 // Real callables (submitSwipe, purchaseShopItem, ...) land in Phases 3-8 per API_CONTRACT.md.
@@ -8,3 +11,5 @@ export const ping = onCall(() => ({
   service: 'swish-game-functions',
   at: new Date().toISOString(),
 }));
+
+export { onUserCreated } from './triggers/onUserCreated';

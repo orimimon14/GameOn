@@ -1,7 +1,10 @@
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { create } from 'zustand';
 
+import { ensureUserDocument } from './userBootstrap';
+
 import { getFirebase, isFirebaseConfigured } from '@/config/firebase';
+
 
 export type AuthStatus = 'loading' | 'authenticated' | 'unauthenticated';
 
@@ -31,5 +34,11 @@ export const initAuthListener = (): void => {
   const { auth } = getFirebase();
   onAuthStateChanged(auth, (user) => {
     useAuthStore.setState({ user, status: user ? 'authenticated' : 'unauthenticated' });
+    if (user) {
+      // Fire-and-forget: the UI never blocks on bootstrap; failures are retried on next auth event.
+      void ensureUserDocument(user).catch(() => {
+        console.error('user bootstrap failed'); // PII-safe: no uid/email in client logs
+      });
+    }
   });
 };

@@ -41,6 +41,7 @@
   - [3.12 `reconcileSubscription`](#312-reconcilesubscription)
   - [3.13 `createCheckoutSession`](#313-createcheckoutsession)
   - [3.14 `deleteAccount`](#314-deleteaccount)
+  - [5.9 `onUserCreated`](#59-onusercreated)
 - [4. HTTP / Webhook Functions](#4-http--webhook-functions)
   - [4.1 `paymentWebhook`](#41-paymentwebhook)
   - [4.2 `checkoutSessionCallback`](#42-checkoutsessioncallback)
@@ -2064,6 +2065,33 @@ export type CheckoutSessionCallbackQuery = {
 
 ---
 
+### 5.9 `onUserCreated`
+
+| Field | Value |
+|---|---|
+| Event | `onCreate` |
+| Path | `users/{uid}` |
+| Scope | MVP |
+| Purpose | משלים bootstrap של משתמש חדש: ממלא server-owned defaults על `users/{uid}` ויוצר את `users/{uid}/private/account`. ה-client יוצר את המסמך עם client-writable keys בלבד (SECURITY §4), והטריגר משלים את היתר. |
+
+#### Reads
+
+- `users/{uid}` (snapshot של המסמך שנוצר).
+- Firebase Auth user record (email, provider) דרך Admin SDK.
+
+#### Writes
+
+- `users/{uid}` — merge של server-owned defaults (MIGRATION_PLAN §2.2): `uid`, `email`, `onboardingCompleted=false`, `coins=0`, `subscriptionTier="basic"`, `subscriptionStatus="none"`, `isPro=false`, `ownedItemIds=[]`, `isSuspended=false`, `isDeleted=false`, timestamps.
+- `users/{uid}/private/account` — יצירה עם `email`, `authProvider`, `moderationState="clean"`, timestamps.
+
+#### Idempotency / Retry Safety
+
+- כל הכתיבות ב-merge; שדות קיימים לא נדרסים (set-if-missing).
+- retry של הטריגר בטוח — אין side effects כפולים.
+- הענקת `signup_bonus` (ADR-034) מתווספת לטריגר זה ב-Phase 5 עם `transactions` audit.
+
+---
+
 ## 6. טבלת סיכום
 
 | Function | Type | Scope | Auth | Idempotent | Writes |
@@ -2086,6 +2114,7 @@ export type CheckoutSessionCallbackQuery = {
 | `checkoutSessionCallback` | HTTP | Scale/V1 | Provider/session | כן — no entitlement mutation | optional logs |
 | `scheduledSubscriptionReconciliation` | Scheduled | Scale/V1 | Service account | כן | `subscriptions`, `users`, `publicProfiles` |
 | `scheduledUsageCleanup` | Scheduled | Scale/V1 | Service account | כן | `usage` cleanup/archive |
+| `onUserCreated` | Firestore Trigger | MVP | Admin SDK trigger | כן — set-if-missing merge | `users` server-owned defaults, `users/{uid}/private/account` |
 | `onUserProfileUpdated` | Firestore Trigger | MVP | Admin SDK trigger | כן | `publicProfiles`, Scale: `discoveryProfiles` |
 | `onUserGameUpdated` | Firestore Trigger | MVP | Admin SDK trigger | כן | `publicProfiles`, Scale: `discoveryProfiles` |
 | `onSubscriptionUpdated` | Firestore Trigger | MVP | Admin SDK trigger | כן | `users`, `publicProfiles`, Scale: `discoveryProfiles` |
