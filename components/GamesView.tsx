@@ -48,8 +48,8 @@ const GamesView: React.FC<GamesViewProps> = ({ onSelectGame }) => {
     return (
         <div className="p-6 pt-24 pb-32 max-w-6xl mx-auto relative z-10 no-scrollbar overflow-y-auto h-full">
             <div className="text-right mb-12">
-                <h2 className="text-4xl font-black dark:text-white text-dogame-lightText italic uppercase tracking-tighter mb-2">בחר משחק</h2>
-                <p className="dark:text-dogame-muted text-gray-500 font-bold">מצא שותפים למשחק הספציפי שאתה אוהב</p>
+                <h2 className="text-4xl font-black dark:text-white text-text-inverse italic uppercase tracking-tighter mb-2">בחר משחק</h2>
+                <p className="dark:text-text-muted text-gray-500 font-bold">מצא שותפים למשחק הספציפי שאתה אוהב</p>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -57,7 +57,7 @@ const GamesView: React.FC<GamesViewProps> = ({ onSelectGame }) => {
                     <button 
                         key={index}
                         onClick={() => onSelectGame(game.name)}
-                        className="group relative h-64 rounded-[32px] overflow-hidden border-2 border-transparent hover:border-dogame-primary transition-all duration-300 shadow-2xl active:scale-95"
+                        className="group relative h-64 rounded-[32px] overflow-hidden border-2 border-transparent hover:border-primary transition-all duration-300 shadow-2xl active:scale-95"
                     >
                         <img 
                             src={game.image} 
@@ -71,8 +71,8 @@ const GamesView: React.FC<GamesViewProps> = ({ onSelectGame }) => {
                             <h3 className="text-2xl font-black text-white italic uppercase drop-shadow-lg">{game.name}</h3>
                             
                             <div className="mt-4 flex items-center justify-end gap-2 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
-                                <span className="text-xs font-bold text-dogame-primary uppercase italic">הצג שחקנים</span>
-                                <div className="w-8 h-8 rounded-full bg-dogame-primary text-white flex items-center justify-center shadow-glow">
+                                <span className="text-xs font-bold text-primary uppercase italic">הצג שחקנים</span>
+                                <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center shadow-glow">
                                     <i className="fa-solid fa-arrow-left text-[10px]"></i>
                                 </div>
                             </div>
@@ -83,10 +83,10 @@ const GamesView: React.FC<GamesViewProps> = ({ onSelectGame }) => {
 
             <div className="mt-16 bg-white/5 border border-dashed border-white/10 rounded-[32px] p-12 text-center">
                 <div className="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center mx-auto mb-6">
-                    <i className="fa-solid fa-plus text-2xl text-dogame-muted"></i>
+                    <i className="fa-solid fa-plus text-2xl text-text-muted"></i>
                 </div>
                 <h3 className="text-xl font-bold text-white mb-2">לא מוצא את המשחק שלך?</h3>
-                <p className="text-dogame-muted text-sm max-w-sm mx-auto">אנחנו מוסיפים משחקים חדשים בכל שבוע. שלח לנו הצעה ונשמח להוסיף אותה!</p>
+                <p className="text-text-muted text-sm max-w-sm mx-auto">אנחנו מוסיפים משחקים חדשים בכל שבוע. שלח לנו הצעה ונשמח להוסיף אותה!</p>
                 <button className="mt-6 px-8 py-3 bg-white/10 hover:bg-white/20 text-white rounded-full font-bold text-xs uppercase tracking-widest transition-all">
                     הצע משחק חדש
                 </button>

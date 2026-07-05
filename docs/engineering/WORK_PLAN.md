@@ -191,7 +191,7 @@ gemini-3-flash-preview
 
 ### 6.1 משימות — Tooling & Project Structure
 
-- [ ] **P1-T01 — Tailwind כ-build dependency** `(M)` — הסרת CDN; התקנת Tailwind + config עם ה-design tokens מ-DESIGN_SYSTEM (Dark Matter, amber `#F59E0B`, Rubik).
+- [x] **P1-T01 — Tailwind כ-build dependency** `(M)` — CDN הוסר; Tailwind v3 + PostCSS מותקנים; `tailwind.config.ts` עם הטוקנים הקנוניים (DESIGN_SYSTEM §13); כל 231 מופעי `dogame-*` הוחלפו בטוקנים סמנטיים (MIGRATION_PLAN §1.2 בוצע יחד); importmap CDN של React הוסר. אומת: typecheck+build ירוקים, preview מציג צבעים קנוניים מדויקים (#0F172A/#6366F1/#1E293B), Rubik נטען, אפס אזהרות console.
 - [ ] **P1-T02 — ESLint + Prettier** `(S)` — כללי CONVENTIONS (named exports, no `any`, import order); script `npm run lint` אמיתי (לא רק tsc).
 - [ ] **P1-T03 — Vitest + Testing Library** `(S)` — הקמת `npm run test`, קובץ בדיקה ראשון עובר.
 - [ ] **P1-T04 — מבנה feature-based** `(M)` — יצירת `src/app`, `src/config`, `src/features/*`, `src/shared` לפי CONVENTIONS §2; העברת קוד prototype רלוונטי.

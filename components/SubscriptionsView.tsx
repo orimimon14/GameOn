@@ -49,10 +49,10 @@ const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ onSelectPlan, onU
     return (
         <div className="p-6 pt-24 pb-32 max-w-6xl mx-auto relative z-10 no-scrollbar overflow-y-auto h-full">
             <div className="text-center mb-16">
-                <h2 className="text-6xl font-black dark:text-white text-dogame-lightText italic uppercase tracking-tighter mb-4 drop-shadow-2xl">
+                <h2 className="text-6xl font-black dark:text-white text-text-inverse italic uppercase tracking-tighter mb-4 drop-shadow-2xl">
                     השוואת מנויים
                 </h2>
-                <p className="dark:text-dogame-muted text-gray-500 font-bold text-xl">
+                <p className="dark:text-text-muted text-gray-500 font-bold text-xl">
                     בדוק מה יש לך עכשיו ומה אתה יכול לקבל
                 </p>
             </div>
@@ -65,7 +65,7 @@ const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ onSelectPlan, onU
                         className={`relative rounded-[40px] p-10 border-2 transition-all duration-500 flex flex-col ${
                             plan.recommended 
                             ? 'bg-gradient-to-b from-yellow-500/10 to-transparent border-yellow-500 shadow-[0_0_40px_rgba(234,179,8,0.15)] scale-105 z-10' 
-                            : 'bg-white/5 border-white/10 dark:bg-dogame-surface/40'
+                            : 'bg-white/5 border-white/10 dark:bg-surface/40'
                         }`}
                     >
                         {plan.recommended && (
@@ -75,14 +75,14 @@ const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ onSelectPlan, onU
                         )}
 
                         <div className="text-right mb-10">
-                            <span className={`text-[10px] font-black uppercase tracking-widest mb-2 block ${plan.recommended ? 'text-yellow-500' : 'text-dogame-muted'}`}>
+                            <span className={`text-[10px] font-black uppercase tracking-widest mb-2 block ${plan.recommended ? 'text-yellow-500' : 'text-text-muted'}`}>
                                 {plan.status}
                             </span>
-                            <h3 className={`text-4xl font-black italic uppercase mb-2 ${plan.recommended ? 'text-white' : 'text-dogame-muted'}`}>
+                            <h3 className={`text-4xl font-black italic uppercase mb-2 ${plan.recommended ? 'text-white' : 'text-text-muted'}`}>
                                 {plan.name}
                             </h3>
                             <div className="flex items-baseline justify-end gap-1">
-                                {plan.period && <span className="text-dogame-muted text-sm">{plan.period}</span>}
+                                {plan.period && <span className="text-text-muted text-sm">{plan.period}</span>}
                                 <span className="text-4xl font-black text-white">{plan.price}</span>
                             </div>
                         </div>
@@ -95,7 +95,7 @@ const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ onSelectPlan, onU
                                     </span>
                                     <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${
                                         feature.included 
-                                        ? plan.recommended ? 'bg-yellow-500 text-black' : 'bg-dogame-primary/20 text-dogame-primary'
+                                        ? plan.recommended ? 'bg-yellow-500 text-black' : 'bg-primary/20 text-primary'
                                         : 'bg-white/5 text-gray-600'
                                     }`}>
                                         <i className={`fa-solid ${feature.included ? 'fa-check' : 'fa-xmark'} text-[10px]`}></i>
@@ -123,7 +123,7 @@ const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ onSelectPlan, onU
             <div className="mb-16">
                 <div className="text-right mb-8">
                     <h3 className="text-3xl font-black text-white italic uppercase tracking-tighter mb-2">קנה מטבעות</h3>
-                    <p className="text-dogame-muted font-bold">המר דולרים למטבעות (1$ = 100 מטבעות)</p>
+                    <p className="text-text-muted font-bold">המר דולרים למטבעות (1$ = 100 מטבעות)</p>
                 </div>
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
                     {coinPackages.map((pkg, i) => (
@@ -133,9 +133,9 @@ const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ onSelectPlan, onU
                                 onUpdateCoins(pkg.amount);
                                 alert(`רכשת ${pkg.amount} מטבעות ב-$${pkg.price}!`);
                             }}
-                            className="group relative bg-dogame-surface/40 backdrop-blur-md p-6 rounded-[32px] border border-white/5 hover:border-dogame-primary/50 transition-all text-right flex flex-col items-center lg:items-end overflow-hidden"
+                            className="group relative bg-surface/40 backdrop-blur-md p-6 rounded-[32px] border border-white/5 hover:border-primary/50 transition-all text-right flex flex-col items-center lg:items-end overflow-hidden"
                         >
-                            <div className="absolute -left-4 -top-4 w-20 h-20 bg-dogame-primary/10 rounded-full blur-2xl group-hover:bg-dogame-primary/20 transition-all"></div>
+                            <div className="absolute -left-4 -top-4 w-20 h-20 bg-primary/10 rounded-full blur-2xl group-hover:bg-primary/20 transition-all"></div>
                             
                             <div className="relative z-10 flex items-center gap-3 mb-4">
                                 <span className="text-3xl font-black text-white">{pkg.amount.toLocaleString()}</span>
@@ -143,11 +143,11 @@ const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ onSelectPlan, onU
                             </div>
                             
                             <div className="relative z-10 text-right mb-6">
-                                <span className="text-xs font-black text-dogame-muted uppercase block">{pkg.label}</span>
-                                {pkg.bonus && <span className="text-[10px] font-black text-dogame-success uppercase">{pkg.bonus}</span>}
+                                <span className="text-xs font-black text-text-muted uppercase block">{pkg.label}</span>
+                                {pkg.bonus && <span className="text-[10px] font-black text-success uppercase">{pkg.bonus}</span>}
                             </div>
 
-                            <div className="relative z-10 w-full py-3 bg-white text-dogame-bg rounded-xl font-black text-center group-hover:bg-dogame-primary group-hover:text-white transition-all">
+                            <div className="relative z-10 w-full py-3 bg-white text-background rounded-xl font-black text-center group-hover:bg-primary group-hover:text-white transition-all">
                                 ${pkg.price}
                             </div>
                         </button>
@@ -164,7 +164,7 @@ const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ onSelectPlan, onU
                     <i className="fa-brands fa-apple-pay text-5xl"></i>
                     <i className="fa-brands fa-cc-paypal text-5xl"></i>
                 </div>
-                <p className="mt-8 text-dogame-muted text-[10px] font-black uppercase tracking-[0.2em]">
+                <p className="mt-8 text-text-muted text-[10px] font-black uppercase tracking-[0.2em]">
                     SECURE ENCRYPTED PAYMENTS
                 </p>
             </div>

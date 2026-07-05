@@ -21,7 +21,7 @@ const BackgroundCollectionModal: React.FC<BackgroundCollectionModalProps> = ({
 
     return (
         <div className="fixed inset-0 bg-black/80 z-[100] flex justify-center items-center p-4 backdrop-blur-md" onClick={onClose}>
-            <div className="bg-dogame-bg w-full max-w-4xl max-h-[80vh] relative rounded-[40px] overflow-hidden border border-white/10 shadow-2xl flex flex-col" onClick={e => e.stopPropagation()}>
+            <div className="bg-background w-full max-w-4xl max-h-[80vh] relative rounded-[40px] overflow-hidden border border-white/10 shadow-2xl flex flex-col" onClick={e => e.stopPropagation()}>
                 
                 {/* Header */}
                 <div className="p-8 border-b border-white/5 flex items-center justify-between shrink-0">
@@ -30,7 +30,7 @@ const BackgroundCollectionModal: React.FC<BackgroundCollectionModalProps> = ({
                     </button>
                     <div className="text-right">
                         <h2 className="text-2xl font-black text-white italic uppercase tracking-tighter">האוסף שלי</h2>
-                        <p className="text-dogame-muted text-sm font-bold">נהל את הרקעים והמסגרות שלך</p>
+                        <p className="text-text-muted text-sm font-bold">נהל את הרקעים והמסגרות שלך</p>
                     </div>
                 </div>
 
@@ -49,7 +49,7 @@ const BackgroundCollectionModal: React.FC<BackgroundCollectionModalProps> = ({
                                 const isBorder = item.itemType === 'avatar-border';
 
                                 return (
-                                    <div key={item.id} className={`group relative rounded-3xl overflow-hidden border-2 transition-all duration-300 shadow-xl ${isEquipped ? 'border-dogame-primary' : 'border-white/5 hover:border-dogame-primary/50'}`}>
+                                    <div key={item.id} className={`group relative rounded-3xl overflow-hidden border-2 transition-all duration-300 shadow-xl ${isEquipped ? 'border-primary' : 'border-white/5 hover:border-primary/50'}`}>
                                         <div className="aspect-video relative overflow-hidden cursor-pointer" onClick={() => onEquip(item)}>
                                             {isBorder ? (
                                                 <div className="w-full h-full bg-black/40 flex items-center justify-center">
@@ -58,7 +58,7 @@ const BackgroundCollectionModal: React.FC<BackgroundCollectionModalProps> = ({
                                                             style={{ background: item.previewUrl }} 
                                                             className={`absolute inset-0 ${item.isAnimated ? item.animationClass : ''}`}
                                                         />
-                                                        <div className="relative z-10 w-full h-full rounded-full border-2 border-dogame-bg bg-dogame-surface"></div>
+                                                        <div className="relative z-10 w-full h-full rounded-full border-2 border-background bg-surface"></div>
                                                     </div>
                                                 </div>
                                             ) : (
@@ -75,24 +75,24 @@ const BackgroundCollectionModal: React.FC<BackgroundCollectionModalProps> = ({
                                             </div>
 
                                             {isEquipped && (
-                                                <div className="absolute inset-0 flex items-center justify-center bg-dogame-primary/20 backdrop-blur-[2px]">
-                                                    <div className="bg-dogame-primary text-white text-[10px] font-black px-4 py-1.5 rounded-full uppercase tracking-widest shadow-glow">
+                                                <div className="absolute inset-0 flex items-center justify-center bg-primary/20 backdrop-blur-[2px]">
+                                                    <div className="bg-primary text-white text-[10px] font-black px-4 py-1.5 rounded-full uppercase tracking-widest shadow-glow">
                                                         מיושם
                                                     </div>
                                                 </div>
                                             )}
                                         </div>
                                         
-                                        <div className="p-4 bg-dogame-surface/50 text-right">
+                                        <div className="p-4 bg-surface/50 text-right">
                                             <h4 className="text-white font-bold text-sm mb-1">{item.name}</h4>
-                                            <p className="text-[9px] text-dogame-muted uppercase mb-3">{isBorder ? 'Avatar Border' : 'Background'}</p>
+                                            <p className="text-[9px] text-text-muted uppercase mb-3">{isBorder ? 'Avatar Border' : 'Background'}</p>
                                             <button 
                                                 onClick={() => onEquip(item)}
                                                 disabled={isEquipped}
                                                 className={`w-full py-2 text-[10px] font-black uppercase rounded-xl transition-colors ${
                                                     isEquipped 
-                                                    ? 'bg-white/5 text-dogame-muted border border-white/10' 
-                                                    : 'bg-dogame-primary text-white hover:bg-dogame-primary/80 shadow-glow'
+                                                    ? 'bg-white/5 text-text-muted border border-white/10' 
+                                                    : 'bg-primary text-white hover:bg-primary/80 shadow-glow'
                                                 }`}
                                             >
                                                 {isEquipped ? 'מיושם' : 'החל פריט'}

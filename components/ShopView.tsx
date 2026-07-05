@@ -48,20 +48,20 @@ const ShopView: React.FC<ShopViewProps> = ({ onPurchase, userCoins, ownedItems }
                 <div className="flex flex-col lg:flex-row justify-between items-end mb-12 gap-6">
                     <div className="text-right w-full lg:w-auto">
                         <h2 className="text-4xl font-black text-white italic uppercase tracking-tighter mb-2">חנות הצבעים</h2>
-                        <p className="text-dogame-muted text-lg">בחר את האווירה שלך עם צבעים, גרדיאנטים ומסגרות פרופיל</p>
+                        <p className="text-text-muted text-lg">בחר את האווירה שלך עם צבעים, גרדיאנטים ומסגרות פרופיל</p>
                     </div>
                     
                     <div className="flex items-center gap-6 w-full lg:w-auto justify-between lg:justify-end">
                         {/* Category Selector */}
-                        <div className="flex bg-dogame-surface/50 p-1.5 rounded-2xl border border-white/5 backdrop-blur-md overflow-x-auto no-scrollbar">
+                        <div className="flex bg-surface/50 p-1.5 rounded-2xl border border-white/5 backdrop-blur-md overflow-x-auto no-scrollbar">
                             {categories.map(cat => (
                                 <button
                                     key={cat}
                                     onClick={() => setSelectedCategory(cat)}
                                     className={`px-5 py-2 rounded-xl text-sm font-bold transition-all whitespace-nowrap ${
                                         selectedCategory === cat 
-                                        ? 'bg-dogame-primary text-white shadow-glow' 
-                                        : 'text-dogame-muted hover:text-white'
+                                        ? 'bg-primary text-white shadow-glow' 
+                                        : 'text-text-muted hover:text-white'
                                     }`}
                                 >
                                     {cat === 'All' ? 'הכל' : cat === 'Borders' ? 'מסגרות' : cat}
@@ -70,9 +70,9 @@ const ShopView: React.FC<ShopViewProps> = ({ onPurchase, userCoins, ownedItems }
                         </div>
 
                         {/* Coins Display */}
-                        <div className="bg-gradient-to-br from-dogame-surface to-dogame-bg px-6 py-3 rounded-2xl border border-white/10 flex items-center gap-3 shadow-xl shrink-0">
+                        <div className="bg-gradient-to-br from-surface to-background px-6 py-3 rounded-2xl border border-white/10 flex items-center gap-3 shadow-xl shrink-0">
                             <div className="flex flex-col items-end">
-                                <span className="text-xs text-dogame-muted font-bold uppercase tracking-widest">יתרה</span>
+                                <span className="text-xs text-text-muted font-bold uppercase tracking-widest">יתרה</span>
                                 <span className="text-2xl font-black text-white leading-none">{userCoins.toLocaleString()}</span>
                             </div>
                             <i className="fa-solid fa-coins text-yellow-400 text-2xl drop-shadow-[0_0_8px_rgba(234,179,8,0.5)]"></i>
@@ -84,7 +84,7 @@ const ShopView: React.FC<ShopViewProps> = ({ onPurchase, userCoins, ownedItems }
                 {previewItem && (
                     <div className="mb-8 animate-pop text-center bg-white/5 backdrop-blur-md py-6 rounded-3xl border border-white/10 flex flex-col items-center">
                         <p className="text-white font-black italic uppercase text-lg tracking-wider mb-4">
-                            <span className="text-dogame-primary ml-2">מציג כעת:</span>
+                            <span className="text-primary ml-2">מציג כעת:</span>
                             {previewItem.name}
                         </p>
                         
@@ -95,7 +95,7 @@ const ShopView: React.FC<ShopViewProps> = ({ onPurchase, userCoins, ownedItems }
                                     style={{ background: previewItem.previewUrl }} 
                                     className={`absolute inset-0 z-0 ${previewItem.isAnimated ? previewItem.animationClass : ''}`}
                                 />
-                                <div className="relative z-10 w-full h-full rounded-full border-[6px] border-dogame-bg overflow-hidden bg-dogame-surface">
+                                <div className="relative z-10 w-full h-full rounded-full border-[6px] border-background overflow-hidden bg-surface">
                                     <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=1780&auto=format&fit=crop" className="w-full h-full object-cover" alt="Avatar Preview" />
                                 </div>
                             </div>
@@ -103,7 +103,7 @@ const ShopView: React.FC<ShopViewProps> = ({ onPurchase, userCoins, ownedItems }
 
                         <button 
                             onClick={() => setPreviewItem(null)}
-                            className="text-xs font-bold text-dogame-danger hover:underline uppercase"
+                            className="text-xs font-bold text-danger hover:underline uppercase"
                         >
                             בטל תצוגה מקדימה
                         </button>
@@ -120,8 +120,8 @@ const ShopView: React.FC<ShopViewProps> = ({ onPurchase, userCoins, ownedItems }
                         return (
                             <div 
                                 key={item.id} 
-                                className={`group relative bg-dogame-surface/40 backdrop-blur-sm rounded-[32px] overflow-hidden border transition-all duration-500 shadow-xl flex flex-col ${
-                                    isBeingPreviewed ? 'border-dogame-primary scale-[1.02] shadow-glow' : 'border-white/5 hover:border-dogame-primary/50'
+                                className={`group relative bg-surface/40 backdrop-blur-sm rounded-[32px] overflow-hidden border transition-all duration-500 shadow-xl flex flex-col ${
+                                    isBeingPreviewed ? 'border-primary scale-[1.02] shadow-glow' : 'border-white/5 hover:border-primary/50'
                                 }`}
                             >
                                 {/* Color Swatch Section */}
@@ -134,7 +134,7 @@ const ShopView: React.FC<ShopViewProps> = ({ onPurchase, userCoins, ownedItems }
                                                     style={{ background: item.previewUrl }} 
                                                     className={`absolute inset-0 ${item.isAnimated ? item.animationClass : ''}`}
                                                 />
-                                                <div className="relative z-10 w-full h-full rounded-full border-4 border-dogame-bg flex items-center justify-center bg-dogame-surface text-dogame-muted">
+                                                <div className="relative z-10 w-full h-full rounded-full border-4 border-background flex items-center justify-center bg-surface text-text-muted">
                                                     <i className="fa-solid fa-user text-3xl"></i>
                                                 </div>
                                             </div>
@@ -148,7 +148,7 @@ const ShopView: React.FC<ShopViewProps> = ({ onPurchase, userCoins, ownedItems }
                                     )}
                                     
                                     {/* Overlays */}
-                                    <div className="absolute inset-0 bg-gradient-to-t from-dogame-surface/40 via-transparent to-transparent opacity-60"></div>
+                                    <div className="absolute inset-0 bg-gradient-to-t from-surface/40 via-transparent to-transparent opacity-60"></div>
                                     
                                     {/* Badge: Live vs Static */}
                                     <div className={`absolute top-4 left-4 px-3 py-1 rounded-full text-[9px] font-black text-white flex items-center gap-1.5 shadow-lg border border-white/10 ${item.isAnimated ? 'bg-indigo-600' : 'bg-gray-700'}`}>
@@ -174,8 +174,8 @@ const ShopView: React.FC<ShopViewProps> = ({ onPurchase, userCoins, ownedItems }
                                     </div>
 
                                     {/* Try On Overlay */}
-                                    <div className={`absolute inset-0 bg-dogame-primary/20 flex items-center justify-center transition-opacity duration-300 ${isBeingPreviewed ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}>
-                                        <div className="bg-white text-dogame-bg font-black px-6 py-2 rounded-full transform transition-transform">
+                                    <div className={`absolute inset-0 bg-primary/20 flex items-center justify-center transition-opacity duration-300 ${isBeingPreviewed ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}>
+                                        <div className="bg-white text-background font-black px-6 py-2 rounded-full transform transition-transform">
                                             {isBeingPreviewed ? 'בתצוגה מקדימה' : isBorder ? 'נסה מסגרת' : 'נסה על המסך'}
                                         </div>
                                     </div>
@@ -190,7 +190,7 @@ const ShopView: React.FC<ShopViewProps> = ({ onPurchase, userCoins, ownedItems }
                                         </div>
                                         <div>
                                             <h4 className="text-white font-black text-xl italic uppercase tracking-tight">{item.name}</h4>
-                                            <span className="text-dogame-muted text-xs font-bold">{isBorder ? 'Avatar Border' : item.category + ' Palette'}</span>
+                                            <span className="text-text-muted text-xs font-bold">{isBorder ? 'Avatar Border' : item.category + ' Palette'}</span>
                                         </div>
                                     </div>
 
@@ -198,10 +198,10 @@ const ShopView: React.FC<ShopViewProps> = ({ onPurchase, userCoins, ownedItems }
                                         onClick={() => !owned && onPurchase(item)}
                                         className={`w-full py-4 rounded-2xl font-black text-lg transition-all active:scale-95 shadow-lg flex items-center justify-center gap-3 ${
                                             owned 
-                                            ? 'bg-dogame-success/20 text-dogame-success border border-dogame-success/30 cursor-default'
+                                            ? 'bg-success/20 text-success border border-success/30 cursor-default'
                                             : userCoins >= item.price
-                                            ? 'bg-white text-dogame-bg hover:bg-dogame-primary hover:text-white'
-                                            : 'bg-white/5 text-dogame-muted cursor-not-allowed border border-white/10'
+                                            ? 'bg-white text-background hover:bg-primary hover:text-white'
+                                            : 'bg-white/5 text-text-muted cursor-not-allowed border border-white/10'
                                         }`}
                                         disabled={!owned && userCoins < item.price}
                                     >
