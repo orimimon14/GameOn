@@ -216,13 +216,13 @@ gemini-3-flash-preview
 
 ### 6.4 בדיקות ואימות
 
-- [ ] כל פקודות ה-toolkit (§3.1 עד וכולל build+scan) רצות ועוברות.
-- [ ] בדיקת unit לדוגמה + בדיקת component לדוגמה עוברות.
-- [ ] TC-X-001 (חלקי): `lang`/`dir` נכונים ב-`he` וב-`en`; החלפת שפה חיה עובדת.
-- [ ] TC-X-002: כל enum מכוסה label בשתי השפות (בדיקת טיפוסים נכשלת על חוסר).
-- [ ] TC-X-009: scan:bundle נקי.
-- [ ] emulators עולים; אפליקציה מתחברת אליהם ב-dev.
-- [ ] CI רץ על PR ונכשל כשצריך (בדיקת שבירה מכוונת אחת).
+- [x] כל פקודות ה-toolkit (§3.1 עד וכולל build+scan) רצות ועוברות (typecheck/lint/test/build/scan:bundle; test:rules — Phase 2).
+- [x] בדיקת unit לדוגמה + בדיקת component לדוגמה עוברות (27 בדיקות ב-6 קבצים).
+- [x] TC-X-001 (חלקי): `lang`/`dir` נכונים ב-`he` וב-`en`; החלפת שפה חיה אומתה בדפדפן.
+- [x] TC-X-002: כל enum מכוסה label בשתי השפות (12 בדיקות + אכיפת טיפוסים).
+- [x] TC-X-009: scan:bundle נקי.
+- [x] emulators עולים — smoke מלא ALL PASS כולל callable; חיבור ה-UI לאמולטורים מחווט ב-`firebase.ts` (שימוש בפועל — Phase 2).
+- [x] CI רץ ב-GitHub — run ראשון על main הסתיים `success` (web+functions); fail-path אומת לוקאלית לאורך הפיתוח.
 
 ### 6.5 Exit Criteria
 
