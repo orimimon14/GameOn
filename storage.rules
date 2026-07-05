@@ -1,0 +1,10 @@
+rules_version = '2';
+
+// Baseline: deny everything. Real rules per docs/architecture/SECURITY.md land in Phase 2 (P2-T07).
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

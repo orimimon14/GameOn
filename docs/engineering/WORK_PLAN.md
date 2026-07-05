@@ -208,11 +208,11 @@ gemini-3-flash-preview
 
 ### 6.3 משימות — Firebase & CI
 
-- [ ] **P1-T12 — פרויקטי Firebase** `(M)` — יצירת `swish-game-dev` + `swish-game-staging` (prod נדחה עד Phase 9); הפעלת Auth/Firestore/Storage/Functions.
-- [ ] **P1-T13 — Firebase client config** `(S)` — `src/config/firebase.ts` עם `VITE_*` env vars בלבד; `.env.example`.
-- [ ] **P1-T14 — Emulator Suite** `(M)` — `firebase.json` עם Auth/Firestore/Storage/Functions emulators + seed script בסיסי.
-- [ ] **P1-T15 — functions workspace** `(M)` — `functions/` עם TypeScript strict, מבנה `callable/http/triggers/shared/repositories/services/schemas/types` (CONVENTIONS).
-- [ ] **P1-T16 — CI pipeline (GitHub Actions)** `(M)` — workflow PR: typecheck→lint→test→build→scan:bundle לפי CI_CD §5; ללא deploy עדיין.
+- [ ] **P1-T12 — פרויקטי Firebase** `(M)` — ✳️ חלקי: פרויקטי GCP `swish-game-dev`+`swish-game-staging` נוצרו; `.firebaserc` עם aliases. **חסום על אישור Firebase ToS ע"י בעל החשבון** (פתיחת console.firebase.google.com פעם אחת) → ואז `addfirebase` + רישום web apps + `.env.local` אמיתי.
+- [x] **P1-T13 — Firebase client config** `(S)` — `firebase` SDK הותקן; `src/config/firebase.ts` (רק `VITE_*`, lazy init, חיבור אמולטורים כש-`VITE_USE_EMULATORS=true`); `.env.example` + `.env.local` (gitignored).
+- [x] **P1-T14 — Emulator Suite** `(M)` — `firebase.json` (auth/firestore/storage/functions/ui) + baseline deny rules + `scripts/emulator-smoke.mjs`; **smoke מלא PASS** כולל קריאת callable מקצה לקצה. seed מלא — P2-T09.
+- [x] **P1-T15 — functions workspace** `(M)` — `functions/` TS strict (build+typecheck ירוקים), מבנה CONVENTIONS מלא, callable ראשון `ping` עובד באמולטור, engines node 22.
+- [x] **P1-T16 — CI pipeline (GitHub Actions)** `(M)` — `.github/workflows/ci.yml`: web (typecheck/lint/test/build/scan) + functions (build) על PR+main.
 
 ### 6.4 בדיקות ואימות
 

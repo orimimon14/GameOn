@@ -1,0 +1,7 @@
+{
+  "projects": {
+    "default": "swish-game-dev",
+    "dev": "swish-game-dev",
+    "staging": "swish-game-staging"
+  }
+}
