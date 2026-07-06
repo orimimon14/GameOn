@@ -12,6 +12,7 @@
     "format": "prettier --write .",
     "test": "vitest run",
     "test:rules": "firebase emulators:exec --only firestore --project demo-swish-game \"vitest run --config vitest.rules.config.ts\"",
+    "seed": "node scripts/seed-emulator.mjs",
     "scan:bundle": "node scripts/scan-bundle.mjs"
   },
   "dependencies": {
@@ -41,6 +42,7 @@
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.3",
+    "firebase-admin": "^14.1.0",
     "firebase-tools": "^15.22.4",
     "jsdom": "^29.1.1",
     "postcss": "^8.5.16",

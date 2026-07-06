@@ -252,7 +252,7 @@ gemini-3-flash-preview
 - [ ] **P2-T06 — Profile view/edit** `(M)` — מסך פרופיל עם קריאה/עדכון שדות מותרים בלבד; `preferredLocale` setting.
 - [x] **P2-T07 — Security Rules v1** `(L)` — **ה-ruleset הקנוני המלא** מ-SECURITY §4 הועתק ל-`firestore.rules` (כל הקולקציות: users/private/games/swipes/blocks/ownedItems/transactions/usage/publicProfiles/discovery/matches/chats/messages/shop/catalog/subscriptions/billing/ai/reports/moderation/system + default deny). קומפל ורץ באמולטור; allow-path של bootstrap אומת ב-E2E. deny/allow matrix מלא — ב-P2-T08.
 - [x] **P2-T08 — rules test harness** `(M)` — `npm run test:rules` (emulators:exec + vitest config נפרד) עם **מטריצת deny/allow של 47 בדיקות**: users (create/read/update, server-owned, enums, suspended), private/account, games (onboarding gate, catalog), כל הקולקציות server-only (TC-SEC-001..009, 018..020), קריאות (publicProfiles/reports/billing/system), chats+messages (participant, text-only, TC-SEC-013/015/016), reports (self-report deny). 47/47 ✓. נוסף ל-CI עם cache לאמולטור.
-- [ ] **P2-T09 — Emulator seed** `(S)` — סקריפט seed: משתמשים, gameCatalog, פרופילים discoverable.
+- [x] **P2-T09 — Emulator seed** `(S)` — `npm run seed` (REST טהור, ללא תלויות): 6 משחקים ב-gameCatalog עם supportedRanks, `system/config` מלא (flags+limits+billing+ai), 3 משתמשי דמו (auth+users+private+games+publicProfiles discoverable, סיסמה `demo123456`). אומת: ריצה כפולה idempotent (אותם UIDs), התחברות דמו עובדת, כל הספירות נכונות.
 
 ### 7.2 בדיקות ואימות
 
