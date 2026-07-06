@@ -41,6 +41,7 @@
   - [3.12 `reconcileSubscription`](#312-reconcilesubscription)
   - [3.13 `createCheckoutSession`](#313-createcheckoutsession)
   - [3.14 `deleteAccount`](#314-deleteaccount)
+  - [3.15 `completeOnboarding`](#315-completeonboarding)
   - [5.9 `onUserCreated`](#59-onusercreated)
 - [4. HTTP / Webhook Functions](#4-http--webhook-functions)
   - [4.1 `paymentWebhook`](#41-paymentwebhook)
@@ -1599,6 +1600,87 @@ export type DeleteAccountOutput = {
 
 ---
 
+### 3.15 `completeOnboarding`
+
+| Field | Value |
+|---|---|
+| Type | Callable Function |
+| Scope | MVP |
+| Auth requirement | Authenticated owner |
+| Description | משלים onboarding באופן backend-authoritative: מעדכן את שדות הפרופיל, יוצר את משחק-הבסיס, מסמן `onboardingCompleted = true` ויוצר את `publicProfiles/{uid}`. נדרש כי `onboardingCompleted` ו-`publicProfiles` הם server-owned, ויצירת game doc ב-rules מותנית ב-onboarding שהושלם. |
+
+#### Input Schema
+
+```ts
+export type CompleteOnboardingInput = {
+  profile: {
+    displayName: string;
+    age: number;            // מינימום 16 (ADR-013)
+    bio: string;
+    skillLevel: SkillLevel;
+    platforms: Platform[];  // לפחות אחת
+  };
+  game: {
+    gameId: string;         // חייב להתקיים ב-gameCatalog ולהיות isActive
+    rank: string;
+    lookingFor: LookingFor;
+    lookingForText?: string;
+    voicePreference?: VoicePreference;
+  };
+};
+```
+
+#### Output Schema
+
+```ts
+export type CompleteOnboardingOutput = {
+  success: true;
+  uid: string;
+  completedAt: FirebaseFirestore.Timestamp;
+};
+```
+
+#### Validation Rules
+
+- user authenticated; הפעולה על ה-`uid` של המבקש בלבד.
+- `users/{uid}` קיים (bootstrap הושלם); לא suspended/deleted.
+- Zod על כל הקלט: enums קנוניים בלבד, `age >= 16`, `platforms.length >= 1`, אורכי שדות לפי DATA_MODEL.
+- `gameCatalog/{gameId}` קיים ו-`isActive == true`.
+- קריאה חוזרת מותרת (עדכון) — idempotent.
+
+#### Error Codes
+
+| Error Code | מקרה |
+|---|---|
+| `unauthenticated` | אין Auth context. |
+| `invalid_argument` | קלט לא עובר Zod. |
+| `not_found` | user doc או game catalog לא נמצאו. |
+| `failed_precondition` | user suspended/deleted או game לא פעיל. |
+| `internal` | כשל לא צפוי. |
+
+#### Idempotency
+
+- batch write דטרמיניסטי; ריצה חוזרת מעדכנת לאותו state.
+
+#### Side Effects
+
+Writes (atomic batch):
+
+- `users/{uid}` — שדות פרופיל client-writable + `onboardingCompleted = true` + `updatedAt`.
+- `users/{uid}/games/{gameId}` — יצירה/עדכון עם `name`/`iconUrl` מהקטלוג.
+- `publicProfiles/{uid}` — upsert מלא (כולל `gameIds`, `primaryGameId`, `primaryRank`).
+
+#### Relevant ADRs
+
+- ADR-003, ADR-004, ADR-006, ADR-010, ADR-013, ADR-019, ADR-021.
+
+#### Server-Owned Guarantees
+
+- `onboardingCompleted` נכתב רק כאן (ובאדמין).
+- `publicProfiles` נכתב רק server-side; אין העתקת שדות פרטיים.
+
+---
+
 ## 4. HTTP / Webhook Functions
 
 ---
@@ -2110,6 +2192,7 @@ export type CheckoutSessionCallbackQuery = {
 | `reconcileSubscription` | Callable | Scale/V1 | Admin/service | כן — provider truth | `subscriptions`, `users`, `publicProfiles` |
 | `createCheckoutSession` | Callable | MVP | Authenticated | חלקית — block duplicate active subscription | provider session; optional providerCustomerId |
 | `deleteAccount` | Callable | MVP | Authenticated owner | כן — idempotent on `isDeleted` | `users`, `publicProfiles`, cascading deletion/anonymization |
+| `completeOnboarding` | Callable | MVP | Authenticated owner | כן — deterministic batch | `users` (+`onboardingCompleted`), `users/{uid}/games`, `publicProfiles` |
 | `paymentWebhook` | HTTP/Webhook | MVP | Provider signature | כן — provider event ID | `subscriptions`, `users`, `publicProfiles`, Scale: `billingEvents` |
 | `checkoutSessionCallback` | HTTP | Scale/V1 | Provider/session | כן — no entitlement mutation | optional logs |
 | `scheduledSubscriptionReconciliation` | Scheduled | Scale/V1 | Service account | כן | `subscriptions`, `users`, `publicProfiles` |

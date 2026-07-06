@@ -29,6 +29,12 @@ export const heLabels: EnumLabels = {
     no_voice_chat: 'בלי צ׳אט קולי',
     custom: 'מותאם אישית',
   },
+  voicePreference: {
+    required: 'חובה מיקרופון',
+    preferred: 'עדיף מיקרופון',
+    no_voice: 'בלי צ׳אט קולי',
+    flexible: 'גמיש',
+  },
   shopItemCategory: {
     avatar_border: 'מסגרת לאווטאר',
     profile_banner: 'באנר לפרופיל',

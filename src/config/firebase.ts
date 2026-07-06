@@ -1,6 +1,7 @@
 import { FirebaseApp, getApps, initializeApp } from 'firebase/app';
 import { Auth, connectAuthEmulator, getAuth } from 'firebase/auth';
 import { connectFirestoreEmulator, Firestore, getFirestore } from 'firebase/firestore';
+import { connectFunctionsEmulator, Functions, getFunctions } from 'firebase/functions';
 import { connectStorageEmulator, FirebaseStorage, getStorage } from 'firebase/storage';
 
 // Client Firebase config — public VITE_* values only (ENVIRONMENTS §5). Never put secrets here.
@@ -30,11 +31,17 @@ export const getFirebaseApp = (): FirebaseApp => {
   return app;
 };
 
-const connectEmulatorsOnce = (auth: Auth, db: Firestore, storage: FirebaseStorage) => {
+const connectEmulatorsOnce = (
+  auth: Auth,
+  db: Firestore,
+  storage: FirebaseStorage,
+  functions: Functions,
+) => {
   if (emulatorsConnected || !useEmulators) return;
   connectAuthEmulator(auth, 'http://127.0.0.1:9099', { disableWarnings: true });
   connectFirestoreEmulator(db, '127.0.0.1', 8080);
   connectStorageEmulator(storage, '127.0.0.1', 9199);
+  connectFunctionsEmulator(functions, '127.0.0.1', 5001);
   emulatorsConnected = true;
 };
 
@@ -43,6 +50,7 @@ export const getFirebase = () => {
   const auth = getAuth(firebaseApp);
   const db = getFirestore(firebaseApp);
   const storage = getStorage(firebaseApp);
-  connectEmulatorsOnce(auth, db, storage);
-  return { app: firebaseApp, auth, db, storage };
+  const functions = getFunctions(firebaseApp);
+  connectEmulatorsOnce(auth, db, storage, functions);
+  return { app: firebaseApp, auth, db, storage, functions };
 };

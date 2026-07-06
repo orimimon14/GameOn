@@ -12,4 +12,8 @@ export const ping = onCall(() => ({
   at: new Date().toISOString(),
 }));
 
+export { completeOnboarding } from './callable/completeOnboarding';
+export { syncPublicProfile } from './callable/syncPublicProfile';
 export { onUserCreated } from './triggers/onUserCreated';
+export { onUserGameUpdated } from './triggers/onUserGameUpdated';
+export { onUserProfileUpdated } from './triggers/onUserProfileUpdated';

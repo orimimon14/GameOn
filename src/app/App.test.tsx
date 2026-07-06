@@ -6,6 +6,9 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { App } from './App';
 
 import { useAuthStore } from '@/features/auth/authStore';
+import type { UserDocument } from '@/shared/models';
+import { useUserStore } from '@/shared/store/userStore';
+
 
 // Stub the real auth listener: in CI there is no .env.local, so the unconfigured
 // path would force the store to 'unauthenticated' and override test state.
@@ -14,7 +17,15 @@ vi.mock('@/features/auth/authStore', async (importOriginal) => {
   return { ...actual, initAuthListener: vi.fn() };
 });
 
+// Onboarding data fetching goes to Firebase — not available in unit tests.
+vi.mock('@/features/onboarding/onboardingApi', () => ({
+  completeOnboarding: vi.fn(),
+  loadGameCatalog: vi.fn().mockResolvedValue([]),
+}));
+
 const testUser = { uid: 'test-uid' } as unknown as User;
+const completedDoc = { onboardingCompleted: true } as UserDocument;
+const incompleteDoc = { onboardingCompleted: false } as UserDocument;
 
 const renderApp = (initialPath = '/discover') =>
   render(
@@ -26,9 +37,10 @@ const renderApp = (initialPath = '/discover') =>
 describe('App', () => {
   beforeEach(() => {
     useAuthStore.setState({ user: testUser, status: 'authenticated' });
+    useUserStore.setState({ userDoc: completedDoc, status: 'ready' });
   });
 
-  it('renders the main navigation in Hebrew for authenticated users', () => {
+  it('renders the main navigation in Hebrew for onboarded users', () => {
     renderApp();
 
     expect(screen.getAllByText('משחקים').length).toBeGreaterThan(0);
@@ -47,6 +59,14 @@ describe('App', () => {
     renderApp('/discover');
 
     expect(screen.getByText('המשך עם Google')).toBeInTheDocument();
+    expect(screen.queryByText('התאמות חדשות')).not.toBeInTheDocument();
+  });
+
+  it('redirects authenticated users without onboarding to the wizard', () => {
+    useUserStore.setState({ userDoc: incompleteDoc, status: 'ready' });
+    renderApp('/discover');
+
+    expect(screen.getByText('מי אתה?')).toBeInTheDocument();
     expect(screen.queryByText('התאמות חדשות')).not.toBeInTheDocument();
   });
 

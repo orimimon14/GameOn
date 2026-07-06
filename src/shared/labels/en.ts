@@ -29,6 +29,12 @@ export const enLabels: EnumLabels = {
     no_voice_chat: 'No Voice Chat',
     custom: 'Custom',
   },
+  voicePreference: {
+    required: 'Mic required',
+    preferred: 'Mic preferred',
+    no_voice: 'No voice chat',
+    flexible: 'Flexible',
+  },
   shopItemCategory: {
     avatar_border: 'Avatar Border',
     profile_banner: 'Profile Banner',

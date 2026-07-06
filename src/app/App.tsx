@@ -12,6 +12,7 @@ import { GamesView } from '@/features/discovery/GamesView';
 import { SwipeView } from '@/features/discovery/SwipeView';
 import { LikesGrid } from '@/features/matches/LikesGrid';
 import { OnboardingPage } from '@/features/onboarding/OnboardingPage';
+import { RequireOnboarding } from '@/features/onboarding/RequireOnboarding';
 import { ProfileView } from '@/features/profile/ProfileView';
 import { SettingsView } from '@/features/profile/SettingsView';
 import { ShopView } from '@/features/shop/ShopView';
@@ -241,9 +242,11 @@ export const App: React.FC = () => {
       <LocaleSync />
       <Routes>
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/onboarding" element={<OnboardingPage />} />
         <Route element={<RequireAuth />}>
-          <Route path="/*" element={<AppShell />} />
+          <Route path="/onboarding" element={<OnboardingPage />} />
+          <Route element={<RequireOnboarding />}>
+            <Route path="/*" element={<AppShell />} />
+          </Route>
         </Route>
       </Routes>
     </>
