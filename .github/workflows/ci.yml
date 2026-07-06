@@ -25,7 +25,14 @@ jobs:
         with:
           path: ~/.cache/firebase/emulators
           key: firebase-emulators-${{ runner.os }}
-      - run: npm run test:rules
+      - name: Rules tests
+        shell: bash
+        run: |
+          set -o pipefail
+          npm run test:rules 2>&1 | tee rules-tests.log || {
+            echo "::error title=rules-tests::$(tail -c 900 rules-tests.log | tr '\n' ' ' | tr -d '\r')"
+            exit 1
+          }
       - run: npm run build
       - run: npm run scan:bundle
 
