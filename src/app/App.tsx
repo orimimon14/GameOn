@@ -13,6 +13,7 @@ import { SwipeView } from '@/features/discovery/SwipeView';
 import { LikesGrid } from '@/features/matches/LikesGrid';
 import { OnboardingPage } from '@/features/onboarding/OnboardingPage';
 import { RequireOnboarding } from '@/features/onboarding/RequireOnboarding';
+import { MyProfilePage } from '@/features/profile/MyProfilePage';
 import { ProfileView } from '@/features/profile/ProfileView';
 import { SettingsView } from '@/features/profile/SettingsView';
 import { ShopView } from '@/features/shop/ShopView';
@@ -22,6 +23,7 @@ import { SideNav } from '@/shared/components/SideNav';
 import { useLocale } from '@/shared/i18n/useLocale';
 import { currentUserProfile, matchedProfiles, profilesWhoLikedUser } from '@/shared/mockData';
 import { useUiStore } from '@/shared/store/uiStore';
+import { useUserStore } from '@/shared/store/userStore';
 import { BackgroundItem, GamerProfile } from '@/shared/types';
 
 const TITLE_KEYS: Record<string, string> = {
@@ -36,13 +38,24 @@ const TITLE_KEYS: Record<string, string> = {
   '/ai': 'titles.ai',
 };
 
-// Keeps <html lang/dir> in sync with the active locale (ADR-035).
+// Keeps <html lang/dir> in sync with the active locale, and applies the
+// signed-in user's persisted preferredLocale from Firestore (ADR-035).
 const LocaleSync: React.FC = () => {
-  const { locale, dir } = useLocale();
+  const { locale, setLocale, dir } = useLocale();
+  const preferredLocale = useUserStore((s) => s.userDoc?.preferredLocale);
+
   useEffect(() => {
     document.documentElement.lang = locale;
     document.documentElement.dir = dir;
   }, [locale, dir]);
+
+  useEffect(() => {
+    if (preferredLocale && preferredLocale !== locale) {
+      setLocale(preferredLocale);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- apply only when the persisted value changes
+  }, [preferredLocale]);
+
   return null;
 };
 
@@ -212,15 +225,20 @@ const AppShell: React.FC = () => {
             <Route
               path="/profile"
               element={
-                <ProfileView
-                  profile={viewingProfile || userProfile}
-                  onSave={setUserProfile}
-                  isOwnProfile={!viewingProfile}
-                  onReturnToLobby={() => handleNavigate('/discover')}
-                  isGlobalBackground={globalBackground === (viewingProfile?.bannerImage || userProfile.bannerImage)}
-                  onSetGlobalBackground={(url) => setGlobalBackground(url || null)}
-                  ownedBackgrounds={ownedItems}
-                />
+                viewingProfile ? (
+                  // Viewing ANOTHER user still runs on prototype mock data — replaced in Phase 3 (real discovery).
+                  <ProfileView
+                    profile={viewingProfile}
+                    onSave={setUserProfile}
+                    isOwnProfile={false}
+                    onReturnToLobby={() => handleNavigate('/discover')}
+                    isGlobalBackground={globalBackground === viewingProfile.bannerImage}
+                    onSetGlobalBackground={(url) => setGlobalBackground(url || null)}
+                    ownedBackgrounds={ownedItems}
+                  />
+                ) : (
+                  <MyProfilePage />
+                )
               }
             />
             <Route path="/ai" element={<GeminiSquadEngine />} />

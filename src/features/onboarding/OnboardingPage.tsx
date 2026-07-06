@@ -3,26 +3,15 @@ import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Navigate, useNavigate } from 'react-router-dom';
-import { z } from 'zod';
 
 import { completeOnboarding, loadGameCatalog } from './onboardingApi';
 
 import { LOOKING_FOR, LookingFor, Platform, PLATFORMS, SKILL_LEVELS, VOICE_PREFERENCES, VoicePreference } from '@/shared/enums';
 import { useLabels } from '@/shared/labels';
 import type { GameCatalogDocument } from '@/shared/models';
+// Step 1 uses the shared client-writable basics schema (also used by profile editing).
+import { profileBasicsSchema as basicsSchema, ProfileBasicsInput as BasicsInput } from '@/shared/schemas/profileForm';
 import { useUserStore } from '@/shared/store/userStore';
-
-
-// Step 1 — client-writable profile basics (messages are i18n keys, ADR-035).
-const basicsSchema = z.object({
-  displayName: z.string().trim().min(2, 'onboarding.errors.displayName').max(30, 'onboarding.errors.displayName'),
-  age: z.number('onboarding.errors.age').int('onboarding.errors.age').min(16, 'onboarding.errors.age').max(120, 'onboarding.errors.age'),
-  bio: z.string().max(300, 'onboarding.errors.bio'),
-  skillLevel: z.enum(SKILL_LEVELS),
-  platforms: z.array(z.enum(PLATFORMS)).min(1, 'onboarding.errors.platforms'),
-});
-
-type BasicsInput = z.infer<typeof basicsSchema>;
 
 const inputClass =
   'w-full bg-surface border border-white/10 rounded-xl px-4 py-3 text-text focus:outline-none focus:border-primary transition-colors';

@@ -147,6 +147,7 @@ service cloud.firestore {
         "displayName",
         "age",
         "bio",
+        "preferredLocale",
         "skillLevel",
         "platforms",
         "isDiscoverable",
@@ -200,6 +201,7 @@ service cloud.firestore {
       return (!("displayName" in data) || data.displayName is string)
         && (!("age" in data) || data.age is int)
         && (!("bio" in data) || data.bio is string)
+        && (!("preferredLocale" in data) || data.preferredLocale in ["he", "en"])
         && (!("skillLevel" in data) || isValidSkillLevel(data.skillLevel))
         && (!("platforms" in data) || isValidPlatformList(data.platforms))
         && (!("isDiscoverable" in data) || data.isDiscoverable is bool)

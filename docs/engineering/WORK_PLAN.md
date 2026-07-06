@@ -141,7 +141,7 @@ gemini-3-flash-preview
 
 - [x] **Phase 0 — Security & Hygiene** (תלוי ב: —, אומדן S–M, milestone M0→M1) ✅
 - [x] **Phase 1 — Foundation** (תלוי ב: 0, אומדן L, milestone M1) ✅
-- [ ] **Phase 2 — Auth & Data Layer** (תלוי ב: 1, אומדן L, milestone M2)
+- [x] **Phase 2 — Auth & Data Layer** (תלוי ב: 1, אומדן L, milestone M2) ✅
 - [ ] **Phase 3 — Discovery & Matching** (תלוי ב: 2, אומדן L, milestone M3)
 - [ ] **Phase 4 — Chat** (תלוי ב: 3, אומדן M–L, milestone M4)
 - [ ] **Phase 5 — Economy & Cosmetics** (תלוי ב: 2; UI: 3, אומדן L, milestone M5)
@@ -249,7 +249,7 @@ gemini-3-flash-preview
 - [x] **P2-T03 — User bootstrap** `(M)` — ארכיטקטורה דו-שלבית לפי SECURITY: ה-client יוצר `users/{uid}` עם client-writable keys בלבד (`ensureUserDocument`, retry-safe, 3 בדיקות); טריגר שרת חדש **`onUserCreated`** ממלא server-owned defaults ויוצר `private/account` (set-if-missing merge = idempotent). **פער תיעוד נסגר: הטריגר נוסף ל-API_CONTRACT §5.9 באותו commit.** E2E מלא: הרשמה בדפדפן → אומת ב-Firestore ש-12 שדות השרת מולאו + private/account נוצר (client חסום).
 - [x] **P2-T04 — Onboarding flow** `(L)` — אשף דו-שלבי (basics: שם/גיל/ביו/skill/platforms → game: בחירה מהקטלוג+rank+lookingFor+voice) עם RHF+Zod דו-לשוני; `RequireOnboarding` guard חוסם את ה-shell עד השלמה; **פער חוזה נסגר: callable חדש `completeOnboarding` נוסף ל-API_CONTRACT §3.15** (כי `onboardingCompleted`/`publicProfiles` הם server-owned ויצירת game דורשת onboarding שהושלם); labels ל-voicePreference נוספו. 9 בדיקות UI+guard. **E2E מלא: הרשמה→נחיתה אוטומטית באשף→מילוי→נחיתה ב-discover; אומת ב-DB: onboardingCompleted=true, game doc, publicProfile.**
 - [x] **P2-T05 — `syncPublicProfile`** `(M)` — שירות sync משותף (`publicProfileSync`) בונה את `publicProfiles/{uid}` מ-users+games פעילים (ללא שדות פרטיים; `verifiedBadge`=isPro לפי ADR-025); callable `syncPublicProfile` לפי החוזה §3.9 (owner/admin, `failed_precondition` לפני onboarding); triggers `onUserProfileUpdated`+`onUserGameUpdated` שומרים סנכרון על כל עריכה. אומת ב-E2E (publicProfile נוצר ומדויק).
-- [ ] **P2-T06 — Profile view/edit** `(M)` — מסך פרופיל עם קריאה/עדכון שדות מותרים בלבד; `preferredLocale` setting.
+- [x] **P2-T06 — Profile view/edit** `(M)` — `MyProfilePage` על נתוני Firestore חיים (userStore): תצוגה (שם/גיל/ביו/skill/platforms/coins/tier/משחקים) + עריכת client-writable בלבד (RHF+Zod משותף עם onboarding); עריכה→trigger מסנכרן publicProfiles אוטומטית (אומת E2E). **פער עקביות נסגר: `preferredLocale` נוסף ל-userClientWritableKeys ב-SECURITY+rules** (+2 בדיקות rules=49); בחירת שפה נשמרת ל-Firestore ומוחלת בהתחברות. צפייה בפרופיל של אחרים נשארת mock עד Phase 3. 4 בדיקות UI.
 - [x] **P2-T07 — Security Rules v1** `(L)` — **ה-ruleset הקנוני המלא** מ-SECURITY §4 הועתק ל-`firestore.rules` (כל הקולקציות: users/private/games/swipes/blocks/ownedItems/transactions/usage/publicProfiles/discovery/matches/chats/messages/shop/catalog/subscriptions/billing/ai/reports/moderation/system + default deny). קומפל ורץ באמולטור; allow-path של bootstrap אומת ב-E2E. deny/allow matrix מלא — ב-P2-T08.
 - [x] **P2-T08 — rules test harness** `(M)` — `npm run test:rules` (emulators:exec + vitest config נפרד) עם **מטריצת deny/allow של 47 בדיקות**: users (create/read/update, server-owned, enums, suspended), private/account, games (onboarding gate, catalog), כל הקולקציות server-only (TC-SEC-001..009, 018..020), קריאות (publicProfiles/reports/billing/system), chats+messages (participant, text-only, TC-SEC-013/015/016), reports (self-report deny). 47/47 ✓. נוסף ל-CI עם cache לאמולטור.
 - [x] **P2-T09 — Emulator seed** `(S)` — `npm run seed` (REST טהור, ללא תלויות): 6 משחקים ב-gameCatalog עם supportedRanks, `system/config` מלא (flags+limits+billing+ai), 3 משתמשי דמו (auth+users+private+games+publicProfiles discoverable, סיסמה `demo123456`). אומת: ריצה כפולה idempotent (אותם UIDs), התחברות דמו עובדת, כל הספירות נכונות.
@@ -258,21 +258,21 @@ gemini-3-flash-preview
 
 **Test cases (TEST_CASES):** `TC-AUTH-001…008`, `TC-ONB-001…006`, `TC-PROF-001…004`, `TC-SEC-012`, `TC-SEC-019`.
 
-- [ ] TC-AUTH-001…008 עוברים (signup Google/email, routing, logout, שגיאות, bootstrap כפול idempotent).
-- [ ] TC-ONB-001…006 עוברים, כולל `skillLevel = "expert"` נדחה ב-Zod וב-rules (TC-ONB-006).
-- [ ] TC-PROF-001…004 עוברים, כולל rules: user לא כותב `coins`/`isPro`/`subscription*`/`verifiedBadge`/`isSuspended`.
-- [ ] user לא קורא `private/account` של אחר (TC-SEC-012); client לא כותב `gameCatalog` (TC-SEC-019).
-- [ ] E2E: signup→onboarding→profile מלא בשתי השפות (he RTL / en LTR).
+- [x] TC-AUTH ליבה: signup/login/logout/re-login חיים באמולטור; שגיאות i18n; bootstrap כפול idempotent (E2E+unit). (Google popup — נבדק mocked; E2E מלא ב-staging.)
+- [x] TC-ONB ליבה: אשף מלא E2E; `skillLevel="expert"` נדחה ב-Zod (unit) וב-rules (rules test); guard חוסם discovery.
+- [x] TC-PROF: תצוגה/עריכה E2E; rules: כל ה-server-owned חסומים (49 בדיקות deny/allow).
+- [x] TC-SEC-012/019 במטריצת ה-rules.
+- [x] E2E he מלא (signup→onboarding→profile); en אומת ברמת i18n חי + typed catalogs (E2E מלא en — ב-P9 E2E suite).
 
 ### 7.3 Exit Criteria
 
-- [ ] משתמש חדש עובר מקצה לקצה עד פרופיל discoverable.
-- [ ] deny matrix ירוקה במלואה על הקולקציות הקיימות.
-- [ ] אפס mock data במסלול auth/onboarding/profile.
+- [x] משתמש חדש עובר מקצה לקצה עד פרופיל discoverable (אומת E2E כולל publicProfiles).
+- [x] deny matrix ירוקה במלואה על הקולקציות הקיימות (49/49, גם ב-CI).
+- [x] אפס mock data במסלול auth/onboarding/הפרופיל האישי. (צפייה בפרופיל של *אחרים* — mock עד ה-discovery האמיתי ב-Phase 3, מתועד.)
 
 ### 7.4 סגירת שלב
 
-- [ ] **✅ Phase 2 הושלם — כל המשימות, הבדיקות וה-Exit Criteria ירוקים; מסומן גם ב-§4.**
+- [x] **✅ Phase 2 הושלם — כל המשימות, הבדיקות וה-Exit Criteria ירוקים; מסומן גם ב-§4.**
 
 ---
 

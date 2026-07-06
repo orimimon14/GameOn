@@ -103,6 +103,16 @@ describe('users/{uid}', () => {
     await assertSucceeds(updateDoc(doc(asUser(ALICE), 'users', ALICE), { bio: 'ביו חדש' }));
   });
 
+  it('allows the owner to update preferredLocale (ADR-035)', async () => {
+    await seedUser(ALICE);
+    await assertSucceeds(updateDoc(doc(asUser(ALICE), 'users', ALICE), { preferredLocale: 'en' }));
+  });
+
+  it('rejects an unsupported preferredLocale value', async () => {
+    await seedUser(ALICE);
+    await assertFails(updateDoc(doc(asUser(ALICE), 'users', ALICE), { preferredLocale: 'fr' }));
+  });
+
   it('TC-SEC-001: denies updating coins', async () => {
     await seedUser(ALICE);
     await assertFails(updateDoc(doc(asUser(ALICE), 'users', ALICE), { coins: 999999 }));
