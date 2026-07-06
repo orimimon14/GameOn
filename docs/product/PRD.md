@@ -337,6 +337,8 @@ MVP includes:
 - Double opt-in matching.
 - Match states: pending, matched, blocked, archived.
 - Real-time text chat for matched users.
+- Live voice/video calls between matched users — free for all tiers (ADR-041).
+- Recorded video messages in chat — Pro-only (ADR-041).
 - Pro-only media/image transfer gating.
 - Basic and Pro tier logic.
 - Cosmetic shop with granted/earned coins.
@@ -357,7 +359,7 @@ V1 may include full production Pro subscription checkout, advanced Pro entitleme
 
 ### 9.3 Future Scope
 
-Future releases may include native iOS/Android apps, voice rooms, live video, clan/team pages, party scheduling, tournament discovery, game API rank verification, advanced AI compatibility scoring, creator/coach marketplace, full admin dashboard, and advanced trust and safety tooling.
+Future releases may include native iOS/Android apps, voice rooms, group calls, clan/team pages, party scheduling, tournament discovery, game API rank verification, advanced AI compatibility scoring, creator/coach marketplace, full admin dashboard, and advanced trust and safety tooling.
 
 ### 9.4 Explicitly Out of Scope for MVP
 
@@ -366,7 +368,7 @@ Future releases may include native iOS/Android apps, voice rooms, live video, cl
 - Coin cash-out.
 - Real-money coin packs.
 - Public global chat rooms.
-- Live voice/video.
+- Voice rooms / group calls (1:1 live calls between matched users ARE in MVP — ADR-041).
 - Game-API rank verification.
 - Full admin dashboard.
 - Gambling, betting, or wagering.

@@ -1,16 +1,20 @@
+import { AnimatePresence } from 'framer-motion';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
 import { loadDeck, loadMyActiveGameIds, submitSwipe } from './discoveryApi';
 import { MatchCelebration } from './MatchCelebration';
+import { SwipeActions } from './SwipeActions';
+import { SwipeCard } from './SwipeCard';
 
-import { useLabels } from '@/shared/labels';
+import type { SwipeDirection } from '@/shared/enums';
 import type { PublicProfileDocument } from '@/shared/models';
 import { useUiStore } from '@/shared/store/uiStore';
 import { useUserStore } from '@/shared/store/userStore';
 
-// P3-T04 — the real discovery deck: publicProfiles query + submitSwipe callable.
+// P3-T04 — the real discovery deck: publicProfiles query + submitSwipe
+// callable, rendered as SwipeCard/SwipeHud/SwipeActions with Framer Motion.
 type DeckStatus = 'loading' | 'ready' | 'no-game' | 'error';
 
 const isCallableError = (error: unknown, code: string): boolean =>
@@ -21,7 +25,6 @@ const isCallableError = (error: unknown, code: string): boolean =>
 
 export const SwipeView: React.FC = () => {
   const { t } = useTranslation();
-  const labels = useLabels();
   const navigate = useNavigate();
 
   const uid = useUserStore((s) => s.userDoc?.uid);
@@ -35,6 +38,7 @@ export const SwipeView: React.FC = () => {
   const [swipeError, setSwipeError] = useState(false);
   const [limitReached, setLimitReached] = useState(false);
   const [matchedWith, setMatchedWith] = useState<PublicProfileDocument | null>(null);
+  const [exitDirection, setExitDirection] = useState<SwipeDirection | null>(null);
 
   const [reloadToken, setReloadToken] = useState(0);
 
@@ -74,10 +78,11 @@ export const SwipeView: React.FC = () => {
 
   const currentProfile = deck[index];
 
-  const handleSwipe = async (direction: 'like' | 'skip') => {
+  const handleSwipe = async (direction: SwipeDirection) => {
     if (pending || !currentProfile || !gameId) return;
     setPending(true);
     setSwipeError(false);
+    setExitDirection(direction);
     try {
       const outcome = await submitSwipe({
         targetUid: currentProfile.uid,
@@ -175,7 +180,7 @@ export const SwipeView: React.FC = () => {
   }
 
   return (
-    <div className="h-full flex flex-col items-center justify-center p-6 relative z-10">
+    <div className="h-full flex flex-col items-center justify-center gap-6 p-6 relative z-10">
       {matchedWith && (
         <MatchCelebration
           name={matchedWith.displayName}
@@ -185,83 +190,23 @@ export const SwipeView: React.FC = () => {
         />
       )}
 
-      <div className="relative w-full max-w-md aspect-[3/4.5] rounded-[40px] overflow-hidden shadow-2xl border-2 dark:border-white/10 border-gray-200 group bg-surface/20 backdrop-blur-md">
-        {currentProfile.profileImageUrl ? (
-          <img
-            src={currentProfile.profileImageUrl}
-            alt={currentProfile.displayName}
-            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+      <div className="relative w-full max-w-md aspect-[3/4.5] flex-shrink min-h-0">
+        <AnimatePresence initial={false}>
+          <SwipeCard
+            key={currentProfile.uid}
+            profile={currentProfile}
+            exitDirection={exitDirection}
+            disabled={pending}
+            onSwipe={(direction) => void handleSwipe(direction)}
           />
-        ) : (
-          <div className="w-full h-full bg-gradient-to-br from-primary/60 via-surface to-background flex items-center justify-center">
-            <span className="text-8xl font-black text-white/80">{currentProfile.displayName.charAt(0)}</span>
-          </div>
-        )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"></div>
-
-        <div className="absolute top-0 left-0 right-0 z-20 p-4">
-          <div className="bg-black/60 backdrop-blur-xl border border-white/10 rounded-2xl p-3 flex items-center justify-between shadow-2xl">
-            <div className="flex flex-col items-center">
-              <span className="text-[8px] font-black text-text-muted uppercase tracking-widest mb-0.5">{t('discovery.skillLevel')}</span>
-              <div className="px-3 py-1 rounded-lg bg-primary/20 border border-primary/30 text-[10px] font-black text-white uppercase tracking-tight flex items-center gap-1.5">
-                <i className="fa-solid fa-trophy text-yellow-400 text-[8px]"></i>
-                <span>{labels.skillLevel[currentProfile.skillLevel]}</span>
-              </div>
-            </div>
-
-            <div className="flex flex-col items-end">
-              <span className="text-[8px] font-black text-text-muted uppercase tracking-widest mb-0.5">{t('discovery.rank')}</span>
-              <div className="px-3 py-1 rounded-lg bg-white/5 border border-white/10 text-[13px] font-black text-primary uppercase tracking-tighter flex items-center gap-2 shadow-glow">
-                <i className="fa-solid fa-ranking-star"></i>
-                <span>{currentProfile.primaryRank ?? '—'}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="absolute inset-0 p-8 flex flex-col justify-end text-right">
-          <h2 className="text-4xl font-black text-white italic uppercase tracking-tighter mb-2">
-            {currentProfile.displayName}, {currentProfile.age}
-          </h2>
-          <p className="text-white/80 font-bold mb-6 line-clamp-2">{currentProfile.bio}</p>
-
-          <div className="flex flex-wrap gap-2 justify-end mb-8">
-            {currentProfile.platforms.map((platform) => (
-              <span
-                key={platform}
-                className="px-3 py-1 bg-white/10 backdrop-blur-md rounded-full text-[10px] font-black text-white uppercase italic border border-white/10"
-              >
-                {labels.platform[platform]}
-              </span>
-            ))}
-          </div>
-
-          {swipeError && (
-            <p role="alert" className="text-danger font-bold text-sm mb-4 text-center">
-              {t('discovery.swipeError')}
-            </p>
-          )}
-
-          <div className="flex justify-between gap-4">
-            <button
-              onClick={() => void handleSwipe('skip')}
-              disabled={pending}
-              aria-label="skip"
-              className="flex-1 h-16 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/10 text-white flex items-center justify-center text-2xl hover:bg-danger hover:text-white transition-all active:scale-95 shadow-lg disabled:opacity-50"
-            >
-              <i className="fa-solid fa-xmark"></i>
-            </button>
-            <button
-              onClick={() => void handleSwipe('like')}
-              disabled={pending}
-              aria-label="like"
-              className="flex-1 h-16 rounded-2xl bg-primary text-white flex items-center justify-center text-2xl hover:scale-105 transition-all active:scale-95 shadow-glow disabled:opacity-50"
-            >
-              <i className="fa-solid fa-check"></i>
-            </button>
-          </div>
-        </div>
+        </AnimatePresence>
       </div>
+
+      <SwipeActions
+        disabled={pending}
+        showError={swipeError}
+        onSwipe={(direction) => void handleSwipe(direction)}
+      />
     </div>
   );
 };

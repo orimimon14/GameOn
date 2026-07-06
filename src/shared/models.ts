@@ -2,12 +2,17 @@ import type { Timestamp } from 'firebase/firestore';
 
 import type {
   AuthProvider,
+  CallStatus,
+  CallType,
   LookingFor,
+  MessageStatus,
+  MessageType,
   ModerationState,
   Platform,
   SkillLevel,
   SubscriptionStatus,
   SubscriptionTier,
+  SwipeDirection,
   VoicePreference,
 } from '@/shared/enums';
 
@@ -121,6 +126,84 @@ export interface UserGameDocument {
   voicePreference?: VoicePreference;
 
   isActive: boolean;
+
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
+}
+
+// users/{uid}/swipes/{targetUid_gameId} — DATA_MODEL §4.5 (server-owned via submitSwipe)
+export interface SwipeDocument {
+  fromUid: string;
+  toUid: string;
+  gameId: string;
+
+  direction: SwipeDirection;
+
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
+}
+
+// chats/{chatId} — DATA_MODEL §4.7 (metadata; created by submitSwipe with the match)
+export interface ChatDocument {
+  chatId: string;
+  matchId: string;
+
+  participants: [string, string];
+  userA: string;
+  userB: string;
+
+  gameId: string;
+  gameName: string;
+
+  lastMessage?: string;
+  lastMessageType?: MessageType;
+  lastMessageSenderId?: string;
+  lastTimestamp?: Timestamp;
+
+  unreadCounts?: Record<string, number>;
+
+  isActive: boolean;
+
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
+}
+
+// chats/{chatId}/messages/{messageId} — DATA_MODEL §4.8 (text client-writable under rules)
+export interface MessageDocument {
+  messageId: string;
+  chatId: string;
+
+  senderId: string;
+
+  type: MessageType;
+
+  text?: string;
+
+  fileUrl?: string;
+  filePath?: string;
+  fileMimeType?: string;
+  fileSizeBytes?: number;
+
+  status: MessageStatus;
+
+  createdAt: Timestamp;
+  updatedAt?: Timestamp;
+  deletedAt?: Timestamp;
+}
+
+// chats/{chatId}/calls/{callId} — DATA_MODEL §4.23 (WebRTC signaling, participants-only)
+export interface CallDocument {
+  callId: string;
+  chatId: string;
+
+  callerUid: string;
+  calleeUid: string;
+
+  type: CallType;
+  status: CallStatus;
+
+  offer?: { type: string; sdp: string };
+  answer?: { type: string; sdp: string };
 
   createdAt: Timestamp;
   updatedAt: Timestamp;

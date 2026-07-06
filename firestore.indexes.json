@@ -7,6 +7,22 @@
         { "fieldPath": "gameIds", "arrayConfig": "CONTAINS" },
         { "fieldPath": "isDiscoverable", "order": "ASCENDING" }
       ]
+    },
+    {
+      "collectionGroup": "swipes",
+      "queryScope": "COLLECTION_GROUP",
+      "fields": [
+        { "fieldPath": "toUid", "order": "ASCENDING" },
+        { "fieldPath": "direction", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "calls",
+      "queryScope": "COLLECTION_GROUP",
+      "fields": [
+        { "fieldPath": "calleeUid", "order": "ASCENDING" },
+        { "fieldPath": "status", "order": "ASCENDING" }
+      ]
     }
   ],
   "fieldOverrides": []

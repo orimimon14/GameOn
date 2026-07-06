@@ -13,8 +13,10 @@ export const ping = onCall(() => ({
 }));
 
 export { completeOnboarding } from './callable/completeOnboarding';
+export { sendChatMediaMessage } from './callable/sendChatMediaMessage';
 export { submitSwipe } from './callable/submitSwipe';
 export { syncPublicProfile } from './callable/syncPublicProfile';
+export { onMessageCreated } from './triggers/onMessageCreated';
 export { onUserCreated } from './triggers/onUserCreated';
 export { onUserGameUpdated } from './triggers/onUserGameUpdated';
 export { onUserProfileUpdated } from './triggers/onUserProfileUpdated';

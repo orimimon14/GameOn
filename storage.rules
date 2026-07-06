@@ -1,8 +1,131 @@
+// Canonical Firebase Storage Rules — copied verbatim from docs/architecture/SECURITY.md §5.
+// Chat media (images + recorded video messages) is Pro-only (ADR-041).
 rules_version = '2';
 
-// Baseline: deny everything. Real rules per docs/architecture/SECURITY.md land in Phase 2 (P2-T07).
 service firebase.storage {
   match /b/{bucket}/o {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && request.auth.token.admin == true;
+    }
+
+    function userDoc(uid) {
+      return firestore.get(/databases/(default)/documents/users/$(uid));
+    }
+
+    function userExists(uid) {
+      return firestore.exists(/databases/(default)/documents/users/$(uid));
+    }
+
+    function isNotSuspended() {
+      return isSignedIn()
+        && userExists(request.auth.uid)
+        && userDoc(request.auth.uid).data.isSuspended != true
+        && userDoc(request.auth.uid).data.isDeleted != true;
+    }
+
+    function isProUser() {
+      return isNotSuspended()
+        && userDoc(request.auth.uid).data.isPro == true
+        && userDoc(request.auth.uid).data.subscriptionStatus in ["trialing", "active"];
+    }
+
+    function chatDoc(chatId) {
+      return firestore.get(/databases/(default)/documents/chats/$(chatId));
+    }
+
+    function chatExists(chatId) {
+      return firestore.exists(/databases/(default)/documents/chats/$(chatId));
+    }
+
+    function isChatParticipant(chatId) {
+      return isSignedIn()
+        && chatExists(chatId)
+        && request.auth.uid in chatDoc(chatId).data.participants;
+    }
+
+    function isValidImage() {
+      return request.resource != null
+        && request.resource.contentType.matches("image/.*");
+    }
+
+    function isValidChatMedia() {
+      return request.resource != null
+        && (request.resource.contentType.matches("image/.*")
+          || request.resource.contentType in ["video/webm", "video/mp4"]);
+    }
+
+    function isMaxSize(bytes) {
+      return request.resource != null
+        && request.resource.size <= bytes;
+    }
+
+    match /profileImages/{uid}/{fileId} {
+      allow read: if isSignedIn();
+
+      allow write: if isOwner(uid)
+        && isNotSuspended()
+        && isValidImage()
+        && isMaxSize(5 * 1024 * 1024);
+
+      allow delete: if isOwner(uid) || isAdmin();
+    }
+
+    match /bannerImages/{uid}/{fileId} {
+      allow read: if isSignedIn();
+
+      allow write: if isOwner(uid)
+        && isNotSuspended()
+        && isValidImage()
+        && isMaxSize(5 * 1024 * 1024);
+
+      allow delete: if isOwner(uid) || isAdmin();
+    }
+
+    match /chatMedia/{chatId}/{uid}/{fileId} {
+      allow read: if isChatParticipant(chatId) || isAdmin();
+
+      // Images and recorded video messages (ADR-041) — Pro-only either way.
+      allow write: if isOwner(uid)
+        && isProUser()
+        && isChatParticipant(chatId)
+        && isValidChatMedia()
+        && isMaxSize(25 * 1024 * 1024);
+
+      allow delete: if isOwner(uid) || isAdmin();
+    }
+
+    match /shopAssets/{itemId}/{fileName} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    match /tempUploads/{uid}/{fileId} {
+      allow read: if isOwner(uid) || isAdmin();
+
+      allow write: if isOwner(uid)
+        && isNotSuspended()
+        && isValidImage()
+        && isMaxSize(10 * 1024 * 1024);
+
+      allow delete: if isOwner(uid) || isAdmin();
+    }
+
+    match /moderationEvidence/{reportId}/{fileId} {
+      allow read: if isAdmin();
+      allow write: if isAdmin();
+      allow delete: if false;
+    }
+
     match /{allPaths=**} {
       allow read, write: if false;
     }

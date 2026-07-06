@@ -64,7 +64,7 @@ export type SubscriptionStatus = (typeof SUBSCRIPTION_STATUSES)[number];
 export const MATCH_STATUSES = ['pending', 'matched', 'blocked', 'archived'] as const;
 export type MatchStatus = (typeof MATCH_STATUSES)[number];
 
-export const MESSAGE_TYPES = ['text', 'image', 'system'] as const;
+export const MESSAGE_TYPES = ['text', 'image', 'video', 'system'] as const;
 export type MessageType = (typeof MESSAGE_TYPES)[number];
 
 export const MESSAGE_STATUSES = ['sent', 'failed', 'deleted'] as const;
@@ -75,6 +75,13 @@ export type VoicePreference = (typeof VOICE_PREFERENCES)[number];
 
 export const SWIPE_DIRECTIONS = ['like', 'skip'] as const;
 export type SwipeDirection = (typeof SWIPE_DIRECTIONS)[number];
+
+// Live calls (product decision 2026-07-06: voice/video calls in MVP — see DECISIONS ADR-041 proposal)
+export const CALL_TYPES = ['video', 'voice'] as const;
+export type CallType = (typeof CALL_TYPES)[number];
+
+export const CALL_STATUSES = ['ringing', 'accepted', 'declined', 'ended'] as const;
+export type CallStatus = (typeof CALL_STATUSES)[number];
 
 export const COIN_TRANSACTION_TYPES = [
   'item_purchase',

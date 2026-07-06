@@ -42,6 +42,7 @@
   - [4.20 `discoveryProfiles/{gameId}/players/{uid}`](#420-discoveryprofilesgameidplayersuid)
   - [4.21 `users/{uid}/usage/{yyyy-mm-dd}`](#421-usersuidusageyyyy-mm-dd)
   - [4.22 `system/config`](#422-systemconfig)
+  - [4.23 `chats/{chatId}/calls/{callId}`](#423-chatschatidcallscallid)
 - [5. Deterministic ID Reference](#5-deterministic-id-reference)
 - [6. מטריצת שדות בבעלות שרת מול client-writable](#6-מטריצת-שדות-בבעלות-שרת-מול-client-writable)
 - [7. מפת Denormalization & Sync](#7-מפת-denormalization--sync)
@@ -183,6 +184,7 @@ export type MatchStatus =
 export type MessageType =
   | "text"
   | "image"
+  | "video"
   | "system";
 
 export type MessageStatus =
@@ -692,7 +694,7 @@ export type MessageDocument = {
 | `messageId` | `string` | כן | Server-owned | MVP | זהה ל-document ID. |
 | `chatId` | `string` | כן | Client-writable | MVP | חייב להתאים ל-path ולעבור rules. |
 | `senderId` | `string` | כן | Client-writable | MVP | חייב להיות `request.auth.uid`; מאומת ב-rules/backend. |
-| `type` | `MessageType` | כן | Client-writable | MVP | `text`, `image`, או `system`. |
+| `type` | `MessageType` | כן | Client-writable | MVP | `text`, `image`, `video` (הודעת וידאו מוקלטת — Pro-only, ADR-041), או `system`. |
 | `text` | `string` | אופציונלי | Client-writable | MVP | חובה כאשר `type = text`. |
 | `fileUrl` | `string` | אופציונלי | Server-owned | MVP | URL למדיה מאושרת. |
 | `filePath` | `string` | אופציונלי | Server-owned | MVP | Storage path למדיה. |
@@ -1382,6 +1384,59 @@ export type SystemConfigDocument = {
 | `ai.timeoutMs` | `number` | כן | Admin/server | MVP | timeout ל-AI provider. |
 | `store` | `object` | אופציונלי | Admin/server | MVP | flags עתידיים ל-store/native packaging (web-first עכשיו, ADR-036; ראה `STORE_COMPLIANCE.md`). |
 | `updatedAt` | `Timestamp` | כן | Admin/server | MVP | זמן עדכון. |
+
+---
+
+### 4.23 `chats/{chatId}/calls/{callId}`
+
+**Scope:** MVP (ADR-041 proposal — product decision 2026-07-06: live voice/video calls in MVP)
+**מטרה:** מסמכי signaling לשיחות קול/וידאו חיות בין matched users. WebRTC peer-to-peer; Firestore משמש רק להעברת offer/answer/ICE — המדיה עצמה זורמת ישירות בין הדפדפנים ואינה נשמרת.
+**Path:** `chats/{chatId}/calls/{callId}`
+**Deterministic ID:** לא — auto ID.
+
+```ts
+export type CallType = "video" | "voice";
+export type CallStatus = "ringing" | "accepted" | "declined" | "ended";
+
+export type CallDocument = {
+  callId: string;
+  chatId: string;
+
+  callerUid: string;
+  calleeUid: string;
+
+  type: CallType;
+  status: CallStatus;
+
+  offer?: { type: string; sdp: string };
+  answer?: { type: string; sdp: string };
+
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+};
+```
+
+| Field | Type | חובה | Ownership | Scope | תיאור |
+|---|---|---:|---|---|---|
+| `callId` | `string` | כן | Client (auto ID) | MVP | זהה ל-document ID. |
+| `chatId` | `string` | כן | Client-writable | MVP | חייב להתאים ל-path; נאכף ב-rules. |
+| `callerUid` | `string` | כן | Client-writable | MVP | חייב להיות `request.auth.uid`; נאכף ב-rules. |
+| `calleeUid` | `string` | כן | Client-writable | MVP | חייב להיות המשתתף השני בצ׳אט; נאכף ב-rules. |
+| `type` | `CallType` | כן | Client-writable | MVP | `video` או `voice`. |
+| `status` | `CallStatus` | כן | Client-writable | MVP | נוצר כ-`ringing`; המשתתפים מעדכנים ל-`accepted`/`declined`/`ended`. |
+| `offer` | `{type, sdp}` | אופציונלי | Client-writable | MVP | SDP offer של המתקשר. |
+| `answer` | `{type, sdp}` | אופציונלי | Client-writable | MVP | SDP answer של העונה. |
+| `createdAt` | `Timestamp` | כן | Client-writable | MVP | `request.time` בעת יצירה; נאכף ב-rules. |
+| `updatedAt` | `Timestamp` | כן | Client-writable | MVP | זמן עדכון אחרון. |
+
+**Subcollections:** `callerCandidates/{id}` ו-`calleeCandidates/{id}` — ICE candidates (JSON של `RTCIceCandidate`), create-only על ידי משתתפי הצ׳אט.
+
+**אילוצים:**
+
+- קריאה/כתיבה למשתתפי הצ׳אט בלבד (SECURITY §4).
+- שדות identity (`chatId`, `callerUid`, `calleeUid`, `type`, `createdAt`) חסינים לעדכון.
+- collection-group read למשתתף בלבד (למאזין שיחות נכנסות: `calleeUid == me && status == "ringing"`), עם index ב-`firestore.indexes.json`.
+- MVP הוא STUN-only (ללא TURN relay) — חיבור עלול להיכשל מאחורי NAT מגביל; TURN הוא open item.
 
 ---
 

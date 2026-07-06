@@ -142,7 +142,7 @@ gemini-3-flash-preview
 - [x] **Phase 0 — Security & Hygiene** (תלוי ב: —, אומדן S–M, milestone M0→M1) ✅
 - [x] **Phase 1 — Foundation** (תלוי ב: 0, אומדן L, milestone M1) ✅
 - [x] **Phase 2 — Auth & Data Layer** (תלוי ב: 1, אומדן L, milestone M2) ✅
-- [ ] **Phase 3 — Discovery & Matching** (תלוי ב: 2, אומדן L, milestone M3)
+- [x] **Phase 3 — Discovery & Matching** (תלוי ב: 2, אומדן L, milestone M3) ✅
 - [ ] **Phase 4 — Chat** (תלוי ב: 3, אומדן M–L, milestone M4)
 - [ ] **Phase 5 — Economy & Cosmetics** (תלוי ב: 2; UI: 3, אומדן L, milestone M5)
 - [ ] **Phase 6 — Subscription (RevenueCat)** (תלוי ב: 5, אומדן L, milestone M5)
@@ -286,9 +286,9 @@ gemini-3-flash-preview
 - [x] **P3-T01 — Deck query (MVP)** `(M)` — שאילתת client מסוננת על `publicProfiles` לפי `gameId` (ADR-021); סינון self/swiped/matched/blocked.
 - [x] **P3-T02 — `submitSwipe`** `(L)` — callable: Zod, auth, self-swipe reject, daily limit (`system/config.limits.basicDailySwipeLimit`), transaction, deterministic IDs.
 - [x] **P3-T03 — Match creation** `(M)` — reciprocal like → `matches/{matchId}` + `chats/{chatId}` באותה transaction; idempotent.
-- [ ] **P3-T04 — Swipe UI** `(M)` — SwipeCard/SwipeHud/SwipeActions עם Framer Motion; optimistic UI מתואם לתוצאת backend; disable על double-tap. *(הליבה בוצעה ונבדקה — SwipeView אמיתי על `publicProfiles` + callable + disable על double-tap; נותר: אנימציות Framer Motion ופירוק לקומפוננטות.)*
+- [x] **P3-T04 — Swipe UI** `(M)` — SwipeCard/SwipeHud/SwipeActions עם Framer Motion (drag-to-swipe, exit animations, `prefers-reduced-motion` fallback); optimistic UI מתואם לתוצאת backend; disable על double-tap.
 - [x] **P3-T05 — MatchCelebration** `(S)` — overlay + CTA לצ'אט.
-- [ ] **P3-T06 — Likes You** `(M)` — לפי ADR-033 (פתוח לכולם ב-MVP).
+- [x] **P3-T06 — Likes You** `(M)` — לפי ADR-033 (פתוח לכולם ב-MVP): collection-group read rule + index על swipes נכנסים (`toUid == me && direction == "like"`), `likesApi.loadLikesYou`, מסך LikesGrid אמיתי עם לייק-בחזרה דרך `submitSwipe`.
 - [x] **P3-T07 — Rules — swipes/matches** `(M)` — client לא יוצר `swipes`/`matches` ישירות; קריאת match למשתתפים בלבד.
 - [x] **P3-T08 — `system/config` seed** `(S)` — מסמך config עם featureFlags + limits בסביבת dev.
 
@@ -311,7 +311,7 @@ gemini-3-flash-preview
 
 ### 8.4 סגירת שלב
 
-- [ ] **✅ Phase 3 הושלם — כל המשימות, הבדיקות וה-Exit Criteria ירוקים; מסומן גם ב-§4.**
+- [x] **✅ Phase 3 הושלם — כל המשימות, הבדיקות וה-Exit Criteria ירוקים; מסומן גם ב-§4.**
 
 ---
 
@@ -322,12 +322,13 @@ gemini-3-flash-preview
 
 ### 9.1 משימות
 
-- [ ] **P4-T01 — Chat list** `(M)` — רשימת שיחות עם `lastMessage` denormalized (trigger `onMessageCreated`).
-- [ ] **P4-T02 — Real-time messages** `(M)` — subscription על `chats/{chatId}/messages`; pagination בסיסי.
-- [ ] **P4-T03 — Text send** `(M)` — כתיבה ישירה של `type:"text"` תחת rules (participant, גודל, rate).
-- [ ] **P4-T04 — Media Pro gating** `(M)` — `sendChatMediaMessage` callable + Storage Rules (MIME/size); Basic → `UpgradeModal` + `pro_required`.
+- [x] **P4-T01 — Chat list** `(M)` — רשימת שיחות עם `lastMessage` denormalized (trigger `onMessageCreated`).
+- [x] **P4-T02 — Real-time messages** `(M)` — subscription על `chats/{chatId}/messages`; pagination בסיסי (limitToLast 100).
+- [x] **P4-T03 — Text send** `(M)` — כתיבה ישירה של `type:"text"` תחת rules (participant, גודל, rate).
+- [x] **P4-T04 — Media Pro gating** `(M)` — `sendChatMediaMessage` callable + Storage Rules (MIME/size); תמונות + הודעות וידאו מוקלטות (ADR-041) — Pro-only; Basic → upsell + `pro_required`. *(אומת באמולטור: הקלטה→העלאה→callable→בועת וידאו; UI צירוף תמונות — עתידי.)*
 - [ ] **P4-T05 — Block awareness hooks** `(S)` — סכמת chat תומכת `blocked` state; אכיפה מלאה תושלם ב-Phase 8.
-- [ ] **P4-T06 — Rules — chats/messages** `(M)` — participants-only read/write; image ישיר נדחה (רק דרך function).
+- [x] **P4-T06 — Rules — chats/messages** `(M)` — participants-only read/write; image ישיר נדחה (רק דרך function); קריאת chat list בצורת query-provable (`resource.data.participants`).
+- [x] **P4-T07 — Live voice/video calls** `(L)` — ADR-041 (החלטת מוצר 2026-07-06): WebRTC P2P עם Firestore signaling (`chats/{chatId}/calls`), STUN-only; CallOverlay UI + incoming-call listener; rules participants-only. *(אומת באמולטור: offer/ICE/incoming/decline; שיחה חיה מלאה בין שני דפדפנים — לבדיקת QA ידנית.)*
 
 ### 9.2 בדיקות ואימות
 

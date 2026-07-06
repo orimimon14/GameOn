@@ -691,7 +691,7 @@ export type SendChatMediaMessageOutput = {
   success: true;
   chatId: string;
   messageId: string;
-  type: "image";
+  type: "image" | "video";
   fileUrl: string;
   createdAt: FirebaseFirestore.Timestamp;
 };
@@ -705,7 +705,7 @@ export type SendChatMediaMessageOutput = {
 - chat `isActive = true`.
 - אין block בין המשתתפים.
 - file path שייך ל-user ול-chat.
-- `fileMimeType` חייב להיות image MIME type מאושר.
+- `fileMimeType` חייב להיות image או video MIME type מאושר (`image/jpeg`, `image/png`, `image/webp`, `video/webm`, `video/mp4` — ADR-041: הודעות וידאו מוקלטות הן Pro-only).
 - `fileSizeBytes` <= limit מ-`system/config` או default.
 - Basic user rejected.
 

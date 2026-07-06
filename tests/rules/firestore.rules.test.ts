@@ -6,7 +6,18 @@ import {
   initializeTestEnvironment,
   RulesTestEnvironment,
 } from '@firebase/rules-unit-testing';
-import { doc, getDoc, serverTimestamp, setDoc, updateDoc } from 'firebase/firestore';
+import {
+  collection,
+  collectionGroup,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  serverTimestamp,
+  setDoc,
+  updateDoc,
+  where,
+} from 'firebase/firestore';
 import { afterAll, beforeAll, beforeEach, describe, it } from 'vitest';
 
 // Firestore Security Rules deny/allow matrix — SECURITY §9, TEST_CASES §4 (TC-SEC-*).
@@ -337,6 +348,24 @@ describe('chats & messages', () => {
     await assertSucceeds(getDoc(doc(asUser(ALICE), 'chats', 'chat1')));
   });
 
+  it('allows a participant to list their chats (array-contains query)', async () => {
+    await seedChat([ALICE, BOB]);
+    await assertSucceeds(
+      getDocs(
+        query(collection(asUser(ALICE), 'chats'), where('participants', 'array-contains', ALICE)),
+      ),
+    );
+  });
+
+  it("denies listing chats with someone else's uid filter", async () => {
+    await seedChat([ALICE, BOB]);
+    await assertFails(
+      getDocs(
+        query(collection(asUser('carol'), 'chats'), where('participants', 'array-contains', ALICE)),
+      ),
+    );
+  });
+
   it('TC-SEC-015: allows a participant to create a valid text message', async () => {
     await seedUser(ALICE);
     await seedChat([ALICE, BOB]);
@@ -405,6 +434,247 @@ describe('reports', () => {
         reason: 'other',
         status: 'open',
         createdAt: serverTimestamp(),
+      }),
+    );
+  });
+});
+
+describe('Likes You — collection-group reads on swipes (ADR-033, P3-T06)', () => {
+  const seedSwipe = (fromUid: string, toUid: string, direction: 'like' | 'skip') =>
+    seed(`users/${fromUid}/swipes/${toUid}_valorant`, {
+      fromUid,
+      toUid,
+      gameId: 'valorant',
+      direction,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
+
+  it('allows the target to query inbound likes about them', async () => {
+    await seedUser(ALICE);
+    await seedUser(BOB);
+    await seedSwipe(ALICE, BOB, 'like');
+    await assertSucceeds(
+      getDocs(
+        query(
+          collectionGroup(asUser(BOB), 'swipes'),
+          where('toUid', '==', BOB),
+          where('direction', '==', 'like'),
+        ),
+      ),
+    );
+  });
+
+  it('allows the target a direct get of a like about them', async () => {
+    await seedUser(ALICE);
+    await seedUser(BOB);
+    await seedSwipe(ALICE, BOB, 'like');
+    await assertSucceeds(getDoc(doc(asUser(BOB), 'users', ALICE, 'swipes', `${BOB}_valorant`)));
+  });
+
+  it('denies the target reading skip swipes about them', async () => {
+    await seedUser(ALICE);
+    await seedUser(BOB);
+    await seedSwipe(ALICE, BOB, 'skip');
+    await assertFails(
+      getDocs(
+        query(
+          collectionGroup(asUser(BOB), 'swipes'),
+          where('toUid', '==', BOB),
+          where('direction', '==', 'skip'),
+        ),
+      ),
+    );
+  });
+
+  it("denies querying another user's inbound likes", async () => {
+    await seedUser(ALICE);
+    await seedUser(BOB);
+    await seedSwipe(ALICE, BOB, 'like');
+    await assertFails(
+      getDocs(
+        query(
+          collectionGroup(asUser(ALICE), 'swipes'),
+          where('toUid', '==', BOB),
+          where('direction', '==', 'like'),
+        ),
+      ),
+    );
+  });
+
+  it('denies unauthenticated inbound-likes queries', async () => {
+    await seedUser(ALICE);
+    await seedUser(BOB);
+    await seedSwipe(ALICE, BOB, 'like');
+    await assertFails(
+      getDocs(
+        query(
+          collectionGroup(asGuest(), 'swipes'),
+          where('toUid', '==', BOB),
+          where('direction', '==', 'like'),
+        ),
+      ),
+    );
+  });
+
+  it('denies a suspended target reading their inbound likes', async () => {
+    await seedUser(ALICE);
+    await seedUser(BOB, { isSuspended: true });
+    await seedSwipe(ALICE, BOB, 'like');
+    await assertFails(
+      getDocs(
+        query(
+          collectionGroup(asUser(BOB), 'swipes'),
+          where('toUid', '==', BOB),
+          where('direction', '==', 'like'),
+        ),
+      ),
+    );
+  });
+});
+
+describe('calls — WebRTC signaling (ADR-041, P4-T07)', () => {
+  const seedChat = (participants: string[], isActive = true) =>
+    seed('chats/chat1', { chatId: 'chat1', participants, isActive });
+
+  const validCall = (overrides: Record<string, unknown> = {}) => ({
+    chatId: 'chat1',
+    callerUid: ALICE,
+    calleeUid: BOB,
+    type: 'video',
+    status: 'ringing',
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
+    ...overrides,
+  });
+
+  const seedCall = () =>
+    seed('chats/chat1/calls/call1', {
+      chatId: 'chat1',
+      callerUid: ALICE,
+      calleeUid: BOB,
+      type: 'video',
+      status: 'ringing',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
+
+  it('allows a participant to start a ringing call', async () => {
+    await seedUser(ALICE);
+    await seedChat([ALICE, BOB]);
+    await assertSucceeds(setDoc(doc(asUser(ALICE), 'chats', 'chat1', 'calls', 'call1'), validCall()));
+  });
+
+  it('denies a non-participant starting a call', async () => {
+    await seedUser('carol');
+    await seedChat([ALICE, BOB]);
+    await assertFails(
+      setDoc(
+        doc(asUser('carol'), 'chats', 'chat1', 'calls', 'call1'),
+        validCall({ callerUid: 'carol' }),
+      ),
+    );
+  });
+
+  it('denies creating a call on behalf of someone else', async () => {
+    await seedUser(BOB);
+    await seedChat([ALICE, BOB]);
+    await assertFails(setDoc(doc(asUser(BOB), 'chats', 'chat1', 'calls', 'call1'), validCall()));
+  });
+
+  it('denies creating a call that is not ringing', async () => {
+    await seedUser(ALICE);
+    await seedChat([ALICE, BOB]);
+    await assertFails(
+      setDoc(
+        doc(asUser(ALICE), 'chats', 'chat1', 'calls', 'call1'),
+        validCall({ status: 'accepted' }),
+      ),
+    );
+  });
+
+  it('allows the callee to answer (answer + status)', async () => {
+    await seedUser(BOB);
+    await seedChat([ALICE, BOB]);
+    await seedCall();
+    await assertSucceeds(
+      updateDoc(doc(asUser(BOB), 'chats', 'chat1', 'calls', 'call1'), {
+        answer: { type: 'answer', sdp: 'sdp' },
+        status: 'accepted',
+        updatedAt: serverTimestamp(),
+      }),
+    );
+  });
+
+  it('denies changing call identity fields on update', async () => {
+    await seedUser(BOB);
+    await seedChat([ALICE, BOB]);
+    await seedCall();
+    await assertFails(
+      updateDoc(doc(asUser(BOB), 'chats', 'chat1', 'calls', 'call1'), {
+        calleeUid: 'carol',
+        updatedAt: serverTimestamp(),
+      }),
+    );
+  });
+
+  it('denies a non-participant reading a call', async () => {
+    await seedUser('carol');
+    await seedChat([ALICE, BOB]);
+    await seedCall();
+    await assertFails(getDoc(doc(asUser('carol'), 'chats', 'chat1', 'calls', 'call1')));
+  });
+
+  it('allows the callee to query incoming calls via collection group', async () => {
+    await seedUser(BOB);
+    await seedChat([ALICE, BOB]);
+    await seedCall();
+    await assertSucceeds(
+      getDocs(
+        query(
+          collectionGroup(asUser(BOB), 'calls'),
+          where('calleeUid', '==', BOB),
+          where('status', '==', 'ringing'),
+        ),
+      ),
+    );
+  });
+
+  it("denies querying someone else's incoming calls", async () => {
+    await seedUser('carol');
+    await seedChat([ALICE, BOB]);
+    await seedCall();
+    await assertFails(
+      getDocs(
+        query(
+          collectionGroup(asUser('carol'), 'calls'),
+          where('calleeUid', '==', BOB),
+          where('status', '==', 'ringing'),
+        ),
+      ),
+    );
+  });
+
+  it('allows participants to add ICE candidates', async () => {
+    await seedUser(ALICE);
+    await seedChat([ALICE, BOB]);
+    await seedCall();
+    await assertSucceeds(
+      setDoc(doc(asUser(ALICE), 'chats', 'chat1', 'calls', 'call1', 'callerCandidates', 'c1'), {
+        candidate: 'candidate:1',
+        sdpMid: '0',
+      }),
+    );
+  });
+
+  it('denies a non-participant adding ICE candidates', async () => {
+    await seedUser('carol');
+    await seedChat([ALICE, BOB]);
+    await seedCall();
+    await assertFails(
+      setDoc(doc(asUser('carol'), 'chats', 'chat1', 'calls', 'call1', 'callerCandidates', 'c2'), {
+        candidate: 'candidate:2',
+        sdpMid: '0',
       }),
     );
   });

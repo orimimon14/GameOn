@@ -116,7 +116,7 @@ The MVP architecture does not need to support:
 |---|---|
 | Native iOS/Android apps | Future |
 | Public global chat rooms | Future / Out of scope for MVP |
-| Live voice/video | Future / Out of scope for MVP |
+| Live voice/video (1:1, matched users) | MVP (ADR-041): WebRTC P2P, Firestore signaling, STUN-only, free for all tiers |
 | Game API rank verification | Future / Out of scope for MVP |
 | Real-money coin packs | Scale/V1 |
 | Real-money coin trading or cash-out | Out of scope |

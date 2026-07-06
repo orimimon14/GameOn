@@ -21,7 +21,7 @@ import { SubscriptionsView } from '@/features/subscription/SubscriptionsView';
 import { Header } from '@/shared/components/Header';
 import { SideNav } from '@/shared/components/SideNav';
 import { useLocale } from '@/shared/i18n/useLocale';
-import { currentUserProfile, matchedProfiles, profilesWhoLikedUser } from '@/shared/mockData';
+import { currentUserProfile } from '@/shared/mockData';
 import { useUiStore } from '@/shared/store/uiStore';
 import { useUserStore } from '@/shared/store/userStore';
 import { BackgroundItem, GamerProfile } from '@/shared/types';
@@ -156,26 +156,8 @@ const AppShell: React.FC = () => {
               path="/shop"
               element={<ShopView onPurchase={handlePurchase} userCoins={userCoins} ownedItems={ownedItems} />}
             />
-            <Route
-              path="/chat"
-              element={<ChatView matches={matchedProfiles} onBack={() => handleNavigate('/discover')} />}
-            />
-            <Route
-              path="/likes"
-              element={
-                <LikesGrid
-                  profiles={profilesWhoLikedUser}
-                  onProfileClick={(p) => {
-                    setViewingProfile(p);
-                    navigate('/profile');
-                  }}
-                  onMatch={(p) => {
-                    alert(`התאמת עם ${p.name}!`);
-                    handleNavigate('/chat');
-                  }}
-                />
-              }
-            />
+            <Route path="/chat" element={<ChatView />} />
+            <Route path="/likes" element={<LikesGrid />} />
             <Route
               path="/games"
               element={

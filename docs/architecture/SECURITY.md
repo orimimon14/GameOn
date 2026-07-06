@@ -573,6 +573,25 @@ service cloud.firestore {
         && request.resource.data.createdAt == request.time;
     }
 
+    function callClientCreateKeys() {
+      return ["chatId", "callerUid", "calleeUid", "type", "status", "createdAt", "updatedAt"];
+    }
+
+    function isValidCallCreate(chatId) {
+      return request.resource.data.keys().hasOnly(callClientCreateKeys())
+        && request.resource.data.chatId == chatId
+        && request.resource.data.callerUid == request.auth.uid
+        && request.resource.data.calleeUid in chatData(chatId).participants
+        && request.resource.data.calleeUid != request.auth.uid
+        && request.resource.data.type in ["video", "voice"]
+        && request.resource.data.status == "ringing";
+    }
+
+    function isValidCallUpdate() {
+      return onlyChanged(["offer", "answer", "status", "updatedAt"])
+        && request.resource.data.status in ["ringing", "accepted", "declined", "ended"];
+    }
+
     function isValidReportCreate() {
       return request.resource.data.keys().hasOnly([
           "reporterUid",
@@ -700,8 +719,36 @@ service cloud.firestore {
       allow delete: if false;
     }
 
+    // Likes You (ADR-033, MVP open to all): the target of a like may read
+    // inbound like-swipes about them via a collection-group query. Skips stay
+    // invisible to the target; writes remain server-only.
+    match /{path=**}/swipes/{swipeId} {
+      allow read: if isNotSuspended()
+        && resource.data.toUid == request.auth.uid
+        && resource.data.direction == "like";
+      allow create: if false;
+      allow update: if false;
+      allow delete: if false;
+    }
+
+    // Incoming-call listener (ADR-041 proposal): call participants may find
+    // their calls via a collection-group query (e.g. calleeUid == me,
+    // status == "ringing"). Writes stay path-scoped above.
+    match /{path=**}/calls/{callId} {
+      allow read: if isNotSuspended()
+        && (resource.data.calleeUid == request.auth.uid
+          || resource.data.callerUid == request.auth.uid);
+      allow create: if false;
+      allow update: if false;
+      allow delete: if false;
+    }
+
+
     match /chats/{chatId} {
-      allow read: if isAdmin() || isChatParticipant(chatId);
+      // resource.data (not get()) so participants can list their own chats —
+      // query-provable form of isChatParticipant for this doc itself.
+      allow read: if isAdmin()
+        || (isSignedIn() && request.auth.uid in resource.data.participants);
       allow create: if false;
       allow update: if false;
       allow delete: if false;
@@ -716,6 +763,39 @@ service cloud.firestore {
 
         allow update: if false;
         allow delete: if false;
+      }
+
+      // Live voice/video calls (ADR-041 proposal) — WebRTC signaling docs.
+      // Chat participants only; caller creates as "ringing", both sides may
+      // publish offer/answer and end the call. History is immutable otherwise.
+      match /calls/{callId} {
+        allow read: if isAdmin() || isChatParticipant(chatId);
+
+        allow create: if isSignedIn()
+          && isNotSuspended()
+          && isActiveChatParticipant(chatId)
+          && isValidCallCreate(chatId);
+
+        allow update: if isSignedIn()
+          && isNotSuspended()
+          && isChatParticipant(chatId)
+          && isValidCallUpdate();
+
+        allow delete: if false;
+
+        match /callerCandidates/{candidateId} {
+          allow read: if isChatParticipant(chatId);
+          allow create: if isNotSuspended() && isChatParticipant(chatId);
+          allow update: if false;
+          allow delete: if false;
+        }
+
+        match /calleeCandidates/{candidateId} {
+          allow read: if isChatParticipant(chatId);
+          allow create: if isNotSuspended() && isChatParticipant(chatId);
+          allow update: if false;
+          allow delete: if false;
+        }
       }
     }
 
@@ -859,6 +939,12 @@ service firebase.storage {
         && request.resource.contentType.matches("image/.*");
     }
 
+    function isValidChatMedia() {
+      return request.resource != null
+        && (request.resource.contentType.matches("image/.*")
+          || request.resource.contentType in ["video/webm", "video/mp4"]);
+    }
+
     function isMaxSize(bytes) {
       return request.resource != null
         && request.resource.size <= bytes;
@@ -889,11 +975,12 @@ service firebase.storage {
     match /chatMedia/{chatId}/{uid}/{fileId} {
       allow read: if isChatParticipant(chatId) || isAdmin();
 
+      // Images and recorded video messages (ADR-041) — Pro-only either way.
       allow write: if isOwner(uid)
         && isProUser()
         && isChatParticipant(chatId)
-        && isValidImage()
-        && isMaxSize(10 * 1024 * 1024);
+        && isValidChatMedia()
+        && isMaxSize(25 * 1024 * 1024);
 
       allow delete: if isOwner(uid) || isAdmin();
     }
@@ -986,7 +1073,7 @@ allow update: if isOwner(uid)
 
 | Collection | Client read | Client write |
 |---|---:|---:|
-| `users/{uid}/swipes/{swipeId}` | owner | never |
+| `users/{uid}/swipes/{swipeId}` | owner; like target via collection-group (`toUid == auth.uid && direction == "like"`, ADR-033) | never |
 | `users/{uid}/ownedItems/{itemId}` | owner | never |
 | `users/{uid}/transactions/{transactionId}` | owner | never |
 | `users/{uid}/usage/{date}` | owner | never |

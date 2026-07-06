@@ -617,14 +617,14 @@ chatId = matchId
 
 ### Exit Criteria
 
-- [ ] deck מגיע מ-Firestore או repository abstraction עם Firestore mode.
-- [ ] swipe עובר דרך `submitSwipe`.
-- [ ] אין local-only matching.
-- [ ] reciprocal like יוצר match אחד בלבד.
-- [ ] chat document נוצר עם match.
-- [ ] duplicate swipes לא יוצרים duplicate matches.
-- [ ] Basic swipe limit נאכף server-side.
-- [ ] `Likes You` פתוח לכל המשתמשים אם מופעל.
+- [x] deck מגיע מ-Firestore או repository abstraction עם Firestore mode.
+- [x] swipe עובר דרך `submitSwipe`.
+- [x] אין local-only matching.
+- [x] reciprocal like יוצר match אחד בלבד.
+- [x] chat document נוצר עם match.
+- [x] duplicate swipes לא יוצרים duplicate matches.
+- [x] Basic swipe limit נאכף server-side.
+- [x] `Likes You` פתוח לכל המשתמשים אם מופעל.
 
 ---
 
