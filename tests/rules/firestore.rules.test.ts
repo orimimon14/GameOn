@@ -52,8 +52,9 @@ const asUser = (uid: string) => testEnv.authenticatedContext(uid).firestore();
 const asGuest = () => testEnv.unauthenticatedContext().firestore();
 
 beforeAll(async () => {
+  // demo-* project = fully offline emulator mode, no credentials needed (CI-safe).
   testEnv = await initializeTestEnvironment({
-    projectId: 'swish-game-rules-test',
+    projectId: 'demo-swish-game',
     firestore: { rules: readFileSync('firestore.rules', 'utf8') },
   });
 });

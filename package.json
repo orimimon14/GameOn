@@ -11,7 +11,7 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "test": "vitest run",
-    "test:rules": "firebase emulators:exec --only firestore --project swish-game-dev \"vitest run --config vitest.rules.config.ts\"",
+    "test:rules": "firebase emulators:exec --only firestore --project demo-swish-game \"vitest run --config vitest.rules.config.ts\"",
     "scan:bundle": "node scripts/scan-bundle.mjs"
   },
   "dependencies": {
