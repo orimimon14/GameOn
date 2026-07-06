@@ -65,7 +65,6 @@ const AppShell: React.FC = () => {
   const { t } = useTranslation();
 
   const [viewingProfile, setViewingProfile] = useState<GamerProfile | null>(null);
-  const [likedProfiles, setLikedProfiles] = useState<GamerProfile[]>([]);
   const [userProfile, setUserProfile] = useState<GamerProfile>(currentUserProfile);
   const [userCoins, setUserCoins] = useState(1000000);
   const [globalBackground, setGlobalBackground] = useState<string | null>(null);
@@ -74,7 +73,6 @@ const AppShell: React.FC = () => {
 
   const isDarkMode = useUiStore((s) => s.isDarkMode);
   const toggleDarkMode = useUiStore((s) => s.toggleDarkMode);
-  const selectedGame = useUiStore((s) => s.selectedGame);
   const setSelectedGame = useUiStore((s) => s.setSelectedGame);
 
   useEffect(() => {
@@ -153,19 +151,7 @@ const AppShell: React.FC = () => {
 
         <main className="flex-1 w-full overflow-hidden relative">
           <Routes>
-            <Route
-              path="/discover"
-              element={
-                <SwipeView
-                  onLike={(p) => setLikedProfiles([...likedProfiles, p])}
-                  onViewProfile={(p) => {
-                    setViewingProfile(p);
-                    navigate('/profile');
-                  }}
-                  selectedGame={selectedGame}
-                />
-              }
-            />
+            <Route path="/discover" element={<SwipeView />} />
             <Route
               path="/shop"
               element={<ShopView onPurchase={handlePurchase} userCoins={userCoins} ownedItems={ownedItems} />}
@@ -194,8 +180,8 @@ const AppShell: React.FC = () => {
               path="/games"
               element={
                 <GamesView
-                  onSelectGame={(gameName) => {
-                    setSelectedGame(gameName);
+                  onSelectGame={(gameId) => {
+                    setSelectedGame(gameId);
                     handleNavigate('/discover');
                   }}
                 />

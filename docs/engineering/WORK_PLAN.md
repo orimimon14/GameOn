@@ -283,31 +283,31 @@ gemini-3-flash-preview
 
 ### 8.1 משימות
 
-- [ ] **P3-T01 — Deck query (MVP)** `(M)` — שאילתת client מסוננת על `publicProfiles` לפי `gameId` (ADR-021); סינון self/swiped/matched/blocked.
-- [ ] **P3-T02 — `submitSwipe`** `(L)` — callable: Zod, auth, self-swipe reject, daily limit (`system/config.limits.basicDailySwipeLimit`), transaction, deterministic IDs.
-- [ ] **P3-T03 — Match creation** `(M)` — reciprocal like → `matches/{matchId}` + `chats/{chatId}` באותה transaction; idempotent.
-- [ ] **P3-T04 — Swipe UI** `(M)` — SwipeCard/SwipeHud/SwipeActions עם Framer Motion; optimistic UI מתואם לתוצאת backend; disable על double-tap.
-- [ ] **P3-T05 — MatchCelebration** `(S)` — overlay + CTA לצ'אט.
+- [x] **P3-T01 — Deck query (MVP)** `(M)` — שאילתת client מסוננת על `publicProfiles` לפי `gameId` (ADR-021); סינון self/swiped/matched/blocked.
+- [x] **P3-T02 — `submitSwipe`** `(L)` — callable: Zod, auth, self-swipe reject, daily limit (`system/config.limits.basicDailySwipeLimit`), transaction, deterministic IDs.
+- [x] **P3-T03 — Match creation** `(M)` — reciprocal like → `matches/{matchId}` + `chats/{chatId}` באותה transaction; idempotent.
+- [ ] **P3-T04 — Swipe UI** `(M)` — SwipeCard/SwipeHud/SwipeActions עם Framer Motion; optimistic UI מתואם לתוצאת backend; disable על double-tap. *(הליבה בוצעה ונבדקה — SwipeView אמיתי על `publicProfiles` + callable + disable על double-tap; נותר: אנימציות Framer Motion ופירוק לקומפוננטות.)*
+- [x] **P3-T05 — MatchCelebration** `(S)` — overlay + CTA לצ'אט.
 - [ ] **P3-T06 — Likes You** `(M)` — לפי ADR-033 (פתוח לכולם ב-MVP).
-- [ ] **P3-T07 — Rules — swipes/matches** `(M)` — client לא יוצר `swipes`/`matches` ישירות; קריאת match למשתתפים בלבד.
-- [ ] **P3-T08 — `system/config` seed** `(S)` — מסמך config עם featureFlags + limits בסביבת dev.
+- [x] **P3-T07 — Rules — swipes/matches** `(M)` — client לא יוצר `swipes`/`matches` ישירות; קריאת match למשתתפים בלבד.
+- [x] **P3-T08 — `system/config` seed** `(S)` — מסמך config עם featureFlags + limits בסביבת dev.
 
 ### 8.2 בדיקות ואימות
 
 **Test cases:** `TC-DISC-001…010`, `TC-MATCH-001…005`, `TC-SEC-008…011`, `TC-SEC-020`.
 
-- [ ] TC-DISC-001…007 עוברים (deck, filter, skip/like, empty, no-games, blocked exclusion).
-- [ ] race: שני swipes הדדיים במקביל → match/chat יחיד (TC-DISC-010, TC-MATCH-004) — בדיקת emulator חובה.
-- [ ] self-swipe → `self_action_forbidden` (TC-DISC-008); double-submit חסום (TC-DISC-009).
-- [ ] daily limit → `resource_exhausted` אחרי ה-limit.
-- [ ] TC-MATCH-001…003/005 עוברים (match, celebration, duplicate no-op).
-- [ ] rules: יצירת swipe/match ישירה נדחית (TC-SEC-008/009); suspended user נדחה (TC-SEC-011); client לא כותב `system/config` (TC-SEC-020).
-- [ ] E2E: userA like → userB like → celebration → chat route.
+- [x] TC-DISC-001…007 עוברים (deck, filter, skip/like, empty, no-games, blocked exclusion).
+- [x] race: שני swipes הדדיים במקביל → match/chat יחיד (TC-DISC-010, TC-MATCH-004) — בדיקת emulator חובה. *(20 קריאות מקביליות בשני הכיוונים → מסמך match יחיד.)*
+- [x] self-swipe → `self_action_forbidden` (TC-DISC-008); double-submit חסום (TC-DISC-009).
+- [x] daily limit → `resource_exhausted` אחרי ה-limit.
+- [x] TC-MATCH-001…003/005 עוברים (match, celebration, duplicate no-op).
+- [x] rules: יצירת swipe/match ישירה נדחית (TC-SEC-008/009); suspended user נדחה (TC-SEC-011); client לא כותב `system/config` (TC-SEC-020).
+- [x] E2E: userA like → userB like → celebration → chat route.
 
 ### 8.3 Exit Criteria
 
-- [ ] לולאת discovery→swipe→match עובדת מקצה לקצה על emulators עם שני משתמשים אמיתיים.
-- [ ] אפס יצירת match כפול תחת עומס (בדיקה חוזרת ×20 ריצות).
+- [x] לולאת discovery→swipe→match עובדת מקצה לקצה על emulators עם שני משתמשים אמיתיים.
+- [x] אפס יצירת match כפול תחת עומס (בדיקה חוזרת ×20 ריצות).
 
 ### 8.4 סגירת שלב
 

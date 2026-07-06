@@ -1,4 +1,13 @@
 {
-  "indexes": [],
+  "indexes": [
+    {
+      "collectionGroup": "publicProfiles",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "gameIds", "arrayConfig": "CONTAINS" },
+        { "fieldPath": "isDiscoverable", "order": "ASCENDING" }
+      ]
+    }
+  ],
   "fieldOverrides": []
 }
