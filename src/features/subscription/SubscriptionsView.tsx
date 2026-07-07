@@ -3,17 +3,11 @@ import React from 'react';
 
 interface SubscriptionsViewProps {
     onSelectPlan: (planName: string) => void;
-    onUpdateCoins: (amount: number) => void;
 }
 
-export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ onSelectPlan, onUpdateCoins }) => {
-    const coinPackages = [
-        { amount: 100, price: 1, label: 'חבילת בסיס' },
-        { amount: 550, price: 5, label: 'חבילת גיימר', bonus: '50+ בונוס' },
-        { amount: 1200, price: 10, label: 'חבילת פרו', bonus: '200+ בונוס' },
-        { amount: 3000, price: 20, label: 'חבילת סקוואד', bonus: '1000+ בונוס' },
-    ];
-
+// Real-money coin packs are out of MVP scope (ADR-018/ADR-034): coins are
+// granted (signup bonus) and spent on cosmetics only — never bought with money.
+export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ onSelectPlan }) => {
     const comparisonPlans = [
         {
             name: 'Basic',
@@ -117,42 +111,6 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ onSelectPl
                         </button>
                     </div>
                 ))}
-            </div>
-
-            {/* Buy Coins Section */}
-            <div className="mb-16">
-                <div className="text-right mb-8">
-                    <h3 className="text-3xl font-black text-white italic uppercase tracking-tighter mb-2">קנה מטבעות</h3>
-                    <p className="text-text-muted font-bold">המר דולרים למטבעות (1$ = 100 מטבעות)</p>
-                </div>
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-                    {coinPackages.map((pkg, i) => (
-                        <button
-                            key={i}
-                            onClick={() => {
-                                onUpdateCoins(pkg.amount);
-                                alert(`רכשת ${pkg.amount} מטבעות ב-$${pkg.price}!`);
-                            }}
-                            className="group relative bg-surface/40 backdrop-blur-md p-6 rounded-[32px] border border-white/5 hover:border-primary/50 transition-all text-right flex flex-col items-center lg:items-end overflow-hidden"
-                        >
-                            <div className="absolute -left-4 -top-4 w-20 h-20 bg-primary/10 rounded-full blur-2xl group-hover:bg-primary/20 transition-all"></div>
-                            
-                            <div className="relative z-10 flex items-center gap-3 mb-4">
-                                <span className="text-3xl font-black text-white">{pkg.amount.toLocaleString()}</span>
-                                <i className="fa-solid fa-coins text-yellow-400 text-2xl drop-shadow-[0_0_8px_rgba(234,179,8,0.5)]"></i>
-                            </div>
-                            
-                            <div className="relative z-10 text-right mb-6">
-                                <span className="text-xs font-black text-text-muted uppercase block">{pkg.label}</span>
-                                {pkg.bonus && <span className="text-[10px] font-black text-success uppercase">{pkg.bonus}</span>}
-                            </div>
-
-                            <div className="relative z-10 w-full py-3 bg-white text-background rounded-xl font-black text-center group-hover:bg-primary group-hover:text-white transition-all">
-                                ${pkg.price}
-                            </div>
-                        </button>
-                    ))}
-                </div>
             </div>
 
             {/* Footer / Trusted Badges */}

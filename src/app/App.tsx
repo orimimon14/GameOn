@@ -145,10 +145,7 @@ const AppShell: React.FC = () => {
             <Route
               path="/subscriptions"
               element={
-                <SubscriptionsView
-                  onSelectPlan={(plan) => alert(`נרשמת בהצלחה לתוכנית ${plan}!`)}
-                  onUpdateCoins={() => undefined}
-                />
+                <SubscriptionsView onSelectPlan={(plan) => alert(`נרשמת בהצלחה לתוכנית ${plan}!`)} />
               }
             />
             <Route
