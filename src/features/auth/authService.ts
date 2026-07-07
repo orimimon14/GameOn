@@ -1,8 +1,10 @@
 import {
   createUserWithEmailAndPassword,
+  getRedirectResult,
   GoogleAuthProvider,
   signInWithEmailAndPassword,
   signInWithPopup,
+  signInWithRedirect,
   signOut,
   UserCredential,
 } from 'firebase/auth';
@@ -15,8 +17,33 @@ export const signUpWithEmail = (email: string, password: string): Promise<UserCr
 export const signInWithEmail = (email: string, password: string): Promise<UserCredential> =>
   signInWithEmailAndPassword(getFirebase().auth, email, password);
 
-export const signInWithGoogle = (): Promise<UserCredential> =>
-  signInWithPopup(getFirebase().auth, new GoogleAuthProvider());
+// Mobile browsers block popups, so phones get the redirect flow; desktop
+// keeps the popup with a redirect fallback if it gets blocked.
+const isMobileBrowser = (): boolean =>
+  /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+export const signInWithGoogle = async (): Promise<UserCredential | null> => {
+  const { auth } = getFirebase();
+  const provider = new GoogleAuthProvider();
+  if (isMobileBrowser()) {
+    await signInWithRedirect(auth, provider);
+    return null;
+  }
+  try {
+    return await signInWithPopup(auth, provider);
+  } catch (error) {
+    const code = (error as { code?: string })?.code;
+    if (code === 'auth/popup-blocked') {
+      await signInWithRedirect(auth, provider);
+      return null;
+    }
+    throw error;
+  }
+};
+
+// Surfaces redirect-flow errors after returning from Google (no-op otherwise).
+export const completeRedirectSignIn = (): Promise<UserCredential | null> =>
+  getRedirectResult(getFirebase().auth);
 
 export const signOutUser = (): Promise<void> => signOut(getFirebase().auth);
 

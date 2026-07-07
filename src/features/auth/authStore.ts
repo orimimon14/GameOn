@@ -1,6 +1,7 @@
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { create } from 'zustand';
 
+import { completeRedirectSignIn } from './authService';
 import { ensureUserDocument } from './userBootstrap';
 
 import { getFirebase, isFirebaseConfigured } from '@/config/firebase';
@@ -23,6 +24,10 @@ let listenerStarted = false;
 
 // Single app-wide auth listener (called once from App). Firestore user bootstrap runs in P2-T03.
 export const initAuthListener = (): void => {
+  // Complete a pending Google redirect sign-in (mobile flow); errors are
+  // non-fatal — the listener below is the source of truth for auth state.
+  void completeRedirectSignIn().catch(() => undefined);
+
   if (listenerStarted) return;
   listenerStarted = true;
 
