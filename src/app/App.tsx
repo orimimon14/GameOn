@@ -122,7 +122,7 @@ const AppShell: React.FC = () => {
 
       <SideNav activePath={path} userProfile={userProfile} onNavigate={handleNavigate} />
 
-      <div className="h-full w-full me-[100px] flex flex-col relative z-10">
+      <div className="h-full w-full md:me-[100px] pb-[64px] md:pb-0 flex flex-col relative z-10">
         <Header
           viewTitle={viewTitle}
           userProfile={userProfile}

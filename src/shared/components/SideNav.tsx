@@ -22,7 +22,8 @@ export const SideNav: React.FC<SideNavProps> = ({ activePath, userProfile, onNav
   const { t } = useTranslation();
 
   return (
-    <div className="fixed top-0 end-0 bottom-0 w-[100px] dark:bg-[#1E1F22]/95 bg-white/95 backdrop-blur-xl z-[60] flex flex-col items-center py-8 gap-5 border-s dark:border-white/5 border-gray-200 shadow-2xl">
+    <>
+    <div className="hidden md:flex fixed top-0 end-0 bottom-0 w-[100px] dark:bg-[#1E1F22]/95 bg-white/95 backdrop-blur-xl z-[60] flex-col items-center py-8 gap-5 border-s dark:border-white/5 border-gray-200 shadow-2xl">
       <button
         onClick={() => onNavigate('/profile')}
         className={`w-16 h-16 rounded-[24px] overflow-hidden transition-all duration-300 hover:rounded-[16px] mb-6 relative p-0.5 ${activePath === '/profile' ? 'rounded-[16px] ring-2 ring-primary shadow-glow' : 'opacity-80 hover:opacity-100'}`}
@@ -60,5 +61,38 @@ export const SideNav: React.FC<SideNavProps> = ({ activePath, userProfile, onNav
         );
       })}
     </div>
+
+    {/* Mobile bottom tab bar (like Instagram) — desktop keeps the side rail */}
+    <nav className="md:hidden fixed bottom-0 inset-x-0 z-[60] dark:bg-[#1E1F22]/95 bg-white/95 backdrop-blur-xl border-t dark:border-white/10 border-gray-200 flex items-stretch justify-around px-1 pb-[env(safe-area-inset-bottom)]">
+      {NAV_ITEMS.map((item) => {
+        const isActive = activePath === item.path;
+        return (
+          <button
+            key={item.path}
+            onClick={() => onNavigate(item.path)}
+            aria-label={t(item.labelKey)}
+            className={`flex flex-col items-center justify-center gap-1 py-2.5 flex-1 transition-colors ${isActive ? 'text-primary' : 'dark:text-white/60 text-gray-500'}`}
+          >
+            <i className={`fa-solid ${item.icon} text-lg`}></i>
+            <span className="text-[9px] font-black">{t(item.labelKey)}</span>
+          </button>
+        );
+      })}
+      <button
+        onClick={() => onNavigate('/profile')}
+        aria-label={t('titles.profile')}
+        className={`flex flex-col items-center justify-center gap-1 py-2.5 flex-1 transition-colors ${activePath === '/profile' ? 'text-primary' : 'dark:text-white/60 text-gray-500'}`}
+      >
+        <div className="w-6 h-6 rounded-full overflow-hidden bg-primary/40 flex items-center justify-center">
+          {userProfile.image ? (
+            <img src={userProfile.image} alt="" className="w-full h-full object-cover" />
+          ) : (
+            <span className="text-white font-black text-[10px]">{(userProfile.name || '?').charAt(0)}</span>
+          )}
+        </div>
+        <span className="text-[9px] font-black">{t('titles.profile')}</span>
+      </button>
+    </nav>
+    </>
   );
 };
