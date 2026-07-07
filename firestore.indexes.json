@@ -4,24 +4,56 @@
       "collectionGroup": "publicProfiles",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "gameIds", "arrayConfig": "CONTAINS" },
-        { "fieldPath": "isDiscoverable", "order": "ASCENDING" }
+        {
+          "fieldPath": "gameIds",
+          "arrayConfig": "CONTAINS"
+        },
+        {
+          "fieldPath": "isDiscoverable",
+          "order": "ASCENDING"
+        }
       ]
     },
     {
       "collectionGroup": "swipes",
       "queryScope": "COLLECTION_GROUP",
       "fields": [
-        { "fieldPath": "toUid", "order": "ASCENDING" },
-        { "fieldPath": "direction", "order": "ASCENDING" }
+        {
+          "fieldPath": "toUid",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "direction",
+          "order": "ASCENDING"
+        }
       ]
     },
     {
       "collectionGroup": "calls",
       "queryScope": "COLLECTION_GROUP",
       "fields": [
-        { "fieldPath": "calleeUid", "order": "ASCENDING" },
-        { "fieldPath": "status", "order": "ASCENDING" }
+        {
+          "fieldPath": "calleeUid",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "gameCatalog",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "isActive",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "name",
+          "order": "ASCENDING"
+        }
       ]
     }
   ],
