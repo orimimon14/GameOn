@@ -218,6 +218,11 @@ export const en: TranslationCatalog = {
     tierPro: 'Pro',
   },
   settings: {
+    deleteAccount: 'Delete account permanently',
+    deletingAccount: 'Deleting account…',
+    deleteConfirm1: 'Permanently delete your account? Your profile, matches and chats will be removed.',
+    deleteConfirm2: 'Absolutely sure? This cannot be undone.',
+    deleteError: 'Deletion failed — try again or contact support',
     language: 'Language',
     languageNote: 'Choose the interface language',
     hebrew: 'עברית',

@@ -1,9 +1,11 @@
 
-import React from 'react';
+import React, { useState } from 'react';
+import { httpsCallable } from 'firebase/functions';
 import { useTranslation } from 'react-i18next';
 
 import { updateMyPreferredLocale } from './profileApi';
 
+import { getFirebase } from '@/config/firebase';
 import { useAuthStore } from '@/features/auth/authStore';
 import { useLocale } from '@/shared/i18n/useLocale';
 
@@ -24,6 +26,25 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
     onLogout
 }) => {
     const { t } = useTranslation();
+    const [deleting, setDeleting] = useState(false);
+    const [deleteError, setDeleteError] = useState(false);
+
+    // ADR-038 — mandatory in-app account deletion, double-confirmed.
+    const handleDeleteAccount = async () => {
+        if (deleting) return;
+        if (!window.confirm(t('settings.deleteConfirm1'))) return;
+        if (!window.confirm(t('settings.deleteConfirm2'))) return;
+        setDeleting(true);
+        setDeleteError(false);
+        try {
+            const { functions } = getFirebase();
+            await httpsCallable(functions, 'deleteAccount')({ confirm: true });
+            onLogout();
+        } catch {
+            setDeleteError(true);
+            setDeleting(false);
+        }
+    };
     const { locale, setLocale } = useLocale();
     const user = useAuthStore((s) => s.user);
 
@@ -104,10 +125,21 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                         <i className="fa-solid fa-chevron-left text-xs opacity-30"></i>
                         <span>הגדרות פרטיות</span>
                     </button>
-                    <button onClick={onLogout} className="w-full text-right py-4 px-2 text-danger hover:bg-danger/10 rounded-xl transition-colors flex items-center justify-between">
+                    <button onClick={onLogout} className="w-full text-right py-4 px-2 text-danger hover:bg-danger/10 rounded-xl transition-colors flex items-center justify-between border-b dark:border-white/5 border-gray-200">
                          <i className="fa-solid fa-right-from-bracket text-xs"></i>
                          <span>{t('auth.logout')}</span>
                     </button>
+                    <button
+                        onClick={() => void handleDeleteAccount()}
+                        disabled={deleting}
+                        className="w-full text-right py-4 px-2 text-danger hover:bg-danger/10 rounded-xl transition-colors flex items-center justify-between disabled:opacity-50"
+                    >
+                         <i className="fa-solid fa-trash text-xs"></i>
+                         <span>{deleting ? t('settings.deletingAccount') : t('settings.deleteAccount')}</span>
+                    </button>
+                    {deleteError && (
+                        <p role="alert" className="text-danger font-bold text-sm mt-2 text-center">{t('settings.deleteError')}</p>
+                    )}
                 </div>
             </div>
 

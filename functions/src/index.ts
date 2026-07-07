@@ -14,6 +14,7 @@ export const ping = onCall(() => ({
 
 export { blockUser } from './callable/blockUser';
 export { completeOnboarding } from './callable/completeOnboarding';
+export { deleteAccount } from './callable/deleteAccount';
 export { equipItem } from './callable/equipItem';
 export { purchaseShopItem } from './callable/purchaseShopItem';
 export { sendChatMediaMessage } from './callable/sendChatMediaMessage';
