@@ -95,9 +95,10 @@ export const submitSwipe = onCall(async (request) => {
     if (target.isSuspended === true || target.isDeleted === true || target.isDiscoverable !== true) {
       throw new HttpsError('failed-precondition', 'failed_precondition');
     }
-    if (!Array.isArray(target.gameIds) || !target.gameIds.includes(gameId)) {
-      throw new HttpsError('failed-precondition', 'failed_precondition');
-    }
+    // ADR-040 (resolved 2026-07-07): cross-game likes are allowed in MVP —
+    // requiring the target to play the game made inbound likes from other
+    // decks impossible to reciprocate ("dead-end likes"). Mutual like on the
+    // same deck gameId always matches; revisit symmetric gating in V1.
 
     if (myBlockSnap.exists || theirBlockSnap.exists) {
       throw new HttpsError('permission-denied', 'blocked');

@@ -413,7 +413,7 @@ export type SubmitSwipeOutput = {
 - caller חייב להיות עם onboarding complete.
 - target חייב להתקיים ולהיות discoverable.
 - target חייב להיות לא suspended ולא deleted.
-- target חייב להכיל את `gameId` ב-`publicProfiles/{targetUid}.gameIds`.
+- ~~target חייב להכיל את `gameId` ב-`publicProfiles`~~ — בוטל (ADR-040, 2026-07-07): cross-game likes מותרים ב-MVP; דרישת משחק משותף תישקל מחדש ב-V1.
 - אין block בין הצדדים בשום כיוון.
 - `direction` חייב להיות `like` או `skip`.
 - Basic user כפוף ל-daily swipe limit.

@@ -61,7 +61,7 @@
 | ADR-026 | Initial Launch Market and Language | C — החלטות מוצר מוצעות | Proposed – pending confirmation |
 | ADR-033 | Likes You Visibility & Pro Gating | C — החלטות מוצר מוצעות | Proposed – pending confirmation |
 | ADR-034 | Coin Granting & Earning Mechanism (MVP) | C — החלטות מוצר מוצעות | Proposed – pending confirmation |
-| ADR-040 | Cross-Game Likes & Dead-End Like Prevention | C — החלטות מוצר מוצעות | Proposed – pending confirmation |
+| ADR-040 | Cross-Game Likes & Dead-End Like Prevention | C — החלטות מוצר מוצעות | Accepted (2026-07-07): cross-game likes allowed in MVP |
 | ADR-041 | Live Voice & Video Calls in MVP | C — החלטות מוצר מוצעות | Accepted |
 | ADR-027 | AI Request Limits by Tier | D — נושאים פתוחים | Open |
 | ADR-028 | Chat Abuse Threshold | D — נושאים פתוחים | Open |
