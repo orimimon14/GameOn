@@ -65,7 +65,16 @@ const AppShell: React.FC = () => {
   const { t } = useTranslation();
 
   const [viewingProfile, setViewingProfile] = useState<GamerProfile | null>(null);
-  const [userProfile, setUserProfile] = useState<GamerProfile>(currentUserProfile);
+  const userDoc = useUserStore((s) => s.userDoc);
+  // Live nav profile from the real users doc (mock only as a typed shell).
+  const userProfile: GamerProfile = {
+    ...currentUserProfile,
+    name: userDoc?.displayName ?? '',
+    image: userDoc?.profileImageUrl ?? '',
+    bannerImage: userDoc?.bannerImageUrl ?? '',
+    avatarBorder: undefined,
+  } as GamerProfile;
+  const setUserProfile = (_p: GamerProfile) => undefined;
   const [globalBackground, setGlobalBackground] = useState<string | null>(null);
   const [isGlobalBgEnabled, setIsGlobalBgEnabled] = useState(true);
 
@@ -145,7 +154,7 @@ const AppShell: React.FC = () => {
             <Route
               path="/subscriptions"
               element={
-                <SubscriptionsView onSelectPlan={(plan) => alert(`נרשמת בהצלחה לתוכנית ${plan}!`)} />
+                <SubscriptionsView onSelectPlan={() => alert('רכישת מנוי Pro תיפתח בקרוב! 🔜')} />
               }
             />
             <Route

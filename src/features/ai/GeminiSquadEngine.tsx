@@ -3,17 +3,37 @@ import React, { useState } from 'react';
 
 import { generateSquadStrategy, SquadStrategy } from './geminiService';
 
+import { loadMyActiveGameIds } from '@/features/discovery/discoveryApi';
+import { useUserStore } from '@/shared/store/userStore';
+
 export const GeminiSquadEngine: React.FC = () => {
     const [input, setInput] = useState('');
     const [loading, setLoading] = useState(false);
     const [result, setResult] = useState<SquadStrategy | null>(null);
 
+    const [error, setError] = useState<string | null>(null);
+    const userDoc = useUserStore((s) => s.userDoc);
+
     const handleGenerate = async () => {
-        if (!input.trim()) return;
+        if (!input.trim() || !userDoc) return;
         setLoading(true);
-        const data = await generateSquadStrategy(input);
-        setResult(data);
-        setLoading(false);
+        setError(null);
+        setResult(null);
+        try {
+            const games = await loadMyActiveGameIds(userDoc.uid);
+            const gameId = games[0] ?? 'warzone';
+            const data = await generateSquadStrategy(gameId, gameId, input.trim());
+            setResult(data);
+        } catch (err) {
+            const code = (err as { code?: string })?.code;
+            setError(
+                code === 'functions/resource-exhausted'
+                    ? 'מנוע ה-AI לא זמין כרגע (מכסה יומית או שירות בטעינה) — נסה שוב מאוחר יותר'
+                    : 'המנוע נתקל בתקלה — נסה שוב',
+            );
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -65,6 +85,10 @@ export const GeminiSquadEngine: React.FC = () => {
                 </div>
             </div>
 
+            {error && !loading && (
+                <p role="alert" className="text-danger font-bold text-center mb-8">{error}</p>
+            )}
+
             {loading && (
                 <div className="flex flex-col items-center justify-center py-20 space-y-6">
                     <div className="relative w-24 h-24">
@@ -86,17 +110,14 @@ export const GeminiSquadEngine: React.FC = () => {
                         <div className="absolute top-0 left-0 w-32 h-32 bg-primary blur-[100px] opacity-20"></div>
                         <span className="bg-primary text-white text-[10px] font-black px-4 py-1.5 rounded-full uppercase tracking-widest mb-4 inline-block shadow-glow">תוצאת בינה מלאכותית</span>
                         <h3 className="text-4xl font-black text-primary italic uppercase mb-4 drop-shadow-sm">{result.strategyName}</h3>
-                        <p className="dark:text-white text-text-inverse text-xl font-bold leading-relaxed">{result.description}</p>
+                        <p className="dark:text-white text-text-inverse text-xl font-bold leading-relaxed">{result.summary}</p>
                     </div>
 
                     {/* Roles Grid */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {result.roles.map((role, idx) => (
+                        {(result.roles ?? []).map((role, idx) => (
                             <div key={idx} className="group dark:bg-surface/40 bg-white/70 p-8 rounded-[32px] border dark:border-white/5 border-gray-100 text-right hover:border-primary transition-all duration-500 hover:shadow-2xl">
                                 <div className="flex justify-between items-center mb-5">
-                                    <div className="bg-primary/10 text-primary px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider group-hover:bg-primary group-hover:text-white transition-colors">
-                                        {role.heroType}
-                                    </div>
                                     <h4 className="font-black text-white italic text-2xl group-hover:text-primary transition-colors">{role.role}</h4>
                                 </div>
                                 <p className="text-text-muted text-lg font-medium leading-relaxed group-hover:text-gray-200 transition-colors">{role.description}</p>

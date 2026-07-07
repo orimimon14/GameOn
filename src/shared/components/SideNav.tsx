@@ -30,8 +30,12 @@ export const SideNav: React.FC<SideNavProps> = ({ activePath, userProfile, onNav
         {userProfile.avatarBorder && (
           <div style={{ background: userProfile.avatarBorder }} className="absolute inset-0 z-0 bg-moving" />
         )}
-        <div className="relative z-10 w-full h-full rounded-full border-2 border-background overflow-hidden">
-          <img src={userProfile.image} alt="Me" className="w-full h-full object-cover" />
+        <div className="relative z-10 w-full h-full rounded-full border-2 border-background overflow-hidden bg-primary/40 flex items-center justify-center">
+          {userProfile.image ? (
+            <img src={userProfile.image} alt="Me" className="w-full h-full object-cover" />
+          ) : (
+            <span className="text-white font-black text-2xl">{(userProfile.name || '?').charAt(0)}</span>
+          )}
         </div>
       </button>
 

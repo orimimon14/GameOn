@@ -1,25 +1,32 @@
-// Safe stub — AI is temporarily disabled during the production migration.
-// Gemini will be reintroduced server-side only, via Cloud Functions (see docs/architecture/AI_INTEGRATION.md).
-// This file must not import any AI SDK, contain any API key, or call any external API.
+import { httpsCallable } from 'firebase/functions';
 
+import { getFirebase } from '@/config/firebase';
+
+// AI goes through the server-side Gemini proxy only (AI_INTEGRATION §2):
+// no AI SDK, no API key and no model id ever reach the client.
 export type SquadStrategyRole = {
   role: string;
   description: string;
-  heroType: string;
 };
 
 export type SquadStrategy = {
   strategyName: string;
-  description: string;
-  roles: SquadStrategyRole[];
+  summary: string;
+  roles?: SquadStrategyRole[];
   tips: string[];
+  warnings?: string[];
 };
 
-export const generateSquadStrategy = async (_playstyle: string): Promise<SquadStrategy> => {
-  return {
-    strategyName: 'AI מושבת זמנית',
-    description: 'יכולות ה-AI מושבתות זמנית במהלך המעבר לסביבת production. הן יחזרו דרך שרת מאובטח.',
-    roles: [],
-    tips: [],
-  };
+export const generateSquadStrategy = async (
+  gameId: string,
+  gameName: string,
+  playstyle: string,
+  rank?: string,
+): Promise<SquadStrategy> => {
+  const { functions } = getFirebase();
+  const response = await httpsCallable<
+    { gameId: string; gameName: string; playstyle?: string; rank?: string },
+    SquadStrategy
+  >(functions, 'sendAISquadAdvice')({ gameId, gameName, playstyle, ...(rank ? { rank } : {}) });
+  return response.data;
 };

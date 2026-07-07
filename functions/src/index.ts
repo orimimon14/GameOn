@@ -16,6 +16,8 @@ export { blockUser } from './callable/blockUser';
 export { completeOnboarding } from './callable/completeOnboarding';
 export { deleteAccount } from './callable/deleteAccount';
 export { equipItem } from './callable/equipItem';
+export { sendAIProfileReview } from './callable/sendAIProfileReview';
+export { sendAISquadAdvice } from './callable/sendAISquadAdvice';
 export { purchaseShopItem } from './callable/purchaseShopItem';
 export { sendChatMediaMessage } from './callable/sendChatMediaMessage';
 export { submitSwipe } from './callable/submitSwipe';
