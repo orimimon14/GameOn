@@ -12,6 +12,7 @@ export const ping = onCall(() => ({
   at: new Date().toISOString(),
 }));
 
+export { blockUser } from './callable/blockUser';
 export { completeOnboarding } from './callable/completeOnboarding';
 export { equipItem } from './callable/equipItem';
 export { purchaseShopItem } from './callable/purchaseShopItem';

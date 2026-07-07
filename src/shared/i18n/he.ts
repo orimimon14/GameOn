@@ -122,6 +122,23 @@ export const he = {
     send: 'שלח',
     back: 'חזרה',
     sendError: 'ההודעה לא נשלחה — נסה שוב',
+    safety: {
+      report: 'דווח',
+      block: 'חסום',
+      reportTitle: 'על מה לדווח?',
+      blockConfirm: 'לחסום את {{name}}? השיחה תיסגר ולא תראו זה את זה יותר.',
+      blocked: '{{name}} נחסם. לא תראו זה את זה יותר.',
+      reported: 'הדיווח התקבל — הצוות שלנו יבדוק אותו. תודה!',
+      error: 'הפעולה נכשלה — נסה שוב',
+      reasons: {
+        harassment: 'הטרדה או בריונות',
+        hate_speech: 'דברי שנאה',
+        sexual_content: 'תוכן מיני',
+        scam_spam: 'הונאה או ספאם',
+        fake_profile: 'פרופיל מזויף',
+        other: 'משהו אחר',
+      },
+    },
     videoMessage: {
       title: 'הודעת וידאו',
       record: 'הקלט הודעת וידאו',

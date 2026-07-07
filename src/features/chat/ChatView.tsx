@@ -20,6 +20,7 @@ import {
 } from './chatApi';
 import { VideoMessageRecorder } from './VideoMessageRecorder';
 
+import { blockUser, createReport, type ReportReason } from '@/features/safety/safetyApi';
 import type { CallType } from '@/shared/enums';
 import type { CallDocument, ChatDocument, MessageDocument, PublicProfileDocument } from '@/shared/models';
 import { useUserStore } from '@/shared/store/userStore';
@@ -74,6 +75,8 @@ export const ChatView: React.FC = () => {
   const [sendError, setSendError] = useState(false);
 
   const [recording, setRecording] = useState(false);
+  const [reporting, setReporting] = useState(false);
+  const [safetyNotice, setSafetyNotice] = useState<string | null>(null);
   const [showProUpsell, setShowProUpsell] = useState(false);
   const [activeCall, setActiveCall] = useState<ActiveCall | null>(null);
   const [incomingCall, setIncomingCall] = useState<CallDocument | null>(null);
@@ -86,7 +89,7 @@ export const ChatView: React.FC = () => {
     return subscribeMyChats(
       uid,
       (nextChats) => {
-        setChats(nextChats);
+        setChats(nextChats.filter((chat) => chat.isActive !== false));
         setStatus('ready');
         void loadChatPartnerProfiles(uid, nextChats).then((profiles) =>
           setPartners((prev) => ({ ...prev, ...profiles })),
@@ -134,6 +137,31 @@ export const ChatView: React.FC = () => {
     } catch {
       setSendError(true);
       setDraft(text);
+    }
+  };
+
+  const handleBlock = async () => {
+    const partner = selectedPartner;
+    if (!partner || !selectedChatId) return;
+    if (!window.confirm(t('chat.safety.blockConfirm', { name: partner.displayName }))) return;
+    try {
+      await blockUser(partner.uid);
+      setSafetyNotice(t('chat.safety.blocked', { name: partner.displayName }));
+      openChat(null);
+    } catch {
+      setSafetyNotice(t('chat.safety.error'));
+    }
+  };
+
+  const handleReport = async (reason: ReportReason) => {
+    const partner = selectedPartner;
+    setReporting(false);
+    if (!partner || !uid || !selectedChatId) return;
+    try {
+      await createReport(uid, partner.uid, reason, { chatId: selectedChatId });
+      setSafetyNotice(t('chat.safety.reported'));
+    } catch {
+      setSafetyNotice(t('chat.safety.error'));
     }
   };
 
@@ -226,6 +254,37 @@ export const ChatView: React.FC = () => {
         />
       )}
 
+      {reporting && (
+        <div
+          role="dialog"
+          aria-label={t('chat.safety.reportTitle')}
+          className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-6"
+        >
+          <div className="w-full max-w-sm bg-surface/95 border border-white/10 rounded-3xl p-6 text-right">
+            <h3 className="text-white font-black text-xl mb-4">{t('chat.safety.reportTitle')}</h3>
+            <div className="flex flex-col gap-2">
+              {(['harassment', 'hate_speech', 'sexual_content', 'scam_spam', 'fake_profile', 'other'] as const).map(
+                (reason) => (
+                  <button
+                    key={reason}
+                    onClick={() => void handleReport(reason)}
+                    className="w-full py-2.5 rounded-xl bg-white/10 hover:bg-primary text-white text-sm font-bold transition-all"
+                  >
+                    {t(`chat.safety.reasons.${reason}`)}
+                  </button>
+                ),
+              )}
+              <button
+                onClick={() => setReporting(false)}
+                className="w-full py-2.5 rounded-xl text-text-muted text-sm font-bold hover:text-white transition-all"
+              >
+                {t('chat.videoMessage.cancel')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {activeCall && (
         <CallOverlay
           call={activeCall}
@@ -303,6 +362,20 @@ export const ChatView: React.FC = () => {
 
               <div className="flex items-center gap-3">
                 <button
+                  onClick={() => setReporting(true)}
+                  aria-label={t('chat.safety.report')}
+                  className="w-11 h-11 rounded-full bg-white/10 hover:bg-yellow-500 text-white flex items-center justify-center transition-all"
+                >
+                  <i className="fa-solid fa-flag"></i>
+                </button>
+                <button
+                  onClick={() => void handleBlock()}
+                  aria-label={t('chat.safety.block')}
+                  className="w-11 h-11 rounded-full bg-white/10 hover:bg-danger text-white flex items-center justify-center transition-all"
+                >
+                  <i className="fa-solid fa-ban"></i>
+                </button>
+                <button
                   onClick={() => void handleStartCall('voice')}
                   disabled={!!activeCall}
                   aria-label={t('chat.call.startVoice')}
@@ -321,6 +394,11 @@ export const ChatView: React.FC = () => {
               </div>
             </div>
 
+            {safetyNotice && (
+              <p role="status" className="text-yellow-400 font-bold text-sm py-2 text-center">
+                {safetyNotice}
+              </p>
+            )}
             {callError && (
               <p role="alert" className="text-danger font-bold text-sm py-2 text-center">
                 {t('chat.call.error')}

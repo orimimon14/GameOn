@@ -124,6 +124,23 @@ export const en: TranslationCatalog = {
     send: 'Send',
     back: 'Back',
     sendError: "The message wasn't sent — try again",
+    safety: {
+      report: 'Report',
+      block: 'Block',
+      reportTitle: 'What are you reporting?',
+      blockConfirm: 'Block {{name}}? The chat will close and you will not see each other again.',
+      blocked: '{{name}} has been blocked. You will not see each other again.',
+      reported: 'Report received — our team will review it. Thank you!',
+      error: 'The action failed — try again',
+      reasons: {
+        harassment: 'Harassment or bullying',
+        hate_speech: 'Hate speech',
+        sexual_content: 'Sexual content',
+        scam_spam: 'Scam or spam',
+        fake_profile: 'Fake profile',
+        other: 'Something else',
+      },
+    },
     videoMessage: {
       title: 'Video message',
       record: 'Record a video message',
