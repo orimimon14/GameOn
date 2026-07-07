@@ -1,232 +1,225 @@
+import React, { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
-import React, { useState, useMemo } from 'react';
+import { equipItem, loadShopItems, purchaseShopItem } from './shopApi';
 
-import { backgroundShopItems } from '@/shared/mockData';
-import { BackgroundItem } from '@/shared/types';
+import type { ShopItemCategory } from '@/shared/enums';
+import type { ShopItemDocument } from '@/shared/models';
+import { useUserStore } from '@/shared/store/userStore';
 
-interface ShopViewProps {
-    onPurchase: (item: BackgroundItem) => void;
-    userCoins: number;
-    ownedItems: BackgroundItem[];
-}
+// P5-T06 — the real shop: catalog from Firestore, purchase/equip through the
+// backend (coins are server-owned; userStore's live users/{uid} subscription
+// reflects the new balance and inventory automatically).
+type ShopStatus = 'loading' | 'ready' | 'error';
+type CategoryFilter = 'all' | ShopItemCategory;
 
-type Category = 'All' | 'Borders' | 'Cyber' | 'Space' | 'Nature' | 'Abstract';
+const isCallableError = (error: unknown, code: string): boolean =>
+  typeof error === 'object' &&
+  error !== null &&
+  'code' in error &&
+  (error as { code: unknown }).code === `functions/${code}`;
 
-export const ShopView: React.FC<ShopViewProps> = ({ onPurchase, userCoins, ownedItems }) => {
-    const [previewItem, setPreviewItem] = useState<BackgroundItem | null>(null);
-    const [selectedCategory, setSelectedCategory] = useState<Category>('All');
-
-    const filteredItems = useMemo(() => {
-        if (selectedCategory === 'All') return backgroundShopItems;
-        return backgroundShopItems.filter(item => item.category === selectedCategory);
-    }, [selectedCategory]);
-
-    const isOwned = (id: string) => ownedItems.some(item => item.id === id);
-
-    const getRarityStyles = (rarity: BackgroundItem['rarity']) => {
-        switch (rarity) {
-            case 'Legendary': return 'text-yellow-400 border-yellow-500/50 bg-yellow-500/10 shadow-[0_0_15px_rgba(234,179,8,0.3)]';
-            case 'Epic': return 'text-purple-400 border-purple-500/50 bg-purple-500/10 shadow-[0_0_15px_rgba(168,85,247,0.3)]';
-            case 'Rare': return 'text-blue-400 border-blue-500/50 bg-blue-500/10';
-            default: return 'text-gray-400 border-gray-500/50 bg-gray-500/10';
-        }
-    };
-
-    const categories: Category[] = ['All', 'Borders', 'Cyber', 'Space', 'Nature', 'Abstract'];
-
-    return (
-        <div className="relative h-full w-full overflow-hidden">
-            {/* Full Screen Live Preview Background (Only for background types) */}
-            {previewItem && previewItem.itemType === 'background' && (
-                <div 
-                    className={`absolute inset-0 z-0 transition-all duration-1000 opacity-30 pointer-events-none ${previewItem.isAnimated ? previewItem.animationClass : ''}`}
-                    style={{ background: previewItem.previewUrl }}
-                />
-            )}
-
-            <div className="relative z-10 pt-24 px-6 h-full overflow-y-auto pb-32 max-w-7xl mx-auto no-scrollbar">
-                {/* Top Bar: Stats & Welcome */}
-                <div className="flex flex-col lg:flex-row justify-between items-end mb-12 gap-6">
-                    <div className="text-right w-full lg:w-auto">
-                        <h2 className="text-4xl font-black text-white italic uppercase tracking-tighter mb-2">חנות הצבעים</h2>
-                        <p className="text-text-muted text-lg">בחר את האווירה שלך עם צבעים, גרדיאנטים ומסגרות פרופיל</p>
-                    </div>
-                    
-                    <div className="flex items-center gap-6 w-full lg:w-auto justify-between lg:justify-end">
-                        {/* Category Selector */}
-                        <div className="flex bg-surface/50 p-1.5 rounded-2xl border border-white/5 backdrop-blur-md overflow-x-auto no-scrollbar">
-                            {categories.map(cat => (
-                                <button
-                                    key={cat}
-                                    onClick={() => setSelectedCategory(cat)}
-                                    className={`px-5 py-2 rounded-xl text-sm font-bold transition-all whitespace-nowrap ${
-                                        selectedCategory === cat 
-                                        ? 'bg-primary text-white shadow-glow' 
-                                        : 'text-text-muted hover:text-white'
-                                    }`}
-                                >
-                                    {cat === 'All' ? 'הכל' : cat === 'Borders' ? 'מסגרות' : cat}
-                                </button>
-                            ))}
-                        </div>
-
-                        {/* Coins Display */}
-                        <div className="bg-gradient-to-br from-surface to-background px-6 py-3 rounded-2xl border border-white/10 flex items-center gap-3 shadow-xl shrink-0">
-                            <div className="flex flex-col items-end">
-                                <span className="text-xs text-text-muted font-bold uppercase tracking-widest">יתרה</span>
-                                <span className="text-2xl font-black text-white leading-none">{userCoins.toLocaleString()}</span>
-                            </div>
-                            <i className="fa-solid fa-coins text-yellow-400 text-2xl drop-shadow-[0_0_8px_rgba(234,179,8,0.5)]"></i>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Status Message for Preview */}
-                {previewItem && (
-                    <div className="mb-8 animate-pop text-center bg-white/5 backdrop-blur-md py-6 rounded-3xl border border-white/10 flex flex-col items-center">
-                        <p className="text-white font-black italic uppercase text-lg tracking-wider mb-4">
-                            <span className="text-primary ml-2">מציג כעת:</span>
-                            {previewItem.name}
-                        </p>
-                        
-                        {/* If it's a border, show a special preview */}
-                        {previewItem.itemType === 'avatar-border' ? (
-                            <div className="relative w-32 h-32 mb-4 p-1.5 rounded-full overflow-hidden flex items-center justify-center">
-                                <div 
-                                    style={{ background: previewItem.previewUrl }} 
-                                    className={`absolute inset-0 z-0 ${previewItem.isAnimated ? previewItem.animationClass : ''}`}
-                                />
-                                <div className="relative z-10 w-full h-full rounded-full border-[6px] border-background overflow-hidden bg-surface">
-                                    <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=1780&auto=format&fit=crop" className="w-full h-full object-cover" alt="Avatar Preview" />
-                                </div>
-                            </div>
-                        ) : null}
-
-                        <button 
-                            onClick={() => setPreviewItem(null)}
-                            className="text-xs font-bold text-danger hover:underline uppercase"
-                        >
-                            בטל תצוגה מקדימה
-                        </button>
-                    </div>
-                )}
-
-                {/* Shop Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
-                    {filteredItems.map((item) => {
-                        const owned = isOwned(item.id);
-                        const isBeingPreviewed = previewItem?.id === item.id;
-                        const isBorder = item.itemType === 'avatar-border';
-                        
-                        return (
-                            <div 
-                                key={item.id} 
-                                className={`group relative bg-surface/40 backdrop-blur-sm rounded-[32px] overflow-hidden border transition-all duration-500 shadow-xl flex flex-col ${
-                                    isBeingPreviewed ? 'border-primary scale-[1.02] shadow-glow' : 'border-white/5 hover:border-primary/50'
-                                }`}
-                            >
-                                {/* Color Swatch Section */}
-                                <div className="relative aspect-[16/9] overflow-hidden cursor-pointer" onClick={() => setPreviewItem(item)}>
-                                    {isBorder ? (
-                                        /* Border Preview in Grid */
-                                        <div className="w-full h-full bg-black/40 flex items-center justify-center">
-                                            <div className="relative w-24 h-24 p-1 rounded-full overflow-hidden">
-                                                <div 
-                                                    style={{ background: item.previewUrl }} 
-                                                    className={`absolute inset-0 ${item.isAnimated ? item.animationClass : ''}`}
-                                                />
-                                                <div className="relative z-10 w-full h-full rounded-full border-4 border-background flex items-center justify-center bg-surface text-text-muted">
-                                                    <i className="fa-solid fa-user text-3xl"></i>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ) : (
-                                        /* Background Preview in Grid */
-                                        <div 
-                                            style={{ background: item.previewUrl }}
-                                            className={`w-full h-full transition-transform duration-1000 group-hover:scale-110 ${item.isAnimated ? item.animationClass : ''}`}
-                                        />
-                                    )}
-                                    
-                                    {/* Overlays */}
-                                    <div className="absolute inset-0 bg-gradient-to-t from-surface/40 via-transparent to-transparent opacity-60"></div>
-                                    
-                                    {/* Badge: Live vs Static */}
-                                    <div className={`absolute top-4 left-4 px-3 py-1 rounded-full text-[9px] font-black text-white flex items-center gap-1.5 shadow-lg border border-white/10 ${item.isAnimated ? 'bg-indigo-600' : 'bg-gray-700'}`}>
-                                        {item.isAnimated ? (
-                                            <>
-                                                <span className="relative flex h-2 w-2">
-                                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
-                                                    <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
-                                                </span>
-                                                דינמי
-                                            </>
-                                        ) : (
-                                            <>
-                                                <i className="fa-solid fa-palette text-[10px]"></i>
-                                                סטטי
-                                            </>
-                                        )}
-                                    </div>
-
-                                    {/* Badge: Rarity */}
-                                    <div className={`absolute top-4 right-4 px-4 py-1 rounded-full text-[10px] font-black border backdrop-blur-md ${getRarityStyles(item.rarity)}`}>
-                                        {item.rarity.toUpperCase()}
-                                    </div>
-
-                                    {/* Try On Overlay */}
-                                    <div className={`absolute inset-0 bg-primary/20 flex items-center justify-center transition-opacity duration-300 ${isBeingPreviewed ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}>
-                                        <div className="bg-white text-background font-black px-6 py-2 rounded-full transform transition-transform">
-                                            {isBeingPreviewed ? 'בתצוגה מקדימה' : isBorder ? 'נסה מסגרת' : 'נסה על המסך'}
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Info Section */}
-                                <div className="p-6 flex-1 flex flex-col bg-gradient-to-b from-transparent to-black/20 text-right">
-                                    <div className="flex justify-between items-start mb-6">
-                                        <div className="flex items-center gap-1.5 bg-white/5 px-3 py-1 rounded-lg">
-                                            <span className="text-yellow-400 font-black text-lg leading-none">{item.price.toLocaleString()}</span>
-                                            <i className="fa-solid fa-coins text-xs text-yellow-400"></i>
-                                        </div>
-                                        <div>
-                                            <h4 className="text-white font-black text-xl italic uppercase tracking-tight">{item.name}</h4>
-                                            <span className="text-text-muted text-xs font-bold">{isBorder ? 'Avatar Border' : item.category + ' Palette'}</span>
-                                        </div>
-                                    </div>
-
-                                    <button 
-                                        onClick={() => !owned && onPurchase(item)}
-                                        className={`w-full py-4 rounded-2xl font-black text-lg transition-all active:scale-95 shadow-lg flex items-center justify-center gap-3 ${
-                                            owned 
-                                            ? 'bg-success/20 text-success border border-success/30 cursor-default'
-                                            : userCoins >= item.price
-                                            ? 'bg-white text-background hover:bg-primary hover:text-white'
-                                            : 'bg-white/5 text-text-muted cursor-not-allowed border border-white/10'
-                                        }`}
-                                        disabled={!owned && userCoins < item.price}
-                                    >
-                                        {owned ? (
-                                            <>
-                                                <span>כבר בבעלותך</span>
-                                                <i className="fa-solid fa-circle-check text-sm"></i>
-                                            </>
-                                        ) : userCoins >= item.price ? (
-                                            <>
-                                                <span>רכוש עכשיו</span>
-                                                <i className="fa-solid fa-cart-shopping text-sm"></i>
-                                            </>
-                                        ) : (
-                                            'אין מספיק מטבעות'
-                                        )}
-                                    </button>
-                                </div>
-                            </div>
-                        );
-                    })}
-                </div>
-            </div>
-        </div>
-    );
+const RARITY_STYLES: Record<string, string> = {
+  common: 'bg-gray-400/20 text-gray-300',
+  rare: 'bg-cyan-400/20 text-cyan-300',
+  epic: 'bg-purple-400/20 text-purple-300',
+  legendary: 'bg-yellow-400/20 text-yellow-300',
 };
 
+export const ShopView: React.FC = () => {
+  const { t } = useTranslation();
+  const userDoc = useUserStore((s) => s.userDoc);
+
+  const [status, setStatus] = useState<ShopStatus>('loading');
+  const [items, setItems] = useState<ShopItemDocument[]>([]);
+  const [category, setCategory] = useState<CategoryFilter>('all');
+  const [pendingItemId, setPendingItemId] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    loadShopItems()
+      .then((catalog) => {
+        if (cancelled) return;
+        setItems(catalog);
+        setStatus('ready');
+      })
+      .catch(() => {
+        if (!cancelled) setStatus('error');
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const coins = userDoc?.coins ?? 0;
+  const owned = useMemo(() => new Set(userDoc?.ownedItemIds ?? []), [userDoc?.ownedItemIds]);
+  const equipped = new Set(
+    [userDoc?.avatarBorderItemId, userDoc?.globalBackgroundItemId].filter(Boolean) as string[],
+  );
+
+  const visible = items.filter((item) => category === 'all' || item.category === category);
+
+  const handlePurchase = async (item: ShopItemDocument) => {
+    if (pendingItemId) return;
+    setPendingItemId(item.itemId);
+    setActionError(null);
+    try {
+      await purchaseShopItem(item.itemId);
+    } catch (error) {
+      if (isCallableError(error, 'resource-exhausted')) setActionError(t('shop.insufficientCoins'));
+      else if (isCallableError(error, 'permission-denied')) setActionError(t('shop.proRequired'));
+      else setActionError(t('shop.purchaseError'));
+    } finally {
+      setPendingItemId(null);
+    }
+  };
+
+  const handleEquip = async (item: ShopItemDocument) => {
+    if (pendingItemId) return;
+    setPendingItemId(item.itemId);
+    setActionError(null);
+    try {
+      await equipItem(item.itemId);
+    } catch {
+      setActionError(t('shop.equipError'));
+    } finally {
+      setPendingItemId(null);
+    }
+  };
+
+  if (status === 'loading') {
+    return (
+      <div className="flex items-center justify-center h-full relative z-10">
+        <div
+          role="status"
+          aria-label={t('shop.loading')}
+          className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"
+        />
+      </div>
+    );
+  }
+
+  if (status === 'error') {
+    return (
+      <div className="flex flex-col items-center justify-center h-full text-center p-10 relative z-10">
+        <i className="fa-solid fa-triangle-exclamation text-7xl mb-6 text-danger"></i>
+        <h3 className="text-2xl font-bold italic uppercase dark:text-white text-text-inverse">{t('shop.error')}</h3>
+      </div>
+    );
+  }
+
+  const categories: Array<{ key: CategoryFilter; label: string }> = [
+    { key: 'all', label: t('shop.filterAll') },
+    { key: 'avatar_border', label: t('shop.filterBorders') },
+    { key: 'global_background', label: t('shop.filterBackgrounds') },
+    { key: 'profile_banner', label: t('shop.filterBanners') },
+  ];
+
+  return (
+    <div className="p-6 pt-24 pb-32 overflow-y-auto h-full max-w-6xl mx-auto relative z-10 no-scrollbar">
+      <div className="flex items-center justify-between mb-8 flex-row-reverse">
+        <div className="text-right">
+          <h2 className="text-4xl font-black dark:text-white text-text-inverse italic uppercase tracking-tighter">
+            {t('shop.title')}
+          </h2>
+          <p className="dark:text-text-muted text-gray-500 font-bold">{t('shop.subtitle')}</p>
+        </div>
+        <div className="flex items-center gap-2 bg-yellow-400/10 border border-yellow-400/40 rounded-2xl px-5 py-3">
+          <i className="fa-solid fa-coins text-yellow-400"></i>
+          <span className="font-black text-xl dark:text-white text-text-inverse">{coins.toLocaleString()}</span>
+        </div>
+      </div>
+
+      <div className="flex gap-2 justify-end mb-8 flex-wrap">
+        {categories.map(({ key, label }) => (
+          <button
+            key={key}
+            onClick={() => setCategory(key)}
+            className={`px-5 py-2 rounded-full text-xs font-black uppercase transition-all ${
+              category === key
+                ? 'bg-primary text-white shadow-glow'
+                : 'bg-white/10 dark:text-white text-text-inverse hover:bg-white/20'
+            }`}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
+      {actionError && (
+        <p role="alert" className="text-danger font-bold text-sm mb-6 text-center">
+          {actionError}
+        </p>
+      )}
+
+      {visible.length === 0 ? (
+        <div className="text-center py-20 opacity-40">
+          <p className="text-xl font-bold italic uppercase">{t('shop.empty')}</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {visible.map((item) => {
+            const isOwned = owned.has(item.itemId);
+            const isEquipped = equipped.has(item.itemId);
+            const pending = pendingItemId === item.itemId;
+            return (
+              <div
+                key={item.itemId}
+                className="relative rounded-[24px] overflow-hidden border dark:border-white/10 border-gray-200 bg-surface/40 backdrop-blur-md p-4 flex flex-col"
+              >
+                <span
+                  className={`absolute top-3 left-3 px-2 py-0.5 rounded-full text-[9px] font-black uppercase ${RARITY_STYLES[item.rarity] ?? ''}`}
+                >
+                  {item.rarity}
+                </span>
+                {item.requiresPro && (
+                  <span className="absolute top-3 right-3 px-2 py-0.5 rounded-full text-[9px] font-black uppercase bg-gradient-to-r from-yellow-400 to-amber-500 text-black">
+                    Pro
+                  </span>
+                )}
+
+                <div
+                  className="w-full aspect-square rounded-2xl mb-4"
+                  style={{ background: item.style?.cssGradient ?? '#334155' }}
+                />
+
+                <h3 className="font-black text-lg italic uppercase dark:text-white text-text-inverse text-right">
+                  {item.name}
+                </h3>
+                <p className="text-xs font-bold text-text-muted text-right mb-4">
+                  {t(`shop.category.${item.category}`)}
+                </p>
+
+                <div className="mt-auto">
+                  {isEquipped ? (
+                    <div className="w-full py-2.5 rounded-xl bg-green-500/20 text-green-400 text-xs font-black uppercase text-center">
+                      <i className="fa-solid fa-check ml-1"></i> {t('shop.equipped')}
+                    </div>
+                  ) : isOwned ? (
+                    <button
+                      onClick={() => void handleEquip(item)}
+                      disabled={pending}
+                      className="w-full py-2.5 rounded-xl bg-white/10 hover:bg-primary text-white text-xs font-black uppercase transition-all disabled:opacity-50"
+                    >
+                      {t('shop.equip')}
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => void handlePurchase(item)}
+                      disabled={pending}
+                      className="w-full py-2.5 rounded-xl bg-primary text-white text-xs font-black uppercase shadow-glow hover:scale-[1.02] transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                    >
+                      <i className="fa-solid fa-coins text-yellow-300"></i>
+                      {item.priceCoins.toLocaleString()}
+                    </button>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+};

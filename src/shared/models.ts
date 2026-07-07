@@ -4,12 +4,15 @@ import type {
   AuthProvider,
   CallStatus,
   CallType,
+  CosmeticRenderType,
   LookingFor,
   MessageStatus,
   MessageType,
   ModerationState,
   Platform,
   SkillLevel,
+  ShopItemCategory,
+  ShopItemRarity,
   SubscriptionStatus,
   SubscriptionTier,
   SwipeDirection,
@@ -204,6 +207,39 @@ export interface CallDocument {
 
   offer?: { type: string; sdp: string };
   answer?: { type: string; sdp: string };
+
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
+}
+
+// shopItems/{itemId} — DATA_MODEL §4.9 (admin/server writes only)
+export interface ShopItemDocument {
+  itemId: string;
+
+  name: string;
+  description?: string;
+
+  category: ShopItemCategory;
+  rarity: ShopItemRarity;
+
+  themeTag?: string;
+
+  priceCoins: number;
+
+  previewUrl: string;
+  assetUrl: string;
+
+  style?: {
+    cssGradient?: string;
+    className?: string;
+    animationClass?: string;
+  };
+
+  isAnimated: boolean;
+  renderType: CosmeticRenderType;
+
+  requiresPro?: boolean;
+  isActive: boolean;
 
   createdAt: Timestamp;
   updatedAt: Timestamp;

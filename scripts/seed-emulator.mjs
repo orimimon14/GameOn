@@ -75,6 +75,7 @@ const main = async () => {
     environment: 'development',
     maintenanceMode: false,
     featureFlags: { aiHubEnabled: true, shopEnabled: true, proSubscriptionEnabled: true, mediaUploadEnabled: true, reportsEnabled: true },
+    economy: { signupBonusCoins: 500 },
     limits: {
       basicDailySwipeLimit: 30,
       maxBioLength: 300,
@@ -88,6 +89,33 @@ const main = async () => {
     updatedAt: now(),
   });
   console.log('system/config seeded');
+
+  // shopItems catalog (P5-T03) — static_image items for MVP; animated tiers land with Motion & FX.
+  const SHOP_ITEMS = [
+    { itemId: 'border_ivy_green', name: 'Neon Ivy Green', category: 'avatar_border', rarity: 'rare', priceCoins: 300, style: { cssGradient: 'linear-gradient(135deg, #16a34a, #4ade80)' } },
+    { itemId: 'border_cyber_cyan', name: 'Cyber Cyan Core', category: 'avatar_border', rarity: 'rare', priceCoins: 450, style: { cssGradient: 'linear-gradient(135deg, #0891b2, #22d3ee)' } },
+    { itemId: 'border_pulse_rose', name: 'Pulse Rose', category: 'avatar_border', rarity: 'epic', priceCoins: 900, style: { cssGradient: 'linear-gradient(135deg, #be123c, #fb7185)' } },
+    { itemId: 'border_gold_royal', name: 'Gold Royal Ring', category: 'avatar_border', rarity: 'legendary', priceCoins: 2000, requiresPro: true, style: { cssGradient: 'linear-gradient(135deg, #b45309, #fbbf24)' } },
+    { itemId: 'bg_space', name: 'Deep Space', category: 'global_background', rarity: 'common', priceCoins: 250, themeTag: 'Space', style: { cssGradient: 'linear-gradient(180deg, #0f172a, #312e81)' } },
+    { itemId: 'bg_cyber_purple', name: 'Cyber Purple', category: 'global_background', rarity: 'epic', priceCoins: 850, themeTag: 'Cyber', style: { cssGradient: 'linear-gradient(135deg, #4c1d95, #a855f7)' } },
+    { itemId: 'bg_sunset_blaze', name: 'Sunset Blaze', category: 'global_background', rarity: 'legendary', priceCoins: 1800, requiresPro: true, themeTag: 'Nature', style: { cssGradient: 'linear-gradient(135deg, #7c2d12, #fb923c)' } },
+    { itemId: 'banner_abstract_wave', name: 'Abstract Wave', category: 'profile_banner', rarity: 'common', priceCoins: 200, themeTag: 'Abstract', style: { cssGradient: 'linear-gradient(90deg, #1e3a8a, #38bdf8)' } },
+  ];
+  for (const item of SHOP_ITEMS) {
+    await writeDoc(`shopItems/${item.itemId}`, {
+      ...item,
+      description: '',
+      previewUrl: '',
+      assetUrl: '',
+      isAnimated: false,
+      renderType: 'static_image',
+      requiresPro: item.requiresPro ?? false,
+      isActive: true,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
+  }
+  console.log(`shopItems: ${SHOP_ITEMS.length} items`);
 
   for (const u of DEMO_USERS) {
     const uid = await ensureAuthUser(u.email, 'demo123456');

@@ -33,17 +33,12 @@ const MediaBubble: React.FC<{ message: MessageDocument }> = ({ message }) => {
   const [url, setUrl] = useState<string | null>(null);
   useEffect(() => {
     let cancelled = false;
-    if (message.filePath) {
-      resolveMediaUrl(message.filePath)
-        .then((resolved) => {
-          if (!cancelled) setUrl(resolved);
-        })
-        .catch(() => {
-          if (!cancelled) setUrl(message.fileUrl ?? null);
-        });
-    } else {
-      setUrl(message.fileUrl ?? null);
-    }
+    const resolve = message.filePath
+      ? resolveMediaUrl(message.filePath).catch(() => message.fileUrl ?? null)
+      : Promise.resolve(message.fileUrl ?? null);
+    void resolve.then((resolved) => {
+      if (!cancelled) setUrl(resolved);
+    });
     return () => {
       cancelled = true;
     };

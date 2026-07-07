@@ -67,6 +67,37 @@ export const completeOnboarding = onCall(async (request) => {
   batch.set(gameRef, gameDoc, { merge: true });
 
   await batch.commit();
+
+  // Signup bonus (ADR-034): one-time grant on onboarding completion, amount
+  // from system/config.economy.signupBonusCoins. Deterministic transaction id
+  // makes retries idempotent; the audit doc is written with the grant.
+  const bonusTxRef = db.doc(`users/${uid}/transactions/signup_bonus`);
+  await db.runTransaction(async (tx) => {
+    const [bonusSnap, configSnap, freshUserSnap] = await Promise.all([
+      tx.get(bonusTxRef),
+      tx.get(db.doc('system/config')),
+      tx.get(userRef),
+    ]);
+    if (bonusSnap.exists) return;
+    const bonus: number = configSnap.data()?.economy?.signupBonusCoins ?? 0;
+    if (bonus <= 0) return;
+    const balanceBefore: number = freshUserSnap.data()?.coins ?? 0;
+    tx.update(userRef, {
+      coins: FieldValue.increment(bonus),
+      updatedAt: FieldValue.serverTimestamp(),
+    });
+    tx.set(bonusTxRef, {
+      transactionId: 'signup_bonus',
+      uid,
+      type: 'signup_bonus',
+      amountCoins: bonus,
+      balanceBefore,
+      balanceAfter: balanceBefore + bonus,
+      status: 'completed',
+      createdAt: FieldValue.serverTimestamp(),
+    });
+  });
+
   await syncPublicProfileForUser(uid);
 
   logger.info('onboarding completed', { uid, gameId: game.gameId });

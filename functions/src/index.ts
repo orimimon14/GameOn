@@ -13,6 +13,8 @@ export const ping = onCall(() => ({
 }));
 
 export { completeOnboarding } from './callable/completeOnboarding';
+export { equipItem } from './callable/equipItem';
+export { purchaseShopItem } from './callable/purchaseShopItem';
 export { sendChatMediaMessage } from './callable/sendChatMediaMessage';
 export { submitSwipe } from './callable/submitSwipe';
 export { syncPublicProfile } from './callable/syncPublicProfile';

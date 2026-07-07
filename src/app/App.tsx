@@ -24,7 +24,7 @@ import { useLocale } from '@/shared/i18n/useLocale';
 import { currentUserProfile } from '@/shared/mockData';
 import { useUiStore } from '@/shared/store/uiStore';
 import { useUserStore } from '@/shared/store/userStore';
-import { BackgroundItem, GamerProfile } from '@/shared/types';
+import { GamerProfile } from '@/shared/types';
 
 const TITLE_KEYS: Record<string, string> = {
   '/discover': 'titles.discover',
@@ -66,10 +66,8 @@ const AppShell: React.FC = () => {
 
   const [viewingProfile, setViewingProfile] = useState<GamerProfile | null>(null);
   const [userProfile, setUserProfile] = useState<GamerProfile>(currentUserProfile);
-  const [userCoins, setUserCoins] = useState(1000000);
   const [globalBackground, setGlobalBackground] = useState<string | null>(null);
   const [isGlobalBgEnabled, setIsGlobalBgEnabled] = useState(true);
-  const [ownedItems, setOwnedItems] = useState<BackgroundItem[]>([]);
 
   const isDarkMode = useUiStore((s) => s.isDarkMode);
   const toggleDarkMode = useUiStore((s) => s.toggleDarkMode);
@@ -97,28 +95,6 @@ const AppShell: React.FC = () => {
   const isColorBackground = (bg: string | null | undefined) => {
     if (!bg) return false;
     return bg.startsWith('#') || bg.startsWith('rgb') || bg.startsWith('linear-gradient');
-  };
-
-  const handlePurchase = (item: BackgroundItem) => {
-    if (userCoins >= item.price) {
-      if (ownedItems.find((b) => b.id === item.id)) {
-        alert('הצבע הזה כבר נמצא באוסף שלך!');
-        return;
-      }
-      setUserCoins((prev) => prev - item.price);
-      setOwnedItems((prev) => [...prev, item]);
-
-      if (item.itemType === 'background') {
-        setUserProfile((prev) => ({ ...prev, bannerImage: item.previewUrl }));
-        if (isGlobalBgEnabled) setGlobalBackground(item.previewUrl);
-      } else if (item.itemType === 'avatar-border') {
-        setUserProfile((prev) => ({ ...prev, avatarBorder: item.previewUrl }));
-      }
-
-      alert('הרכישה הושלמה בהצלחה!');
-    } else {
-      alert('אין לך מספיק מטבעות לרכישה זו.');
-    }
   };
 
   return (
@@ -152,10 +128,7 @@ const AppShell: React.FC = () => {
         <main className="flex-1 w-full overflow-hidden relative">
           <Routes>
             <Route path="/discover" element={<SwipeView />} />
-            <Route
-              path="/shop"
-              element={<ShopView onPurchase={handlePurchase} userCoins={userCoins} ownedItems={ownedItems} />}
-            />
+            <Route path="/shop" element={<ShopView />} />
             <Route path="/chat" element={<ChatView />} />
             <Route path="/likes" element={<LikesGrid />} />
             <Route
@@ -174,7 +147,7 @@ const AppShell: React.FC = () => {
               element={
                 <SubscriptionsView
                   onSelectPlan={(plan) => alert(`נרשמת בהצלחה לתוכנית ${plan}!`)}
-                  onUpdateCoins={(amount) => setUserCoins((prev) => prev + amount)}
+                  onUpdateCoins={() => undefined}
                 />
               }
             />
@@ -202,7 +175,7 @@ const AppShell: React.FC = () => {
                     onReturnToLobby={() => handleNavigate('/discover')}
                     isGlobalBackground={globalBackground === viewingProfile.bannerImage}
                     onSetGlobalBackground={(url) => setGlobalBackground(url || null)}
-                    ownedBackgrounds={ownedItems}
+                    ownedBackgrounds={[]}
                   />
                 ) : (
                   <MyProfilePage />

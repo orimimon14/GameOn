@@ -359,12 +359,12 @@ gemini-3-flash-preview
 
 ### 10.1 משימות — Economy
 
-- [ ] **P5-T01 — הסרת coins מקומיים** `(S)` — ביטול ה-1,000,000 placeholder; `coins` נקרא מ-`users/{uid}` בלבד.
-- [ ] **P5-T02 — Signup bonus** `(M)` — הענקת coins חד-פעמית ב-bootstrap לפי `system/config` (ADR-034) + `transactions` audit.
-- [ ] **P5-T03 — `shopItems` seed** `(M)` — קטלוג לפי הטקסונומיה (category/rarity/renderType) כולל `renderConfig` לפריטים מונפשים.
-- [ ] **P5-T04 — `purchaseShopItem`** `(L)` — callable: transaction, `insufficient_coins`, `pro_required`, idempotency, audit, מניעת balance שלילי.
-- [ ] **P5-T05 — `equipItem`** `(M)` — callable: ownership check, עדכון `users` + sync ל-`publicProfiles`.
-- [ ] **P5-T06 — Shop UI** `(M)` — grid, קטגוריות, `ShopItemPreview`, `PurchaseConfirmModal`.
+- [x] **P5-T01 — הסרת coins מקומיים** `(S)` — ביטול ה-1,000,000 placeholder; `coins` נקרא מ-`users/{uid}` בלבד.
+- [x] **P5-T02 — Signup bonus** `(M)` — (מוענק ב-completeOnboarding לפי ADR-034; `economy.signupBonusCoins` ב-system/config) — הענקת coins חד-פעמית ב-bootstrap לפי `system/config` (ADR-034) + `transactions` audit.
+- [x] **P5-T03 — `shopItems` seed** `(M)` — (8 פריטי static_image; פריטים מונפשים יגיעו עם Motion & FX) — קטלוג לפי הטקסונומיה (category/rarity/renderType) כולל `renderConfig` לפריטים מונפשים.
+- [x] **P5-T04 — `purchaseShopItem`** `(L)` — callable: transaction, `insufficient_coins`, `pro_required`, idempotency, audit, מניעת balance שלילי.
+- [x] **P5-T05 — `equipItem`** `(M)` — callable: ownership check, עדכון `users` + sync ל-`publicProfiles`.
+- [x] **P5-T06 — Shop UI** `(M)` — grid, קטגוריות, `ShopItemPreview`, `PurchaseConfirmModal`.
 
 ### 10.2 משימות — Motion & FX (ADR-039)
 
@@ -373,7 +373,7 @@ gemini-3-flash-preview
 - [ ] **P5-T09 — Rive renderer** `(M)` — `.riv` עם artboard/state machine; pause off-screen (IntersectionObserver).
 - [ ] **P5-T10 — Video/Particle renderers** `(L)` — alpha-video dual-format (HEVC+WebM) + PixiJS particles; quality tiers + fallback.
 - [ ] **P5-T11 — Sound controller** `(M)` — Howler audio sprites; off by default; mute/volume settings (MOTION_AND_FX §9).
-- [ ] **P5-T12 — Rules — shop/economy** `(M)` — `shopItems` read-only ל-client; `transactions`/`ownedItems` server-only.
+- [x] **P5-T12 — Rules — shop/economy** `(M)` — `shopItems` read-only ל-client; `transactions`/`ownedItems` server-only.
 
 ### 10.3 בדיקות ואימות
 
