@@ -48,7 +48,7 @@ export const LoginPage: React.FC = () => {
     );
 
   return (
-    <div className="h-screen w-full flex flex-col items-center justify-center bg-background text-text p-6">
+    <div className="h-screen w-full flex flex-col items-center justify-center bg-background text-text p-6 overflow-y-auto overscroll-contain">
       <div className="w-full max-w-md">
         <h1 className="text-4xl font-black italic uppercase tracking-tighter text-center mb-2">
           {t('common.appName')}

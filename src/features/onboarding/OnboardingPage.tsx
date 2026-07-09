@@ -97,7 +97,7 @@ export const OnboardingPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen w-full bg-background text-text flex flex-col items-center p-6 overflow-y-auto">
+    <div className="h-screen w-full bg-background text-text flex flex-col items-center p-6 overflow-y-auto overscroll-contain">
       <div className="w-full max-w-lg py-8">
         <p className="text-primary font-black text-sm uppercase tracking-widest mb-1">
           {t('onboarding.step', { current: step, total: 2 })}
