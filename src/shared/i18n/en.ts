@@ -120,6 +120,7 @@ export const en: TranslationCatalog = {
     empty: 'No chats yet — a new match opens a chat!',
     pickChat: 'Pick a chat to get started',
     startTalking: 'Start talking now!',
+    unreadCount: '{{count}} unread messages',
     inputPlaceholder: 'Type a message...',
     send: 'Send',
     back: 'Back',

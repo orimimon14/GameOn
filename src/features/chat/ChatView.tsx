@@ -6,11 +6,13 @@ import { startCall } from './callService';
 import { useCallStore } from './callStore';
 import {
   loadChatPartnerProfiles,
+  markChatRead,
   resolveMediaUrl,
   sendTextMessage,
   sendVideoMessage,
   subscribeMessages,
   subscribeMyChats,
+  unreadCountFor,
 } from './chatApi';
 import { VideoMessageRecorder } from './VideoMessageRecorder';
 
@@ -98,11 +100,24 @@ export const ChatView: React.FC = () => {
     return subscribeMessages(selectedChatId, setMessages, () => setSendError(true));
   }, [selectedChatId]);
 
-  const openChat = useCallback((chatId: string | null) => {
-    setMessages([]);
-    setSelectedChatId(chatId);
-    if (chatId) localStorage.setItem(`swish_chat_seen_${chatId}`, String(Date.now()));
-  }, []);
+  const openChat = useCallback(
+    (chatId: string | null) => {
+      setMessages([]);
+      setSelectedChatId(chatId);
+      if (chatId && uid) void markChatRead(chatId, uid).catch(() => undefined);
+    },
+    [uid],
+  );
+
+  // Messages that arrive while this chat is open are read immediately —
+  // the counter increments server-side, so zero it again as it lands.
+  useEffect(() => {
+    if (!uid || !selectedChatId) return;
+    const open = chats.find((c) => c.chatId === selectedChatId);
+    if (open && unreadCountFor(open, uid) > 0) {
+      void markChatRead(selectedChatId, uid).catch(() => undefined);
+    }
+  }, [chats, selectedChatId, uid]);
 
   useEffect(() => {
     endRef.current?.scrollIntoView?.({ behavior: 'smooth' });
@@ -437,6 +452,7 @@ export const ChatView: React.FC = () => {
             chats.map((chat) => {
               const partner = partnerOf(chat);
               const isSelected = selectedChatId === chat.chatId;
+              const unread = uid ? unreadCountFor(chat, uid) : 0;
               return (
                 <button
                   key={chat.chatId}
@@ -447,6 +463,15 @@ export const ChatView: React.FC = () => {
                       : 'hover:bg-white/10 dark:text-white text-text-inverse'
                   }`}
                 >
+                  <div className="relative shrink-0">
+                    {unread > 0 && !isSelected && (
+                      <span
+                        aria-label={t('chat.unreadCount', { count: unread })}
+                        className="absolute -top-1 -end-1 z-10 min-w-[22px] h-[22px] px-1.5 rounded-full bg-danger text-white text-xs font-black flex items-center justify-center border-2 border-background"
+                      >
+                        {unread > 99 ? '99+' : unread}
+                      </span>
+                    )}
                   <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-white/20 shrink-0 bg-primary/30 flex items-center justify-center">
                     {partner?.profileImageUrl ? (
                       <img
@@ -460,6 +485,7 @@ export const ChatView: React.FC = () => {
                       </span>
                     )}
                   </div>
+                  </div>
                   <div className="flex-1 text-right min-w-0">
                     <div className="flex justify-between items-center mb-1">
                       <span className="font-bold truncate text-base">{partner?.displayName ?? ''}</span>
@@ -467,7 +493,15 @@ export const ChatView: React.FC = () => {
                         {chat.gameName}
                       </span>
                     </div>
-                    <p className={`text-sm truncate ${isSelected ? 'text-white/80' : 'text-text-muted'}`}>
+                    <p
+                      className={`text-sm truncate ${
+                        isSelected
+                          ? 'text-white/80'
+                          : unread > 0
+                            ? 'font-bold dark:text-white text-text-inverse'
+                            : 'text-text-muted'
+                      }`}
+                    >
                       {chat.lastMessage ?? t('chat.startTalking')}
                     </p>
                   </div>

@@ -118,6 +118,7 @@ export const he = {
     empty: 'אין עדיין שיחות — מאץ׳ חדש פותח שיחה!',
     pickChat: 'בחר שיחה כדי להתחיל',
     startTalking: 'התחילו לדבר עכשיו!',
+    unreadCount: '{{count}} הודעות שלא נקראו',
     inputPlaceholder: 'כתוב הודעה...',
     send: 'שלח',
     back: 'חזרה',

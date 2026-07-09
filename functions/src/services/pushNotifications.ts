@@ -11,7 +11,10 @@ export const sendPushToUser = async (
 ): Promise<void> => {
   const db = getFirestore();
   const devices = await db.collection(`users/${uid}/devices`).get();
-  if (devices.empty) return;
+  if (devices.empty) {
+    logger.info('push skipped — no registered devices', { uid, kind: data.kind });
+    return;
+  }
 
   const tokens = devices.docs.map((d) => d.id);
   const response = await getMessaging().sendEachForMulticast({
@@ -36,5 +39,11 @@ export const sendPushToUser = async (
     }),
   );
 
-  logger.info('push sent', { uid, kind: data.kind, success: response.successCount });
+  logger.info('push sent', {
+    uid,
+    kind: data.kind,
+    success: response.successCount,
+    failure: response.failureCount,
+    errors: response.responses.filter((r) => r.error).map((r) => r.error?.code ?? ''),
+  });
 };

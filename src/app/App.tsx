@@ -8,7 +8,7 @@ import { initAuthListener } from '@/features/auth/authStore';
 import { LoginPage } from '@/features/auth/LoginPage';
 import { RequireAuth } from '@/features/auth/RequireAuth';
 import { CallManager } from '@/features/chat/CallManager';
-import { subscribeMyChats } from '@/features/chat/chatApi';
+import { subscribeMyChats, unreadCountFor } from '@/features/chat/chatApi';
 import { ChatView } from '@/features/chat/ChatView';
 import { GamesView } from '@/features/discovery/GamesView';
 import { SwipeView } from '@/features/discovery/SwipeView';
@@ -84,25 +84,17 @@ const AppShell: React.FC = () => {
   const [globalBackground, setGlobalBackground] = useState<string | null>(null);
   const [hasUnreadChat, setHasUnreadChat] = useState(false);
 
-  // Unread dot on the chat tab: any chat whose last message is from the
-  // other side and newer than when I last opened that chat (localStorage).
+  // Unread dot on the chat tab: backend-maintained unreadCounts (DATA_MODEL
+  // §4.7) — increments on the recipient's key, zeroed when the chat is opened.
   useEffect(() => {
     if (!userDoc?.uid) return;
     const uid = userDoc.uid;
     return subscribeMyChats(
       uid,
-      (chats) => {
+      (chats) =>
         setHasUnreadChat(
-          chats.some(
-            (c) =>
-              c.isActive !== false &&
-              c.lastMessageSenderId &&
-              c.lastMessageSenderId !== uid &&
-              (c.lastTimestamp?.toMillis() ?? 0) >
-                Number(localStorage.getItem(`swish_chat_seen_${c.chatId}`) ?? 0),
-          ),
-        );
-      },
+          chats.some((c) => c.isActive !== false && unreadCountFor(c, uid) > 0),
+        ),
       () => undefined,
     );
   }, [userDoc?.uid]);

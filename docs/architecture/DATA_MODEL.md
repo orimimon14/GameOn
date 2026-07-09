@@ -655,7 +655,7 @@ export type ChatDocument = {
 | `lastMessageType` | `MessageType` | אופציונלי | Server-owned | MVP | סוג הודעה אחרונה. |
 | `lastMessageSenderId` | `string` | אופציונלי | Server-owned | MVP | שולח הודעה אחרונה. |
 | `lastTimestamp` | `Timestamp` | אופציונלי | Server-owned | MVP | timestamp של הודעה אחרונה. |
-| `unreadCounts` | `Record<string, number>` | אופציונלי | Server-owned | MVP | מונה unread לכל uid. |
+| `unreadCounts` | `Record<string, number>` | אופציונלי | Server-owned* | MVP | מונה unread לכל uid; increment ע"י `onMessageCreated`. *חריג: משתתף רשאי לאפס (ל-0) רק את המפתח של עצמו בעת פתיחת הצ'אט (נאכף ב-Rules). |
 | `isActive` | `boolean` | כן | Server-owned | MVP | false לאחר block/archive/delete לפי policy. |
 | `createdAt` | `Timestamp` | כן | Server-owned | MVP | זמן יצירת chat. |
 | `updatedAt` | `Timestamp` | כן | Server-owned | MVP | זמן עדכון. |

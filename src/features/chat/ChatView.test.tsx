@@ -15,13 +15,15 @@ import { ChatView } from './ChatView';
 import type { ChatDocument, MessageDocument, PublicProfileDocument } from '@/shared/models';
 import { useUserStore } from '@/shared/store/userStore';
 
-vi.mock('./chatApi', () => ({
+vi.mock('./chatApi', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('./chatApi')>()),
   subscribeMyChats: vi.fn(),
   subscribeMessages: vi.fn(),
   sendTextMessage: vi.fn(),
   sendVideoMessage: vi.fn(),
   loadChatPartnerProfiles: vi.fn(),
   resolveMediaUrl: vi.fn(async () => 'https://x/video.webm'),
+  markChatRead: vi.fn(async () => undefined),
 }));
 
 vi.mock('./callService', () => ({

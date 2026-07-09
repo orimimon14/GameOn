@@ -30,6 +30,7 @@ export const ProfileGallery: React.FC = () => {
 
   const [busy, setBusy] = useState(false);
   const [errorKey, setErrorKey] = useState<string | null>(null);
+  const [errorDetail, setErrorDetail] = useState<string | null>(null);
 
   if (!userDoc) return null;
   const uid = userDoc.uid;
@@ -40,6 +41,7 @@ export const ProfileGallery: React.FC = () => {
   const onPick = async (file: File | undefined) => {
     if (!file || busy) return;
     setErrorKey(null);
+    setErrorDetail(null);
     const rejection = galleryRejection(file, items.length, isPro);
     if (rejection) {
       setErrorKey(REJECTION_KEYS[rejection]);
@@ -48,8 +50,11 @@ export const ProfileGallery: React.FC = () => {
     setBusy(true);
     try {
       await uploadGalleryMedia(uid, file, items);
-    } catch {
+    } catch (err) {
       setErrorKey('profile.gallery.uploadError');
+      setErrorDetail(
+        (err as { code?: string })?.code ?? (err instanceof Error ? err.message : 'unknown'),
+      );
     } finally {
       setBusy(false);
       if (inputRef.current) inputRef.current.value = '';
@@ -84,6 +89,9 @@ export const ProfileGallery: React.FC = () => {
       {errorKey && (
         <p role="alert" className="text-danger font-bold text-sm mb-3 text-center">
           {t(errorKey)}
+          {errorDetail && (
+            <span dir="ltr" className="opacity-60 text-xs font-normal"> ({errorDetail})</span>
+          )}
         </p>
       )}
 

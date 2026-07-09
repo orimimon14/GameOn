@@ -24,6 +24,13 @@ export const onMessageCreated = onDocumentCreated(
     const preview =
       message.type === 'text' ? String(message.text ?? '').slice(0, PREVIEW_MAX_CHARS) : '';
 
+    // Recipient's unread counter (DATA_MODEL §7) — the recipient zeroes
+    // their own key when they open the chat (narrow rules exception).
+    const chatBefore = await db.doc(`chats/${chatId}`).get();
+    const recipientUid = (chatBefore.data()?.participants ?? []).find(
+      (p: string) => p !== message.senderId,
+    );
+
     try {
       await Promise.all([
         snapshot.ref.set(
@@ -37,6 +44,9 @@ export const onMessageCreated = onDocumentCreated(
             lastMessageSenderId: message.senderId,
             lastTimestamp: message.createdAt ?? FieldValue.serverTimestamp(),
             updatedAt: FieldValue.serverTimestamp(),
+            ...(recipientUid
+              ? { unreadCounts: { [recipientUid]: FieldValue.increment(1) } }
+              : {}),
           },
           { merge: true },
         ),
@@ -52,9 +62,7 @@ export const onMessageCreated = onDocumentCreated(
 
     // New-message push to the other participant (best effort).
     try {
-      const chatSnap = await db.doc(`chats/${chatId}`).get();
-      const participants: string[] = chatSnap.data()?.participants ?? [];
-      const recipient = participants.find((p) => p !== message.senderId);
+      const recipient = recipientUid;
       if (recipient) {
         const senderSnap = await db.doc(`publicProfiles/${message.senderId}`).get();
         const senderName: string = senderSnap.data()?.displayName ?? '';

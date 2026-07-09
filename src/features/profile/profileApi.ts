@@ -55,11 +55,27 @@ const compressImage = (file: File): Promise<Blob> =>
     img.src = url;
   });
 
+// Some phones hand over photos the browser can't decode (HEIC on Android)
+// or camera captures with an empty MIME type. When compression fails, fall
+// back to uploading the original if it fits the Storage rule size cap.
+const compressOrOriginal = async (
+  file: File,
+  maxOriginalBytes: number,
+): Promise<{ blob: Blob; contentType: string; ext: string }> => {
+  try {
+    return { blob: await compressImage(file), contentType: 'image/jpeg', ext: 'jpg' };
+  } catch {
+    if (file.size > maxOriginalBytes) throw new Error('photo_unsupported');
+    const contentType = file.type.split(';')[0] || 'image/jpeg';
+    return { blob: file, contentType, ext: contentType.split('/')[1] ?? 'jpg' };
+  }
+};
+
 export const uploadProfilePhoto = async (uid: string, file: File): Promise<string> => {
   const { storage, db } = getFirebase();
-  const compressed = await compressImage(file);
-  const path = `profileImages/${uid}/${Date.now()}.jpg`;
-  await uploadBytes(storageRef(storage, path), compressed, { contentType: 'image/jpeg' });
+  const { blob, contentType, ext } = await compressOrOriginal(file, 5 * 1024 * 1024);
+  const path = `profileImages/${uid}/${Date.now()}.${ext}`;
+  await uploadBytes(storageRef(storage, path), blob, { contentType });
   const url = await getDownloadURL(storageRef(storage, path));
   // profileImageUrl is client-writable; updatedAt is server-owned (rules) so we don't touch it.
   await updateDoc(doc(db, 'users', uid), { profileImageUrl: url });
@@ -83,7 +99,7 @@ export const galleryRejection = (
   isPro: boolean,
 ): GalleryRejection | null => {
   if (currentCount >= (isPro ? GALLERY_MAX_PRO : GALLERY_MAX_BASIC)) return 'full';
-  if (file.type.startsWith('image/')) return null;
+  if (!file.type || file.type.startsWith('image/')) return null;
   const videoType = file.type.split(';')[0];
   if (!GALLERY_VIDEO_TYPES.includes(videoType)) return 'bad_type';
   if (!isPro) return 'video_pro_only';
@@ -97,12 +113,13 @@ export const uploadGalleryMedia = async (
   existing: GalleryMediaItem[],
 ): Promise<GalleryMediaItem> => {
   const { storage, db } = getFirebase();
-  const isImage = file.type.startsWith('image/');
+  const isImage = !file.type || file.type.startsWith('image/');
   const id = `${Date.now()}`;
-  const blob = isImage ? await compressImage(file) : file;
   // MediaRecorder-style types can carry ";codecs=" — rules expect bare MIME.
-  const contentType = isImage ? 'image/jpeg' : file.type.split(';')[0];
-  const ext = isImage ? 'jpg' : (contentType.split('/')[1] ?? 'mp4');
+  const image = isImage ? await compressOrOriginal(file, 10 * 1024 * 1024) : null;
+  const blob = image ? image.blob : file;
+  const contentType = image ? image.contentType : file.type.split(';')[0];
+  const ext = image ? image.ext : (contentType.split('/')[1] ?? 'mp4');
   const filePath = `profileMedia/${uid}/${id}.${ext}`;
   await uploadBytes(storageRef(storage, filePath), blob, { contentType });
   const url = await getDownloadURL(storageRef(storage, filePath));

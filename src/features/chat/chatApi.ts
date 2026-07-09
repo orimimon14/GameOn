@@ -9,6 +9,7 @@ import {
   orderBy,
   query,
   serverTimestamp,
+  updateDoc,
   where,
 } from 'firebase/firestore';
 import { httpsCallable } from 'firebase/functions';
@@ -129,6 +130,16 @@ export const resolveMediaUrl = async (filePath: string): Promise<string> => {
 
 // One-shot chat list (notifications center) — same data as subscribeMyChats
 // without holding a listener open.
+// Unread counters (DATA_MODEL §4.7): onMessageCreated increments the
+// recipient's key; opening the chat zeroes ONLY your own key (rules-enforced).
+export const unreadCountFor = (chat: ChatDocument, uid: string): number =>
+  chat.unreadCounts?.[uid] ?? 0;
+
+export const markChatRead = async (chatId: string, uid: string): Promise<void> => {
+  const { db } = getFirebase();
+  await updateDoc(doc(db, 'chats', chatId), { [`unreadCounts.${uid}`]: 0 });
+};
+
 export const loadMyChatsOnce = async (uid: string): Promise<ChatDocument[]> => {
   const { db } = getFirebase();
   const snap = await getDocs(

@@ -428,7 +428,20 @@ service cloud.firestore {
       allow read: if isAdmin()
         || (isSignedIn() && request.auth.uid in resource.data.participants);
       allow create: if false;
-      allow update: if false;
+
+      // Narrow exception to server-owned chats (DATA_MODEL §4.7): a
+      // participant may zero their OWN unreadCounts key when opening the
+      // chat. Everything else stays backend-only.
+      allow update: if isSignedIn()
+        && request.auth.uid in resource.data.participants
+        && isNotSuspended()
+        && onlyChanged(["unreadCounts"])
+        && request.resource.data.unreadCounts
+          .diff(resource.data.get("unreadCounts", {}))
+          .affectedKeys()
+          .hasOnly([request.auth.uid])
+        && request.resource.data.unreadCounts[request.auth.uid] == 0;
+
       allow delete: if false;
 
       match /messages/{messageId} {

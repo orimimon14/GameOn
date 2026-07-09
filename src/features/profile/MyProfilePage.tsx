@@ -35,20 +35,29 @@ export const MyProfilePage: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
-  const [photoError, setPhotoError] = useState(false);
+  // null = no error; otherwise a short technical detail shown alongside the
+  // message so remote debugging from a screenshot is possible.
+  const [photoError, setPhotoError] = useState<string | null>(null);
 
   const onPickPhoto = async (file: File | undefined) => {
     if (!file || !user) return;
-    if (!file.type.startsWith('image/') || file.size > 25 * 1024 * 1024) {
-      setPhotoError(true);
+    // Camera captures may come with an empty MIME type — let decode decide.
+    if (file.type && !file.type.startsWith('image/')) {
+      setPhotoError(file.type);
+      return;
+    }
+    if (file.size > 25 * 1024 * 1024) {
+      setPhotoError(`${Math.round(file.size / 1024 / 1024)}MB`);
       return;
     }
     setUploadingPhoto(true);
-    setPhotoError(false);
+    setPhotoError(null);
     try {
       await uploadProfilePhoto(user.uid, file);
-    } catch {
-      setPhotoError(true);
+    } catch (err) {
+      setPhotoError(
+        (err as { code?: string })?.code ?? (err instanceof Error ? err.message : 'unknown'),
+      );
     } finally {
       setUploadingPhoto(false);
     }
@@ -144,7 +153,10 @@ export const MyProfilePage: React.FC = () => {
           </label>
         </div>
         {photoError && (
-          <p role="alert" className="text-danger font-bold text-sm mb-4 text-center">{t('profile.photoError')}</p>
+          <p role="alert" className="text-danger font-bold text-sm mb-4 text-center">
+            {t('profile.photoError')}{' '}
+            <span dir="ltr" className="opacity-60 text-xs font-normal">({photoError})</span>
+          </p>
         )}
 
         {!isEditing && (
