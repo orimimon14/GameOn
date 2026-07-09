@@ -1,4 +1,4 @@
-import { collection, doc, getDocs, updateDoc } from 'firebase/firestore';
+import { collection, doc, getDocs, setDoc, updateDoc } from 'firebase/firestore';
 import { deleteObject, getDownloadURL, ref as storageRef, uploadBytes } from 'firebase/storage';
 
 import { getFirebase } from '@/config/firebase';
@@ -21,7 +21,31 @@ export const updateMyPreferredLocale = async (uid: string, locale: 'he' | 'en'):
 export const loadMyGames = async (uid: string): Promise<UserGameDocument[]> => {
   const { db } = getFirebase();
   const snapshot = await getDocs(collection(db, 'users', uid, 'games'));
-  return snapshot.docs.map((d) => d.data() as UserGameDocument);
+  return snapshot.docs
+    .map((d) => ({ ...(d.data() as UserGameDocument), gameId: d.id }))
+    .filter((g) => g.isActive !== false);
+};
+
+// ADR-043 — add/remove games after onboarding, straight through the rules
+// (create allows only userGameClientWritableKeys; the catalog must contain
+// the game; onUserGameUpdated resyncs publicProfiles.gameIds).
+export const addGameToProfile = async (
+  uid: string,
+  gameId: string,
+  details: { rank?: string; lookingFor: string; voicePreference?: string },
+): Promise<void> => {
+  const { db } = getFirebase();
+  await setDoc(doc(db, 'users', uid, 'games', gameId), {
+    rank: details.rank ?? '',
+    lookingFor: details.lookingFor,
+    ...(details.voicePreference ? { voicePreference: details.voicePreference } : {}),
+    isActive: true,
+  });
+};
+
+export const removeGameFromProfile = async (uid: string, gameId: string): Promise<void> => {
+  const { db } = getFirebase();
+  await updateDoc(doc(db, 'users', uid, 'games', gameId), { isActive: false });
 };
 
 

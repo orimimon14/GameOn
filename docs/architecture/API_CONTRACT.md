@@ -42,6 +42,9 @@
   - [3.13 `createCheckoutSession`](#313-createcheckoutsession)
   - [3.14 `deleteAccount`](#314-deleteaccount)
   - [3.15 `completeOnboarding`](#315-completeonboarding)
+
+> **עדכון ADR-043 (2026-07-09):** הקלט מקבל `games: OnboardingGame[]` (1–10 משחקים) במקום `game` יחיד; `rank` אופציונלי. payload legacy עם `game` יחיד ממשיך להיתמך (מנורמל ל-`games`).
+
   - [5.9 `onUserCreated`](#59-onusercreated)
 - [4. HTTP / Webhook Functions](#4-http--webhook-functions)
   - [4.1 `paymentWebhook`](#41-paymentwebhook)

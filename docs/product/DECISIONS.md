@@ -64,6 +64,7 @@
 | ADR-040 | Cross-Game Likes & Dead-End Like Prevention | C — החלטות מוצר מוצעות | Accepted (2026-07-07): cross-game likes allowed in MVP |
 | ADR-041 | Live Voice & Video Calls in MVP | C — החלטות מוצר מוצעות | Accepted |
 | ADR-042 | Profile Media Gallery (tier-gated) | C — החלטות מוצר מוצעות | Accepted (2026-07-09) |
+| ADR-043 | Multi-Game Profiles & Expanded Catalog | C — החלטות מוצר מוצעות | Accepted (2026-07-09) |
 | ADR-027 | AI Request Limits by Tier | D — נושאים פתוחים | Open |
 | ADR-028 | Chat Abuse Threshold | D — נושאים פתוחים | Open |
 | ADR-029 | Daily Limit Reset Timezone | D — נושאים פתוחים | Open |
@@ -1037,6 +1038,18 @@ Option B לבדו אינו מספיק (שגיאות בזמן swipe), ו-Option A
 - קבצים ב-Storage תחת `profileMedia/{uid}/{fileId}` — תמונות לכולם (≤10MB, נדחסות client-side), וידאו (`video/webm|mp4|quicktime`, ≤50MB) רק ל-Pro (נאכף ב-Storage Rules).
 - מכסות הפריטים נאכפות ב-Firestore Rules לפי `isPro` (3 ל-Basic, 9 ל-Pro).
 - אכיפת "וידאו רק ל-Pro" היא בשכבת ה-Storage (העלאה). פריט וידאו מזויף שמצביע על URL זר אינו מסוכן (render בלבד) — מקובל ל-MVP.
+
+
+### ADR-043: Multi-Game Profiles & Expanded Catalog
+
+**Status:** Accepted (2026-07-09) — בקשת מוצר ישירה.
+
+**החלטות:**
+
+1. **Onboarding מרובה משחקים** — `completeOnboarding` מקבל `games: OnboardingGame[]` (1–10). `rank` הופך לאופציונלי. payload legacy עם `game` יחיד עדיין נתמך (מנורמל ל-`games`).
+2. **ניהול משחקים מהפרופיל** — הוספת משחק נעשית client-side ישירות ל-`users/{uid}/games/{gameId}` (ה-Rules הקיימים כבר מתירים create אחרי onboarding עם מפתחות client-writable בלבד); הסרה = `isActive: false`. `onUserGameUpdated` מסנכרן `publicProfiles.gameIds`. מסמכי game שנוצרו ע"י client לא מכילים `name` — ה-UI פותר שם מ-gameCatalog.
+3. **קטלוג מורחב** — ~27 משחקים פעילים עם `coverUrl`. תמונות: Steam CDN (header.jpg) כשקיים; אחרת תמונת Wikipedia (fair-use/logo). ⚠️ לקראת פרסום בחנויות יש לעבור על רישוי התמונות (STORE_COMPLIANCE).
+4. **הצעות משחקים** — `gameSuggestions/{id}` write-only ({uid, name≤60, createdAt}); קריאה לאדמין בלבד.
 
 ---
 

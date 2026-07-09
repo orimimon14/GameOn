@@ -3,7 +3,16 @@ import { httpsCallable } from 'firebase/functions';
 import { getFirebase } from '@/config/firebase';
 import type { LookingFor, Platform, SkillLevel, VoicePreference } from '@/shared/enums';
 
-// Client wrapper for the onboarding backend (API_CONTRACT §3.15).
+// Client wrapper for the onboarding backend (API_CONTRACT §3.15, ADR-043 —
+// multiple games per signup).
+export interface OnboardingGameInput {
+  gameId: string;
+  rank?: string;
+  lookingFor: LookingFor;
+  lookingForText?: string;
+  voicePreference?: VoicePreference;
+}
+
 export interface CompleteOnboardingPayload {
   profile: {
     displayName: string;
@@ -12,13 +21,7 @@ export interface CompleteOnboardingPayload {
     skillLevel: SkillLevel;
     platforms: Platform[];
   };
-  game: {
-    gameId: string;
-    rank: string;
-    lookingFor: LookingFor;
-    lookingForText?: string;
-    voicePreference?: VoicePreference;
-  };
+  games: OnboardingGameInput[];
 }
 
 export const completeOnboarding = async (payload: CompleteOnboardingPayload): Promise<void> => {

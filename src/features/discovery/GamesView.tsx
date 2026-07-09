@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { loadGameCatalog } from '@/shared/api/gameCatalog';
+import { loadGameCatalog, suggestGame } from '@/shared/api/gameCatalog';
 import type { GameCatalogDocument } from '@/shared/models';
+import { useUserStore } from '@/shared/store/userStore';
 
 // Game picker backed by the real gameCatalog collection (ADR-019).
 // Selecting a game sets the discovery deck filter (uiStore.selectedGame = gameId).
@@ -23,6 +24,24 @@ export const GamesView: React.FC<GamesViewProps> = ({ onSelectGame }) => {
   const { t } = useTranslation();
   const [games, setGames] = useState<GameCatalogDocument[]>([]);
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
+  const uid = useUserStore((s) => s.userDoc?.uid);
+  // ADR-043 — "can't find your game?" submits a real suggestion.
+  const [suggestOpen, setSuggestOpen] = useState(false);
+  const [suggestion, setSuggestion] = useState('');
+  const [suggestState, setSuggestState] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
+
+  const onSuggest = async () => {
+    const name = suggestion.trim();
+    if (!name || !uid || suggestState === 'sending') return;
+    setSuggestState('sending');
+    try {
+      await suggestGame(uid, name);
+      setSuggestState('sent');
+      setSuggestion('');
+    } catch {
+      setSuggestState('error');
+    }
+  };
 
   useEffect(() => {
     let cancelled = false;
@@ -105,9 +124,41 @@ export const GamesView: React.FC<GamesViewProps> = ({ onSelectGame }) => {
         </div>
         <h3 className="text-xl font-bold text-white mb-2">{t('games.missingTitle')}</h3>
         <p className="text-text-muted text-sm max-w-sm mx-auto">{t('games.missingHint')}</p>
-        <button className="mt-6 px-8 py-3 bg-white/10 hover:bg-white/20 text-white rounded-full font-bold text-xs uppercase tracking-widest transition-all">
-          {t('games.suggest')}
-        </button>
+        {suggestState === 'sent' ? (
+          <p className="mt-6 text-green-400 font-bold">
+            <i className="fa-solid fa-check me-2"></i>
+            {t('games.suggestSent')}
+          </p>
+        ) : suggestOpen ? (
+          <div className="mt-6 flex flex-col sm:flex-row gap-2 justify-center items-center">
+            <input
+              aria-label={t('games.suggestPlaceholder')}
+              placeholder={t('games.suggestPlaceholder')}
+              value={suggestion}
+              maxLength={60}
+              onChange={(e) => setSuggestion(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && void onSuggest()}
+              className="w-full sm:w-72 bg-surface border border-white/10 rounded-full px-5 py-3 text-text focus:outline-none focus:border-primary transition-colors text-sm"
+            />
+            <button
+              onClick={() => void onSuggest()}
+              disabled={!suggestion.trim() || suggestState === 'sending'}
+              className="px-8 py-3 bg-primary text-white rounded-full font-bold text-xs uppercase tracking-widest transition-all disabled:opacity-50"
+            >
+              {suggestState === 'sending' ? '…' : t('games.suggestSend')}
+            </button>
+          </div>
+        ) : (
+          <button
+            onClick={() => setSuggestOpen(true)}
+            className="mt-6 px-8 py-3 bg-white/10 hover:bg-white/20 text-white rounded-full font-bold text-xs uppercase tracking-widest transition-all"
+          >
+            {t('games.suggest')}
+          </button>
+        )}
+        {suggestState === 'error' && (
+          <p role="alert" className="mt-3 text-danger text-sm font-bold">{t('games.suggestError')}</p>
+        )}
       </div>
     </div>
   );

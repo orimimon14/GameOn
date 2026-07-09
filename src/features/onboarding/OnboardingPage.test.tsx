@@ -62,17 +62,18 @@ describe('OnboardingPage', () => {
     fillBasics();
     fireEvent.click(screen.getByRole('button', { name: 'המשך' }));
 
-    expect(await screen.findByText('באיזה משחק נתחיל?')).toBeInTheDocument();
-    expect(await screen.findByRole('button', { name: 'Valorant' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'EA FC 26' })).toBeInTheDocument();
+    expect(await screen.findByText('באילו משחקים נתחיל?')).toBeInTheDocument();
+    expect(await screen.findByRole('button', { name: /Valorant/ })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /EA FC 26/ })).toBeInTheDocument();
   });
 
-  it('submits the full canonical payload on finish', async () => {
+  it('submits multiple games in the canonical payload on finish (ADR-043)', async () => {
     renderPage();
     fillBasics();
     fireEvent.click(screen.getByRole('button', { name: 'המשך' }));
-    fireEvent.click(await screen.findByRole('button', { name: 'Valorant' }));
-    fireEvent.change(screen.getByLabelText('הדירוג שלך'), { target: { value: 'Platinum' } });
+    fireEvent.click(await screen.findByRole('button', { name: /Valorant/ }));
+    fireEvent.click(screen.getByRole('button', { name: /EA FC 26/ }));
+    fireEvent.change(screen.getByLabelText('הדירוג שלך — Valorant'), { target: { value: 'Platinum' } });
     fireEvent.click(screen.getByRole('button', { name: 'סיום ויציאה לדרך!' }));
 
     await waitFor(() => expect(completeOnboarding).toHaveBeenCalledTimes(1));
@@ -84,7 +85,10 @@ describe('OnboardingPage', () => {
         skillLevel: 'intermediate',
         platforms: ['pc'],
       },
-      game: { gameId: 'valorant', rank: 'Platinum', lookingFor: 'casual' },
+      games: [
+        { gameId: 'valorant', rank: 'Platinum', lookingFor: 'casual' },
+        { gameId: 'fifa', lookingFor: 'casual' },
+      ],
     });
   });
 
@@ -92,7 +96,7 @@ describe('OnboardingPage', () => {
     renderPage();
     fillBasics();
     fireEvent.click(screen.getByRole('button', { name: 'המשך' }));
-    await screen.findByText('באיזה משחק נתחיל?');
+    await screen.findByText('באילו משחקים נתחיל?');
     fireEvent.click(screen.getByRole('button', { name: 'סיום ויציאה לדרך!' }));
 
     expect(await screen.findByText('יש לבחור משחק')).toBeInTheDocument();

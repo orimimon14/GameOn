@@ -29,21 +29,34 @@ export const LOOKING_FOR = [
 
 export const VOICE_PREFERENCES = ['required', 'preferred', 'no_voice', 'flexible'] as const;
 
-export const completeOnboardingSchema = z.object({
-  profile: z.object({
-    displayName: z.string().trim().min(2).max(30),
-    age: z.number().int().min(16).max(120), // ADR-013
-    bio: z.string().max(300),
-    skillLevel: z.enum(SKILL_LEVELS),
-    platforms: z.array(z.enum(PLATFORMS)).min(1).max(10),
-  }),
-  game: z.object({
-    gameId: z.string().trim().min(1),
-    rank: z.string().trim().min(1).max(50),
-    lookingFor: z.enum(LOOKING_FOR),
-    lookingForText: z.string().max(120).optional(),
-    voicePreference: z.enum(VOICE_PREFERENCES).optional(),
-  }),
+const onboardingGameSchema = z.object({
+  gameId: z.string().trim().min(1),
+  rank: z.string().trim().max(50).optional(), // optional since multi-game (ADR-043)
+  lookingFor: z.enum(LOOKING_FOR),
+  lookingForText: z.string().max(120).optional(),
+  voicePreference: z.enum(VOICE_PREFERENCES).optional(),
 });
+
+// ADR-043 — onboarding accepts multiple games. `game` (singular) is the
+// legacy pre-ADR-043 payload, normalized into `games` for old bundles.
+export const completeOnboardingSchema = z
+  .object({
+    profile: z.object({
+      displayName: z.string().trim().min(2).max(30),
+      age: z.number().int().min(16).max(120), // ADR-013
+      bio: z.string().max(300),
+      skillLevel: z.enum(SKILL_LEVELS),
+      platforms: z.array(z.enum(PLATFORMS)).min(1).max(10),
+    }),
+    games: z.array(onboardingGameSchema).min(1).max(10).optional(),
+    game: onboardingGameSchema.optional(),
+  })
+  .transform((data) => ({
+    profile: data.profile,
+    games: data.games ?? (data.game ? [data.game] : []),
+  }))
+  .refine((data) => data.games.length >= 1 && data.games.length <= 10, {
+    message: 'between 1 and 10 games required',
+  });
 
 export type CompleteOnboardingInput = z.infer<typeof completeOnboardingSchema>;

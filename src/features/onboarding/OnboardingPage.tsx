@@ -29,8 +29,9 @@ export const OnboardingPage: React.FC = () => {
   const [catalogError, setCatalogError] = useState(false);
   const [basics, setBasics] = useState<BasicsInput | null>(null);
 
-  const [gameId, setGameId] = useState('');
-  const [rank, setRank] = useState('');
+  // ADR-043 — pick as many games as you want; rank per game is optional.
+  const [selectedGameIds, setSelectedGameIds] = useState<string[]>([]);
+  const [ranks, setRanks] = useState<Record<string, string>>({});
   const [lookingFor, setLookingFor] = useState<LookingFor>('casual');
   const [voicePreference, setVoicePreference] = useState<VoicePreference | ''>('');
   const [stepTwoError, setStepTwoError] = useState<string | null>(null);
@@ -70,24 +71,29 @@ export const OnboardingPage: React.FC = () => {
     setStep(2);
   };
 
-  const selectedGame = catalog?.find((g) => g.gameId === gameId);
+  const toggleGame = (id: string) =>
+    setSelectedGameIds((prev) =>
+      prev.includes(id) ? prev.filter((g) => g !== id) : [...prev, id],
+    );
 
   const onFinish = async () => {
     if (!basics) return;
-    if (!gameId) return setStepTwoError('onboarding.errors.game');
-    if (!rank.trim() || rank.trim().length > 50) return setStepTwoError('onboarding.errors.rank');
+    if (selectedGameIds.length === 0) return setStepTwoError('onboarding.errors.game');
+    if (selectedGameIds.some((id) => (ranks[id] ?? '').trim().length > 50)) {
+      return setStepTwoError('onboarding.errors.rank');
+    }
     setStepTwoError(null);
     setSubmitError(false);
     setSubmitting(true);
     try {
       await completeOnboarding({
         profile: basics,
-        game: {
-          gameId,
-          rank: rank.trim(),
+        games: selectedGameIds.map((id) => ({
+          gameId: id,
+          ...((ranks[id] ?? '').trim() ? { rank: ranks[id].trim() } : {}),
           lookingFor,
           ...(voicePreference ? { voicePreference } : {}),
-        },
+        })),
       });
       navigate('/discover');
     } catch {
@@ -174,29 +180,63 @@ export const OnboardingPage: React.FC = () => {
             <h2 className="text-xl font-bold text-text-muted">{t('onboarding.gameTitle')}</h2>
 
             <div>
-              <span className="block text-sm font-bold text-text-muted mb-2">{t('onboarding.chooseGame')}</span>
+              <span className="block text-sm font-bold text-text-muted mb-2">{t('onboarding.chooseGames')}</span>
               {catalogError && <p role="alert" className="text-text-danger text-sm">{t('onboarding.catalogError')}</p>}
               {!catalog && !catalogError && <p className="text-text-muted text-sm">{t('onboarding.loadingCatalog')}</p>}
               {catalog && (
-                <div className="grid grid-cols-2 gap-2">
-                  {catalog.map((game) => (
-                    <button key={game.gameId} type="button" onClick={() => setGameId(game.gameId)} className={chipClass(gameId === game.gameId)}>
-                      {game.name}
-                    </button>
-                  ))}
+                <div className="grid grid-cols-3 gap-2">
+                  {catalog.map((game) => {
+                    const selected = selectedGameIds.includes(game.gameId);
+                    return (
+                      <button
+                        key={game.gameId}
+                        type="button"
+                        onClick={() => toggleGame(game.gameId)}
+                        className={`relative h-20 rounded-xl overflow-hidden border-2 transition-all ${selected ? 'border-primary shadow-glow-primary' : 'border-white/10 hover:border-white/30'}`}
+                      >
+                        {game.coverUrl ? (
+                          <img src={game.coverUrl} alt="" className="absolute inset-0 w-full h-full object-cover" />
+                        ) : (
+                          <div className="absolute inset-0 bg-gradient-to-br from-primary/40 via-surface to-background" />
+                        )}
+                        <div className={`absolute inset-0 ${selected ? 'bg-primary/40' : 'bg-black/55'}`} />
+                        <span className="relative z-10 text-white text-xs font-black px-1 leading-tight drop-shadow">{game.name}</span>
+                        {selected && (
+                          <span className="absolute top-1 end-1 z-10 w-5 h-5 rounded-full bg-primary text-white text-[10px] flex items-center justify-center">
+                            <i className="fa-solid fa-check"></i>
+                          </span>
+                        )}
+                      </button>
+                    );
+                  })}
                 </div>
               )}
             </div>
 
-            <div>
-              <label htmlFor="rank" className="block text-sm font-bold text-text-muted mb-1.5">
-                {t('onboarding.rank')}
-              </label>
-              <input id="rank" list="rank-options" placeholder={t('onboarding.rankPlaceholder')} value={rank} onChange={(e) => setRank(e.target.value)} className={inputClass} />
-              <datalist id="rank-options">
-                {selectedGame?.supportedRanks?.map((r) => <option key={r} value={r} />)}
-              </datalist>
-            </div>
+            {selectedGameIds.length > 0 && (
+              <div className="flex flex-col gap-2">
+                <span className="block text-sm font-bold text-text-muted">{t('onboarding.ranksTitle')}</span>
+                {selectedGameIds.map((id) => {
+                  const game = catalog?.find((g) => g.gameId === id);
+                  return (
+                    <div key={id} className="flex items-center gap-3 bg-surface/60 border border-white/10 rounded-xl px-3 py-2">
+                      <input
+                        aria-label={`${t('onboarding.rank')} — ${game?.name ?? id}`}
+                        list={`rank-options-${id}`}
+                        placeholder={t('onboarding.rankOptional')}
+                        value={ranks[id] ?? ''}
+                        onChange={(e) => setRanks((prev) => ({ ...prev, [id]: e.target.value }))}
+                        className="flex-1 bg-transparent border-0 text-text focus:outline-none text-sm"
+                      />
+                      <datalist id={`rank-options-${id}`}>
+                        {game?.supportedRanks?.map((r) => <option key={r} value={r} />)}
+                      </datalist>
+                      <span className="text-sm font-bold text-text shrink-0">{game?.name ?? id}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
 
             <div>
               <label htmlFor="lookingFor" className="block text-sm font-bold text-text-muted mb-1.5">

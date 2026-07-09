@@ -18,7 +18,7 @@ export const completeOnboarding = onCall(async (request) => {
   if (!parsed.success) {
     throw new HttpsError('invalid-argument', 'invalid onboarding payload');
   }
-  const { profile, game } = parsed.data;
+  const { profile, games } = parsed.data;
 
   const db = getFirestore();
 
@@ -32,17 +32,23 @@ export const completeOnboarding = onCall(async (request) => {
     throw new HttpsError('failed-precondition', 'account restricted');
   }
 
-  const catalogSnap = await db.doc(`gameCatalog/${game.gameId}`).get();
-  const catalog = catalogSnap.data();
-  if (!catalog) {
-    throw new HttpsError('not-found', 'game not found');
-  }
-  if (catalog.isActive !== true) {
-    throw new HttpsError('failed-precondition', 'game not active');
-  }
+  // ADR-043 — every selected game must exist and be active in the catalog.
+  const catalogSnaps = await db.getAll(
+    ...games.map((game) => db.doc(`gameCatalog/${game.gameId}`)),
+  );
+  const catalogs = catalogSnaps.map((snap) => {
+    const catalog = snap.data();
+    if (!catalog) {
+      throw new HttpsError('not-found', 'game not found');
+    }
+    if (catalog.isActive !== true) {
+      throw new HttpsError('failed-precondition', 'game not active');
+    }
+    return catalog;
+  });
 
-  const gameRef = db.doc(`users/${uid}/games/${game.gameId}`);
-  const existingGame = await gameRef.get();
+  const gameRefs = games.map((game) => db.doc(`users/${uid}/games/${game.gameId}`));
+  const existingGames = await db.getAll(...gameRefs);
 
   const batch = db.batch();
 
@@ -52,19 +58,22 @@ export const completeOnboarding = onCall(async (request) => {
     { merge: true },
   );
 
-  const gameDoc: Record<string, unknown> = {
-    gameId: game.gameId,
-    name: catalog.name ?? game.gameId,
-    rank: game.rank,
-    lookingFor: game.lookingFor,
-    isActive: true,
-    updatedAt: FieldValue.serverTimestamp(),
-  };
-  if (catalog.iconUrl) gameDoc.iconUrl = catalog.iconUrl;
-  if (game.lookingForText) gameDoc.lookingForText = game.lookingForText;
-  if (game.voicePreference) gameDoc.voicePreference = game.voicePreference;
-  if (!existingGame.exists) gameDoc.createdAt = FieldValue.serverTimestamp();
-  batch.set(gameRef, gameDoc, { merge: true });
+  games.forEach((game, i) => {
+    const catalog = catalogs[i];
+    const gameDoc: Record<string, unknown> = {
+      gameId: game.gameId,
+      name: catalog.name ?? game.gameId,
+      rank: game.rank ?? '',
+      lookingFor: game.lookingFor,
+      isActive: true,
+      updatedAt: FieldValue.serverTimestamp(),
+    };
+    if (catalog.iconUrl) gameDoc.iconUrl = catalog.iconUrl;
+    if (game.lookingForText) gameDoc.lookingForText = game.lookingForText;
+    if (game.voicePreference) gameDoc.voicePreference = game.voicePreference;
+    if (!existingGames[i].exists) gameDoc.createdAt = FieldValue.serverTimestamp();
+    batch.set(gameRefs[i], gameDoc, { merge: true });
+  });
 
   await batch.commit();
 
@@ -100,6 +109,6 @@ export const completeOnboarding = onCall(async (request) => {
 
   await syncPublicProfileForUser(uid);
 
-  logger.info('onboarding completed', { uid, gameId: game.gameId });
+  logger.info('onboarding completed', { uid, gameIds: games.map((g) => g.gameId) });
   return { success: true, uid, completedAt: Timestamp.now() };
 });

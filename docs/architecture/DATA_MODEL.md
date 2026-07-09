@@ -711,6 +711,20 @@ export type MessageDocument = {
 
 ---
 
+### 4.8.1 `gameSuggestions/{suggestionId}` (ADR-043)
+
+**Scope:** MVP  
+**מטרה:** הצעות משתמשים למשחקים חסרים — inbox לאדמין. write-only למשתמשים.  
+**Path:** `gameSuggestions/{suggestionId}` (auto ID)
+
+| Field | Type | חובה | Ownership | Scope | תיאור |
+|---|---|---:|---|---|---|
+| `uid` | `string` | כן | Client-writable | MVP | חייב להיות `request.auth.uid`. |
+| `name` | `string` | כן | Client-writable | MVP | שם המשחק המוצע, 1–60 תווים. |
+| `createdAt` | `Timestamp` | כן | Client-writable | MVP | חייב להיות `request.time`. |
+
+---
+
 ### 4.9 `shopItems/{itemId}`
 
 **Scope:** MVP  

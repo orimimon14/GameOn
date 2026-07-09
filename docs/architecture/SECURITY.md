@@ -767,6 +767,24 @@ service cloud.firestore {
     }
 
 
+
+    // ADR-043 — user-submitted game suggestions: write-only inbox for admins.
+    match /gameSuggestions/{suggestionId} {
+      allow read: if isAdmin();
+
+      allow create: if isSignedIn()
+        && isNotSuspended()
+        && request.resource.data.keys().hasOnly(["uid", "name", "createdAt"])
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0
+        && request.resource.data.name.size() <= 60
+        && request.resource.data.createdAt == request.time;
+
+      allow update: if false;
+      allow delete: if false;
+    }
+
     match /chats/{chatId} {
       // resource.data (not get()) so participants can list their own chats —
       // query-provable form of isChatParticipant for this doc itself.

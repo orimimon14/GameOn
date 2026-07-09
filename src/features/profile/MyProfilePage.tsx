@@ -5,13 +5,14 @@ import { useTranslation } from 'react-i18next';
 
 import { OwnedCollection } from './OwnedCollection';
 import { ProfileGallery } from './ProfileGallery';
-import { loadMyGames, updateMyProfile, uploadProfilePhoto } from './profileApi';
+import { addGameToProfile, loadMyGames, removeGameFromProfile, updateMyProfile, uploadProfilePhoto } from './profileApi';
 
 import { useAuthStore } from '@/features/auth/authStore';
 import { useCosmetics } from '@/features/shop/useCosmetics';
-import { Platform, PLATFORMS, SKILL_LEVELS } from '@/shared/enums';
+import { loadGameCatalog } from '@/shared/api/gameCatalog';
+import { LOOKING_FOR, LookingFor, Platform, PLATFORMS, SKILL_LEVELS } from '@/shared/enums';
 import { useLabels } from '@/shared/labels';
-import type { UserGameDocument } from '@/shared/models';
+import type { GameCatalogDocument, UserGameDocument } from '@/shared/models';
 import { profileBasicsSchema, ProfileBasicsInput } from '@/shared/schemas/profileForm';
 import { useUserStore } from '@/shared/store/userStore';
 
@@ -32,6 +33,14 @@ export const MyProfilePage: React.FC = () => {
   const { bannerGradient } = useCosmetics();
 
   const [games, setGames] = useState<UserGameDocument[] | null>(null);
+  // ADR-043 — add/remove games from the profile.
+  const [catalog, setCatalog] = useState<GameCatalogDocument[]>([]);
+  const [addingGame, setAddingGame] = useState(false);
+  const [newGameId, setNewGameId] = useState('');
+  const [newGameRank, setNewGameRank] = useState('');
+  const [newGameLookingFor, setNewGameLookingFor] = useState<LookingFor>('casual');
+  const [gameActionError, setGameActionError] = useState(false);
+  const [gameBusy, setGameBusy] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
@@ -77,7 +86,46 @@ export const MyProfilePage: React.FC = () => {
 
   useEffect(() => {
     if (user) loadMyGames(user.uid).then(setGames, () => setGames([]));
+    loadGameCatalog().then(setCatalog, () => undefined);
   }, [user]);
+
+  const gameName = (game: UserGameDocument) =>
+    game.name ?? catalog.find((c) => c.gameId === game.gameId)?.name ?? game.gameId;
+  const availableGames = catalog.filter((c) => !games?.some((g) => g.gameId === c.gameId));
+
+  const onAddGame = async () => {
+    if (!user || !newGameId || gameBusy) return;
+    setGameBusy(true);
+    setGameActionError(false);
+    try {
+      await addGameToProfile(user.uid, newGameId, {
+        rank: newGameRank.trim() || undefined,
+        lookingFor: newGameLookingFor,
+      });
+      setGames(await loadMyGames(user.uid));
+      setAddingGame(false);
+      setNewGameId('');
+      setNewGameRank('');
+    } catch {
+      setGameActionError(true);
+    } finally {
+      setGameBusy(false);
+    }
+  };
+
+  const onRemoveGame = async (gameId: string) => {
+    if (!user || gameBusy) return;
+    setGameBusy(true);
+    setGameActionError(false);
+    try {
+      await removeGameFromProfile(user.uid, gameId);
+      setGames((prev) => prev?.filter((g) => g.gameId !== gameId) ?? null);
+    } catch {
+      setGameActionError(true);
+    } finally {
+      setGameBusy(false);
+    }
+  };
 
   if (!userDoc) {
     return (
@@ -201,15 +249,87 @@ export const MyProfilePage: React.FC = () => {
             </div>
 
             <div>
-              <h2 className="text-xl font-black italic uppercase text-text text-end mb-3">{t('profile.myGames')}</h2>
+              <div className="flex items-center justify-between mb-3">
+                <button
+                  onClick={() => { setAddingGame((v) => !v); setGameActionError(false); }}
+                  className="px-4 py-2 rounded-xl font-bold text-sm bg-surface border border-white/10 text-text hover:bg-surface-elevated transition-colors"
+                >
+                  <i className="fa-solid fa-plus me-2 text-primary"></i>
+                  {t('profile.addGame')}
+                </button>
+                <h2 className="text-xl font-black italic uppercase text-text text-end">{t('profile.myGames')}</h2>
+              </div>
+
+              {addingGame && (
+                <div className="bg-surface/60 rounded-2xl border border-primary/30 p-4 mb-3 flex flex-col gap-3">
+                  <select
+                    aria-label={t('profile.addGamePick')}
+                    value={newGameId}
+                    onChange={(e) => setNewGameId(e.target.value)}
+                    className={inputClass}
+                  >
+                    <option value="">{t('profile.addGamePick')}</option>
+                    {availableGames.map((g) => (
+                      <option key={g.gameId} value={g.gameId}>{g.name}</option>
+                    ))}
+                  </select>
+                  <div className="flex gap-2">
+                    <input
+                      aria-label={t('onboarding.rank')}
+                      list="add-game-ranks"
+                      placeholder={t('profile.addGameRank')}
+                      value={newGameRank}
+                      onChange={(e) => setNewGameRank(e.target.value)}
+                      className={inputClass}
+                    />
+                    <datalist id="add-game-ranks">
+                      {catalog.find((c) => c.gameId === newGameId)?.supportedRanks?.map((r) => <option key={r} value={r} />)}
+                    </datalist>
+                    <select
+                      aria-label={t('onboarding.lookingFor')}
+                      value={newGameLookingFor}
+                      onChange={(e) => setNewGameLookingFor(e.target.value as LookingFor)}
+                      className={inputClass}
+                    >
+                      {LOOKING_FOR.map((value) => (
+                        <option key={value} value={value}>{labels.lookingFor[value]}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <button
+                    onClick={() => void onAddGame()}
+                    disabled={!newGameId || gameBusy}
+                    className="py-3 rounded-xl font-black italic uppercase bg-primary text-white shadow-glow-primary disabled:opacity-50"
+                  >
+                    {gameBusy ? t('profile.saving') : t('profile.addGameConfirm')}
+                  </button>
+                </div>
+              )}
+
+              {gameActionError && (
+                <p role="alert" className="text-danger font-bold text-sm mb-3 text-center">{t('profile.gameActionError')}</p>
+              )}
+
               {games === null && <p className="text-text-muted text-end text-sm">…</p>}
               {games?.length === 0 && <p className="text-text-muted text-end">{t('profile.noGames')}</p>}
               <div className="flex flex-col gap-3">
                 {games?.map((game) => (
-                  <div key={game.gameId} className="bg-surface/60 rounded-2xl border border-white/10 p-4 flex items-center justify-between">
-                    <span className="px-3 py-1 rounded-lg bg-primary/15 border border-primary/30 text-primary text-sm font-black">{game.rank}</span>
+                  <div key={game.gameId} className="bg-surface/60 rounded-2xl border border-white/10 p-4 flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => void onRemoveGame(game.gameId)}
+                        disabled={gameBusy}
+                        aria-label={`${t('profile.removeGame')} — ${gameName(game)}`}
+                        className="w-8 h-8 rounded-full text-text-muted hover:text-danger hover:bg-danger/10 transition-colors disabled:opacity-50"
+                      >
+                        <i className="fa-solid fa-xmark"></i>
+                      </button>
+                      {game.rank && (
+                        <span className="px-3 py-1 rounded-lg bg-primary/15 border border-primary/30 text-primary text-sm font-black">{game.rank}</span>
+                      )}
+                    </div>
                     <div className="text-end">
-                      <p className="text-text font-bold">{game.name}</p>
+                      <p className="text-text font-bold">{gameName(game)}</p>
                       <p className="text-text-muted text-sm">{labels.lookingFor[game.lookingFor]}</p>
                     </div>
                   </div>
