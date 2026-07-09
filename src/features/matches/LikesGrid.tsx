@@ -161,8 +161,13 @@ export const LikesGrid: React.FC = () => {
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"></div>
 
               <div className="absolute inset-0 flex flex-col justify-end p-4 text-right">
-                <h3 className="text-white font-black text-xl italic uppercase mb-3">
-                  {profile.displayName}, {profile.age}
+                <h3 className="text-white font-black text-xl italic uppercase mb-3 flex items-center justify-end gap-1.5">
+                  {profile.verifiedBadge && (
+                    <span className="w-4 h-4 rounded-full bg-sky-500 text-white text-[8px] flex items-center justify-center shrink-0">
+                      <i className="fa-solid fa-check"></i>
+                    </span>
+                  )}
+                  <span>{profile.displayName}, {profile.age}</span>
                 </h3>
                 <button
                   onClick={() => void handleLikeBack({ profile, gameId })}

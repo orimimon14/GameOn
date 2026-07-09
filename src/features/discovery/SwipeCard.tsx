@@ -3,6 +3,7 @@ import React from 'react';
 
 import { SwipeHud } from './SwipeHud';
 
+import { useItemGradient } from '@/features/shop/useCosmetics';
 import { useLabels } from '@/shared/labels';
 import type { PublicProfileDocument } from '@/shared/models';
 import type { SwipeDirection } from '@/shared/enums';
@@ -21,6 +22,7 @@ interface SwipeCardProps {
 
 export const SwipeCard: React.FC<SwipeCardProps> = ({ profile, exitDirection, disabled, onSwipe }) => {
   const labels = useLabels();
+  const borderGradient = useItemGradient(profile.avatarBorderItemId);
   const reducedMotion = useReducedMotion() ?? false;
 
   const x = useMotionValue(0);
@@ -77,11 +79,29 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({ profile, exitDirection, di
         </>
       )}
 
+      {borderGradient && (
+        <div
+          className="absolute inset-0 rounded-[40px] pointer-events-none z-10"
+          style={{
+            padding: 3,
+            background: borderGradient,
+            WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+            WebkitMaskComposite: 'xor',
+            maskComposite: 'exclude',
+          }}
+        />
+      )}
+
       <SwipeHud profile={profile} />
 
       <div className="absolute inset-0 p-8 flex flex-col justify-end text-right pointer-events-none">
-        <h2 className="text-4xl font-black text-white italic uppercase tracking-tighter mb-2">
-          {profile.displayName}, {profile.age}
+        <h2 className="text-4xl font-black text-white italic uppercase tracking-tighter mb-2 flex items-center justify-end gap-2">
+          {profile.verifiedBadge && (
+            <span className="w-6 h-6 rounded-full bg-sky-500 text-white text-xs flex items-center justify-center shrink-0" title="Pro">
+              <i className="fa-solid fa-check"></i>
+            </span>
+          )}
+          <span>{profile.displayName}, {profile.age}</span>
         </h2>
         <p className="text-white/80 font-bold mb-6 line-clamp-2">{profile.bio}</p>
 

@@ -1,7 +1,9 @@
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { disablePushDevice, isPushLocallyDisabled, pushPermissionState, registerPushDevice, setPushLocallyDisabled, unlockAudio } from '@/features/notifications/pushApi';
+import { loadMyChatsOnce } from '@/features/chat/chatApi';
+import { loadLikesYou } from '@/features/matches/likesApi';
 import { useUserStore } from '@/shared/store/userStore';
 import { GamerProfile } from '@/shared/types';
 
@@ -42,15 +44,55 @@ export const Header: React.FC<HeaderProps> = ({
       void disablePushDevice(pushUid).catch(() => undefined);
     }
   };
-  const [notifications, setNotifications] = useState([
-    { id: 1, text: "יש לך התאמה חדשה עם דני!", type: 'match', time: 'לפני 2 דק׳', read: false },
-    { id: 2, text: "יעל שלחה לך הודעה חדשה", type: 'message', time: 'לפני 10 דק׳', read: false },
-    { id: 3, text: "מישהו חדש עשה לך לייק!", type: 'like', time: 'לפני שעה', read: false },
-  ]);
+  // Real events: pending inbound likes + latest incoming chat messages.
+  const [notifications, setNotifications] = useState<
+    Array<{ id: string; text: string; type: string; time: string; read: boolean }>
+  >([]);
+
+  useEffect(() => {
+    if (!pushUid) return;
+    let cancelled = false;
+    const load = async () => {
+      try {
+        const [likes, chats] = await Promise.all([
+          loadLikesYou(pushUid),
+          loadMyChatsOnce(pushUid),
+        ]);
+        if (cancelled) return;
+        const seenIds = new Set(JSON.parse(localStorage.getItem('swish_seen_notifs') ?? '[]') as string[]);
+        const items = [
+          ...likes.map((like) => ({
+            id: `like_${like.profile.uid}`,
+            text: `${like.profile.displayName} עשה לך לייק! 💜`,
+            type: 'like',
+            time: '',
+            read: seenIds.has(`like_${like.profile.uid}`),
+          })),
+          ...chats
+            .filter((c) => c.lastMessage && c.lastMessageSenderId && c.lastMessageSenderId !== pushUid)
+            .map((c) => ({
+              id: `msg_${c.chatId}_${c.lastTimestamp?.toMillis() ?? 0}`,
+              text: `הודעה חדשה: ${(c.lastMessage ?? '').slice(0, 40)}`,
+              type: 'message',
+              time: c.lastTimestamp ? c.lastTimestamp.toDate().toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' }) : '',
+              read: seenIds.has(`msg_${c.chatId}_${c.lastTimestamp?.toMillis() ?? 0}`),
+            })),
+        ].slice(0, 10);
+        setNotifications(items);
+      } catch {
+        // notifications center is best-effort
+      }
+    };
+    void load();
+    return () => {
+      cancelled = true;
+    };
+  }, [pushUid, isNotifMenuOpen]);
 
   const unreadCount = notifications.filter(n => !n.read).length;
 
   const markAllAsRead = () => {
+    localStorage.setItem('swish_seen_notifs', JSON.stringify(notifications.map((n) => n.id)));
     setNotifications(notifications.map(n => ({ ...n, read: true })));
   };
 

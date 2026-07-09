@@ -3,6 +3,7 @@ import {
   collection,
   doc,
   getDoc,
+  getDocs,
   limitToLast,
   onSnapshot,
   orderBy,
@@ -123,4 +124,18 @@ export const sendVideoMessage = async (
 export const resolveMediaUrl = async (filePath: string): Promise<string> => {
   const { storage } = getFirebase();
   return getDownloadURL(storageRef(storage, filePath));
+};
+
+
+// One-shot chat list (notifications center) — same data as subscribeMyChats
+// without holding a listener open.
+export const loadMyChatsOnce = async (uid: string): Promise<ChatDocument[]> => {
+  const { db } = getFirebase();
+  const snap = await getDocs(
+    query(collection(db, 'chats'), where('participants', 'array-contains', uid)),
+  );
+  return snap.docs
+    .map((d) => d.data() as ChatDocument)
+    .filter((c) => c.isActive !== false)
+    .sort((a, b) => (b.lastTimestamp?.toMillis() ?? 0) - (a.lastTimestamp?.toMillis() ?? 0));
 };

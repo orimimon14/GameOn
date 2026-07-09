@@ -54,3 +54,23 @@ export const useCosmetics = (): EquippedCosmetics => {
     bannerGradient: styleOf(userDoc?.profileBannerItemId),
   };
 };
+
+
+// Resolve any item id (e.g. another player's equipped border from their
+// public profile) to its visual style, using the same cached catalog.
+export const useItemGradient = (itemId?: string): string | undefined => {
+  const [catalog, setCatalog] = useState<ShopItemDocument[]>(catalogCache ?? []);
+  useEffect(() => {
+    if (!itemId || catalogCache) return;
+    let cancelled = false;
+    void getCatalog()
+      .then((items) => {
+        if (!cancelled) setCatalog(items);
+      })
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
+  }, [itemId]);
+  return itemId ? catalog.find((i) => i.itemId === itemId)?.style?.cssGradient : undefined;
+};
