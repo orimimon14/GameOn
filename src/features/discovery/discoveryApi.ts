@@ -2,6 +2,7 @@ import { collection, getDocs, limit, query, where } from 'firebase/firestore';
 import { httpsCallable } from 'firebase/functions';
 
 import { getFirebase } from '@/config/firebase';
+import { SKILL_LEVELS, type SkillLevel } from '@/shared/enums';
 import type { PublicProfileDocument, UserGameDocument } from '@/shared/models';
 
 // Client wrapper for the discovery backend (API_CONTRACT §3.1).
@@ -70,4 +71,21 @@ export const loadMyActiveGameIds = async (uid: string): Promise<string[]> => {
     query(collection(db, 'users', uid, 'games'), where('isActive', '==', true)),
   );
   return snapshot.docs.map((d) => (d.data() as UserGameDocument).gameId);
+};
+
+// Players closest to MY skill level come first (stable sort — original
+// order breaks ties). This is the core matching promise: find people at
+// your level.
+export const sortByLevelCloseness = (
+  profiles: PublicProfileDocument[],
+  mySkill: SkillLevel | undefined,
+): PublicProfileDocument[] => {
+  if (!mySkill) return profiles;
+  const myIndex = SKILL_LEVELS.indexOf(mySkill);
+  if (myIndex === -1) return profiles;
+  const distance = (p: PublicProfileDocument) => {
+    const idx = SKILL_LEVELS.indexOf(p.skillLevel);
+    return idx === -1 ? SKILL_LEVELS.length : Math.abs(idx - myIndex);
+  };
+  return [...profiles].sort((a, b) => distance(a) - distance(b));
 };

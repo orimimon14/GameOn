@@ -96,6 +96,10 @@ export const en: TranslationCatalog = {
     skillLevel: 'Skill level',
     rank: 'Current rank',
     swipeError: 'Swipe failed — try again',
+    levelFilter: 'Filter by level',
+    levelAll: 'All levels',
+    levelMine: 'My level',
+    emptyLevelHint: 'No players at this level right now — try another level or "All levels"',
     limitTitle: 'Out of swipes for today',
     limitHint: 'Come back tomorrow, or upgrade to Pro for unlimited swipes',
     match: {

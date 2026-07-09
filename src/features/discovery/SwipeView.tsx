@@ -3,12 +3,13 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
-import { loadDeck, loadMyActiveGameIds, submitSwipe } from './discoveryApi';
+import { loadDeck, loadMyActiveGameIds, sortByLevelCloseness, submitSwipe } from './discoveryApi';
 import { MatchCelebration } from './MatchCelebration';
 import { SwipeActions } from './SwipeActions';
 import { SwipeCard } from './SwipeCard';
 
-import type { SwipeDirection } from '@/shared/enums';
+import { SKILL_LEVELS, type SkillLevel, type SwipeDirection } from '@/shared/enums';
+import { useLabels } from '@/shared/labels';
 import type { PublicProfileDocument } from '@/shared/models';
 import { useUiStore } from '@/shared/store/uiStore';
 import { useUserStore } from '@/shared/store/userStore';
@@ -26,9 +27,14 @@ const isCallableError = (error: unknown, code: string): boolean =>
 export const SwipeView: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const labels = useLabels();
 
   const uid = useUserStore((s) => s.userDoc?.uid);
+  const mySkill = useUserStore((s) => s.userDoc?.skillLevel);
   const selectedGame = useUiStore((s) => s.selectedGame);
+  // Level filter: 'all' shows everyone sorted by closeness to MY level;
+  // a specific level hard-filters the deck.
+  const [levelFilter, setLevelFilter] = useState<SkillLevel | 'all'>('all');
 
   const [status, setStatus] = useState<DeckStatus>('loading');
   const [gameId, setGameId] = useState<string | null>(null);
@@ -57,7 +63,12 @@ export const SwipeView: React.FC = () => {
         const cards = await loadDeck(uid, resolvedGameId);
         if (cancelled) return;
         setGameId(resolvedGameId);
-        setDeck(cards);
+        setDeck(
+          sortByLevelCloseness(
+            levelFilter === 'all' ? cards : cards.filter((c) => c.skillLevel === levelFilter),
+            mySkill,
+          ),
+        );
         setIndex(0);
         setSwipeError(false);
         setStatus('ready');
@@ -69,7 +80,8 @@ export const SwipeView: React.FC = () => {
     return () => {
       cancelled = true;
     };
-  }, [uid, selectedGame, reloadToken]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- mySkill changes only with the user doc
+  }, [uid, selectedGame, reloadToken, levelFilter]);
 
   const refreshDeck = useCallback(() => {
     setStatus('loading');
@@ -77,6 +89,34 @@ export const SwipeView: React.FC = () => {
   }, []);
 
   const currentProfile = deck[index];
+
+  const levelChips = (
+    <div className="flex flex-wrap justify-center gap-2" role="group" aria-label={t('discovery.levelFilter')}>
+      <button
+        onClick={() => setLevelFilter('all')}
+        className={`px-4 py-1.5 rounded-full text-xs font-black uppercase italic transition-all ${levelFilter === 'all' ? 'bg-primary text-white shadow-glow-primary' : 'bg-surface/70 text-text-muted border border-white/10 hover:bg-surface-elevated'}`}
+      >
+        {t('discovery.levelAll')}
+      </button>
+      {mySkill && (
+        <button
+          onClick={() => setLevelFilter(mySkill)}
+          className={`px-4 py-1.5 rounded-full text-xs font-black uppercase italic transition-all ${levelFilter === mySkill ? 'bg-primary text-white shadow-glow-primary' : 'bg-surface/70 text-premium border border-premium/30 hover:bg-surface-elevated'}`}
+        >
+          ⭐ {t('discovery.levelMine')}
+        </button>
+      )}
+      {SKILL_LEVELS.filter((level) => level !== mySkill).map((level) => (
+        <button
+          key={level}
+          onClick={() => setLevelFilter(level)}
+          className={`px-4 py-1.5 rounded-full text-xs font-black uppercase italic transition-all ${levelFilter === level ? 'bg-primary text-white shadow-glow-primary' : 'bg-surface/70 text-text-muted border border-white/10 hover:bg-surface-elevated'}`}
+        >
+          {labels.skillLevel[level]}
+        </button>
+      ))}
+    </div>
+  );
 
   const handleSwipe = async (direction: SwipeDirection) => {
     if (pending || !currentProfile || !gameId) return;
@@ -165,22 +205,28 @@ export const SwipeView: React.FC = () => {
 
   if (!currentProfile) {
     return (
-      <div className="flex flex-col items-center justify-center h-full text-center p-10 opacity-70 relative z-10">
-        <i className="fa-solid fa-ghost text-7xl mb-6 dark:text-white text-text-inverse"></i>
-        <h3 className="text-2xl font-bold italic uppercase dark:text-white text-text-inverse">{t('discovery.empty')}</h3>
-        <p className="font-bold dark:text-text-muted text-gray-500 mb-6">{t('discovery.emptyHint')}</p>
-        <button
-          onClick={refreshDeck}
-          className="px-8 py-3 bg-white/10 hover:bg-white/20 text-white rounded-full font-bold text-xs uppercase tracking-widest transition-all"
-        >
-          {t('discovery.refresh')}
-        </button>
+      <div className="flex flex-col items-center justify-center h-full text-center p-10 relative z-10">
+        <div className="mb-8">{levelChips}</div>
+        <div className="opacity-70 flex flex-col items-center">
+          <i className="fa-solid fa-ghost text-7xl mb-6 dark:text-white text-text-inverse"></i>
+          <h3 className="text-2xl font-bold italic uppercase dark:text-white text-text-inverse">{t('discovery.empty')}</h3>
+          <p className="font-bold dark:text-text-muted text-gray-500 mb-6">
+            {levelFilter === 'all' ? t('discovery.emptyHint') : t('discovery.emptyLevelHint')}
+          </p>
+          <button
+            onClick={refreshDeck}
+            className="px-8 py-3 bg-white/10 hover:bg-white/20 text-white rounded-full font-bold text-xs uppercase tracking-widest transition-all"
+          >
+            {t('discovery.refresh')}
+          </button>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="h-full flex flex-col items-center justify-center gap-6 p-6 relative z-10">
+    <div className="h-full flex flex-col items-center justify-center gap-4 p-6 pt-20 relative z-10">
+      {levelChips}
       {matchedWith && (
         <MatchCelebration
           name={matchedWith.displayName}

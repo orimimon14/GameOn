@@ -94,6 +94,10 @@ export const he = {
     skillLevel: 'רמת מיומנות',
     rank: 'דירוג נוכחי',
     swipeError: 'ההחלקה נכשלה — נסה שוב',
+    levelFilter: 'סינון לפי רמה',
+    levelAll: 'כל הרמות',
+    levelMine: 'ברמה שלי',
+    emptyLevelHint: 'אין כרגע שחקנים ברמה הזאת — נסה רמה אחרת או "כל הרמות"',
     limitTitle: 'נגמרו ההחלקות להיום',
     limitHint: 'חזור מחר, או שדרג ל-Pro להחלקות ללא הגבלה',
     match: {

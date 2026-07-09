@@ -9,7 +9,8 @@ import type { PublicProfileDocument } from '@/shared/models';
 import { useUiStore } from '@/shared/store/uiStore';
 import { useUserStore } from '@/shared/store/userStore';
 
-vi.mock('./discoveryApi', () => ({
+vi.mock('./discoveryApi', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('./discoveryApi')>()),
   loadDeck: vi.fn(),
   loadMyActiveGameIds: vi.fn(),
   submitSwipe: vi.fn(),
