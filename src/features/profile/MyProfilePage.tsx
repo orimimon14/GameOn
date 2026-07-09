@@ -38,7 +38,7 @@ export const MyProfilePage: React.FC = () => {
 
   const onPickPhoto = async (file: File | undefined) => {
     if (!file || !user) return;
-    if (!file.type.startsWith('image/') || file.size > 5 * 1024 * 1024) {
+    if (!file.type.startsWith('image/') || file.size > 25 * 1024 * 1024) {
       setPhotoError(true);
       return;
     }

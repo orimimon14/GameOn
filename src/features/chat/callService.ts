@@ -10,6 +10,8 @@ import {
   where,
 } from 'firebase/firestore';
 
+import { startDialTone } from './callSounds';
+
 import { getFirebase } from '@/config/firebase';
 import type { CallType } from '@/shared/enums';
 import type { CallDocument } from '@/shared/models';
@@ -62,6 +64,10 @@ export const startCall = async (
   const localStream = await getMedia(type);
   const { pc, remoteStream } = buildPeer(localStream, () => undefined);
 
+  // Ringback for the CALLER — starts inside the click gesture so audio is
+  // allowed; stops when the callee answers or the call ends.
+  const dialTone = startDialTone();
+
   const callRef = await addDoc(collection(db, 'chats', chatId, 'calls'), {
     chatId,
     callerUid,
@@ -92,6 +98,7 @@ export const startCall = async (
       const data = snap.data() as CallDocument | undefined;
       if (!data) return;
       if (data.answer && pc.signalingState === 'have-local-offer') {
+        dialTone.stop();
         void pc.setRemoteDescription(new RTCSessionDescription(data.answer as RTCSessionDescriptionInit));
       }
       if (data.status === 'declined' || data.status === 'ended') {
@@ -112,6 +119,7 @@ export const startCall = async (
   );
 
   const cleanup = () => {
+    dialTone.stop();
     unsubscribers.forEach((unsub) => unsub());
     pc.close();
     localStream.getTracks().forEach((track) => track.stop());

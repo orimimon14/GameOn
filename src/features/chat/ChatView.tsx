@@ -101,6 +101,7 @@ export const ChatView: React.FC = () => {
   const openChat = useCallback((chatId: string | null) => {
     setMessages([]);
     setSelectedChatId(chatId);
+    if (chatId) localStorage.setItem(`swish_chat_seen_${chatId}`, String(Date.now()));
   }, []);
 
   useEffect(() => {

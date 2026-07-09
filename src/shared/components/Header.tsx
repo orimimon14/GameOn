@@ -1,5 +1,6 @@
 
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import { disablePushDevice, isPushLocallyDisabled, pushPermissionState, registerPushDevice, setPushLocallyDisabled, unlockAudio } from '@/features/notifications/pushApi';
 import { loadMyChatsOnce } from '@/features/chat/chatApi';
@@ -29,6 +30,7 @@ export const Header: React.FC<HeaderProps> = ({
 }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isNotifMenuOpen, setIsNotifMenuOpen] = useState(false);
+  const navigate = useNavigate();
   const pushUid = useUserStore((s) => s.userDoc?.uid);
   const [areNotificationsEnabled, setAreNotificationsEnabled] = useState(!isPushLocallyDisabled());
 
@@ -191,7 +193,15 @@ export const Header: React.FC<HeaderProps> = ({
                              </div>
                           ) : notifications.length > 0 ? (
                             notifications.map(n => (
-                              <div key={n.id} className={`p-4 flex items-start gap-4 hover:bg-white/5 transition-colors border-b dark:border-white/5 border-gray-50 ${!n.read ? 'bg-primary/5' : ''}`}>
+                              <div
+                                key={n.id}
+                                role="button"
+                                tabIndex={0}
+                                onClick={() => {
+                                  setIsNotifMenuOpen(false);
+                                  navigate(n.type === 'like' ? '/likes' : '/chat');
+                                }}
+                                className={`p-4 flex items-start gap-4 hover:bg-white/5 transition-colors border-b dark:border-white/5 border-gray-50 cursor-pointer ${!n.read ? 'bg-primary/5' : ''}`}>
                                 <div className="text-right flex-1">
                                   <p className={`text-sm ${!n.read ? 'text-white font-bold' : 'text-gray-400'}`}>{n.text}</p>
                                   <span className="text-[10px] text-text-muted font-medium">{n.time}</span>

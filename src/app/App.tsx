@@ -8,6 +8,7 @@ import { initAuthListener } from '@/features/auth/authStore';
 import { LoginPage } from '@/features/auth/LoginPage';
 import { RequireAuth } from '@/features/auth/RequireAuth';
 import { CallManager } from '@/features/chat/CallManager';
+import { subscribeMyChats } from '@/features/chat/chatApi';
 import { ChatView } from '@/features/chat/ChatView';
 import { GamesView } from '@/features/discovery/GamesView';
 import { SwipeView } from '@/features/discovery/SwipeView';
@@ -81,6 +82,30 @@ const AppShell: React.FC = () => {
   } as GamerProfile;
   const setUserProfile = (_p: GamerProfile) => undefined;
   const [globalBackground, setGlobalBackground] = useState<string | null>(null);
+  const [hasUnreadChat, setHasUnreadChat] = useState(false);
+
+  // Unread dot on the chat tab: any chat whose last message is from the
+  // other side and newer than when I last opened that chat (localStorage).
+  useEffect(() => {
+    if (!userDoc?.uid) return;
+    const uid = userDoc.uid;
+    return subscribeMyChats(
+      uid,
+      (chats) => {
+        setHasUnreadChat(
+          chats.some(
+            (c) =>
+              c.isActive !== false &&
+              c.lastMessageSenderId &&
+              c.lastMessageSenderId !== uid &&
+              (c.lastTimestamp?.toMillis() ?? 0) >
+                Number(localStorage.getItem(`swish_chat_seen_${c.chatId}`) ?? 0),
+          ),
+        );
+      },
+      () => undefined,
+    );
+  }, [userDoc?.uid]);
   const [isGlobalBgEnabled, setIsGlobalBgEnabled] = useState(true);
 
   const isDarkMode = useUiStore((s) => s.isDarkMode);
@@ -153,7 +178,7 @@ const AppShell: React.FC = () => {
 
       <CallManager />
 
-      <SideNav activePath={path} userProfile={userProfile} onNavigate={handleNavigate} />
+      <SideNav activePath={path} userProfile={userProfile} onNavigate={handleNavigate} hasUnreadChat={hasUnreadChat} />
 
       <div className="h-full w-full md:me-[100px] pb-[64px] md:pb-0 flex flex-col relative z-10">
         <Header

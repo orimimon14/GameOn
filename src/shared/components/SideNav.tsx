@@ -7,6 +7,7 @@ interface SideNavProps {
   activePath: string;
   userProfile: GamerProfile;
   onNavigate: (path: string) => void;
+  hasUnreadChat?: boolean;
 }
 
 const NAV_ITEMS = [
@@ -18,7 +19,7 @@ const NAV_ITEMS = [
   { path: '/settings', icon: 'fa-gear', labelKey: 'nav.settings', bg: 'hover:bg-gray-500' },
 ];
 
-export const SideNav: React.FC<SideNavProps> = ({ activePath, userProfile, onNavigate }) => {
+export const SideNav: React.FC<SideNavProps> = ({ activePath, userProfile, onNavigate, hasUnreadChat }) => {
   const { t } = useTranslation();
 
   return (
@@ -48,9 +49,13 @@ export const SideNav: React.FC<SideNavProps> = ({ activePath, userProfile, onNav
           <div key={item.path} className="relative flex flex-col items-center justify-center group w-full px-2">
             <button
               onClick={() => onNavigate(item.path)}
+              data-unread={item.path === '/chat' && hasUnreadChat ? 'true' : undefined}
               className={`w-16 h-16 flex items-center justify-center transition-all duration-300
                 ${isActive ? 'rounded-[16px] bg-primary text-white shadow-glow' : 'rounded-[24px] dark:bg-surface bg-gray-100 dark:text-gray-400 text-gray-500 hover:rounded-[16px] ' + item.bg + ' hover:text-white'}`}
             >
+              {item.path === '/chat' && hasUnreadChat && (
+                <span className="absolute top-1 end-1 w-2.5 h-2.5 rounded-full bg-danger animate-pulse"></span>
+              )}
               <i className={`fa-solid ${item.icon} text-2xl`}></i>
             </button>
             <span className={`text-[10px] font-black mt-1.5 transition-all duration-300 uppercase tracking-tighter ${isActive ? 'text-primary opacity-100' : 'text-text-muted opacity-0 group-hover:opacity-100'}`}>
@@ -73,7 +78,12 @@ export const SideNav: React.FC<SideNavProps> = ({ activePath, userProfile, onNav
             aria-label={t(item.labelKey)}
             className={`flex flex-col items-center justify-center gap-1 py-2.5 flex-1 transition-colors ${isActive ? 'text-primary' : 'dark:text-white/60 text-gray-500'}`}
           >
-            <i className={`fa-solid ${item.icon} text-lg`}></i>
+            <span className="relative">
+              {item.path === '/chat' && hasUnreadChat && (
+                <span className="absolute -top-1 -end-1.5 w-2 h-2 rounded-full bg-danger animate-pulse"></span>
+              )}
+              <i className={`fa-solid ${item.icon} text-lg`}></i>
+            </span>
             <span className="text-[9px] font-black">{t(item.labelKey)}</span>
           </button>
         );
