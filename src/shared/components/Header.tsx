@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 
-import { disablePushDevice, isPushLocallyDisabled, registerPushDevice, setPushLocallyDisabled, unlockAudio } from '@/features/notifications/pushApi';
+import { disablePushDevice, isPushLocallyDisabled, pushPermissionState, registerPushDevice, setPushLocallyDisabled, unlockAudio } from '@/features/notifications/pushApi';
 import { useUserStore } from '@/shared/store/userStore';
 import { GamerProfile } from '@/shared/types';
 
@@ -119,6 +119,17 @@ export const Header: React.FC<HeaderProps> = ({
                             <span className="text-[10px] font-black uppercase text-text-muted">התראות</span>
                           </div>
                           <h4 className="font-black text-white italic uppercase text-sm">מרכז עדכונים</h4>
+                        </div>
+
+                        {/* Live push status — the honest state of THIS device */}
+                        <div className="px-4 py-2 border-b dark:border-white/5 border-gray-100 text-[10px] font-bold text-text-muted text-right">
+                          {(() => {
+                            const s = pushPermissionState();
+                            if (s === 'granted') return '✅ התראות פעילות במכשיר הזה';
+                            if (s === 'denied') return '⛔ ההרשאה נחסמה — יש לאפשר התראות בהגדרות הדפדפן לאתר הזה';
+                            if (s === 'unsupported') return '📵 הדפדפן הזה לא תומך — באייפון: הוסף למסך הבית ופתח משם';
+                            return '⏳ ממתין לאישור — לחץ על המתג למעלה';
+                          })()}
                         </div>
                         
                         <div className="max-h-96 overflow-y-auto no-scrollbar">

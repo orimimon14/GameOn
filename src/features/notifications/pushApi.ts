@@ -9,18 +9,24 @@ import { getFirebase } from '@/config/firebase';
 const vapidKey = import.meta.env.VITE_FIREBASE_VAPID_KEY as string | undefined;
 
 export const registerPushDevice = async (uid: string): Promise<void> => {
-  if (!vapidKey || import.meta.env.VITE_USE_EMULATORS === 'true') return;
-  if (!('Notification' in window) || !('serviceWorker' in navigator)) return;
+  // Diagnostics stay in the console on purpose — push failures are silent
+  // by nature and this is the only way to see WHERE registration stops.
+  const debug = (msg: string) => console.warn(`[push] ${msg}`);
+  if (!vapidKey || import.meta.env.VITE_USE_EMULATORS === 'true') return debug('no vapid key / emulator mode');
+  if (!('Notification' in window) || !('serviceWorker' in navigator)) return debug('browser lacks Notification/SW');
 
   // The permission request must be the FIRST await inside the user gesture —
   // browsers drop the "user activation" after slow work like SW registration.
   const permission = await Notification.requestPermission();
+  debug(`permission: ${permission}`);
   if (permission !== 'granted') return;
-  if (!(await isSupported().catch(() => false))) return;
+  if (!(await isSupported().catch(() => false))) return debug('FCM not supported in this browser');
 
   const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+  debug('service worker registered');
   const messaging = getMessaging(getFirebase().app);
   const token = await getToken(messaging, { vapidKey, serviceWorkerRegistration: registration });
+  debug(`token: ${token ? 'received' : 'EMPTY'}`);
   if (!token) return;
 
   const { db } = getFirebase();
@@ -29,6 +35,7 @@ export const registerPushDevice = async (uid: string): Promise<void> => {
     platform: 'web',
     updatedAt: serverTimestamp(),
   });
+  debug('device registered in Firestore ✓');
 };
 
 const DISABLED_FLAG = 'swish_push_disabled';
