@@ -6,7 +6,7 @@ import importPlugin from 'eslint-plugin-import';
 import prettier from 'eslint-config-prettier';
 
 export default tseslint.config(
-  { ignores: ['dist/**', 'node_modules/**', 'functions/lib/**'] },
+  { ignores: ['dist/**', 'node_modules/**', 'functions/lib/**', 'android/**', 'ios/**', 'public/**'] },
   js.configs.recommended,
   {
     files: ['scripts/**/*.mjs', '**/*.config.{js,ts}'],

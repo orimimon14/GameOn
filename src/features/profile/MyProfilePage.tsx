@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import { OwnedCollection } from './OwnedCollection';
-import { loadMyGames, updateMyProfile } from './profileApi';
+import { loadMyGames, updateMyProfile, uploadProfilePhoto } from './profileApi';
 
 import { useAuthStore } from '@/features/auth/authStore';
 import { useCosmetics } from '@/features/shop/useCosmetics';
@@ -33,6 +33,25 @@ export const MyProfilePage: React.FC = () => {
   const [games, setGames] = useState<UserGameDocument[] | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  const [photoError, setPhotoError] = useState(false);
+
+  const onPickPhoto = async (file: File | undefined) => {
+    if (!file || !user) return;
+    if (!file.type.startsWith('image/') || file.size > 5 * 1024 * 1024) {
+      setPhotoError(true);
+      return;
+    }
+    setUploadingPhoto(true);
+    setPhotoError(false);
+    try {
+      await uploadProfilePhoto(user.uid, file);
+    } catch {
+      setPhotoError(true);
+    } finally {
+      setUploadingPhoto(false);
+    }
+  };
   const [saveError, setSaveError] = useState(false);
 
   const {
@@ -96,6 +115,35 @@ export const MyProfilePage: React.FC = () => {
       <div className="max-w-2xl mx-auto flex flex-col gap-6">
         {bannerGradient && (
           <div className="w-full h-24 rounded-3xl mb-6" style={{ background: bannerGradient }} />
+        )}
+
+        <div className="flex justify-center -mt-2 mb-6">
+          <label className="relative cursor-pointer group" aria-label={t('profile.changePhoto')}>
+            <div className="w-28 h-28 rounded-full overflow-hidden border-4 border-primary shadow-glow bg-primary/30 flex items-center justify-center">
+              {userDoc?.profileImageUrl ? (
+                <img src={userDoc.profileImageUrl} alt="" className="w-full h-full object-cover" />
+              ) : (
+                <span className="text-white font-black text-4xl">{(userDoc?.displayName ?? '?').charAt(0)}</span>
+              )}
+            </div>
+            <span className="absolute bottom-0 end-0 w-9 h-9 rounded-full bg-primary text-white flex items-center justify-center border-2 border-background group-hover:scale-110 transition-transform">
+              {uploadingPhoto ? (
+                <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              ) : (
+                <i className="fa-solid fa-camera text-sm"></i>
+              )}
+            </span>
+            <input
+              type="file"
+              accept="image/*"
+              className="hidden"
+              disabled={uploadingPhoto}
+              onChange={(e) => void onPickPhoto(e.target.files?.[0])}
+            />
+          </label>
+        </div>
+        {photoError && (
+          <p role="alert" className="text-danger font-bold text-sm mb-4 text-center">{t('profile.photoError')}</p>
         )}
 
         {!isEditing && (

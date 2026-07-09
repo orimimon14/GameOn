@@ -211,6 +211,8 @@ export const he = {
     coins: 'מטבעות',
     email: 'אימייל',
     myGames: 'המשחקים שלי',
+    changePhoto: 'החלף תמונת פרופיל',
+    photoError: 'העלאת התמונה נכשלה — עד 5MB, קובץ תמונה בלבד',
     collection: 'האוסף שלי',
     noGames: 'עוד אין משחקים',
     tierBasic: 'Basic',

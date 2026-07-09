@@ -213,6 +213,8 @@ export const en: TranslationCatalog = {
     coins: 'Coins',
     email: 'Email',
     myGames: 'My Games',
+    changePhoto: 'Change profile photo',
+    photoError: 'Photo upload failed — images only, up to 5MB',
     collection: 'My Collection',
     noGames: 'No games yet',
     tierBasic: 'Basic',
