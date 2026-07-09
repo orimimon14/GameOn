@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
+import { OwnedCollection } from './OwnedCollection';
 import { loadMyGames, updateMyProfile } from './profileApi';
 
 import { useAuthStore } from '@/features/auth/authStore';
@@ -148,6 +149,8 @@ export const MyProfilePage: React.FC = () => {
                 ))}
               </div>
             </div>
+
+            <OwnedCollection />
           </>
         )}
 

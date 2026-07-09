@@ -211,6 +211,7 @@ export const he = {
     coins: 'מטבעות',
     email: 'אימייל',
     myGames: 'המשחקים שלי',
+    collection: 'האוסף שלי',
     noGames: 'עוד אין משחקים',
     tierBasic: 'Basic',
     tierPro: 'Pro',

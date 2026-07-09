@@ -213,6 +213,7 @@ export const en: TranslationCatalog = {
     coins: 'Coins',
     email: 'Email',
     myGames: 'My Games',
+    collection: 'My Collection',
     noGames: 'No games yet',
     tierBasic: 'Basic',
     tierPro: 'Pro',
