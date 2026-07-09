@@ -1,4 +1,4 @@
-import { doc, serverTimestamp, setDoc } from 'firebase/firestore';
+import { deleteDoc, doc, serverTimestamp, setDoc } from 'firebase/firestore';
 import { getMessaging, getToken, isSupported, onMessage, type MessagePayload } from 'firebase/messaging';
 
 import { getFirebase } from '@/config/firebase';
@@ -27,6 +27,32 @@ export const registerPushDevice = async (uid: string): Promise<void> => {
     platform: 'web',
     updatedAt: serverTimestamp(),
   });
+};
+
+const DISABLED_FLAG = 'swish_push_disabled';
+
+export const isPushLocallyDisabled = (): boolean => localStorage.getItem(DISABLED_FLAG) === '1';
+
+export const setPushLocallyDisabled = (disabled: boolean): void => {
+  if (disabled) localStorage.setItem(DISABLED_FLAG, '1');
+  else localStorage.removeItem(DISABLED_FLAG);
+};
+
+export const disablePushDevice = async (uid: string): Promise<void> => {
+  setPushLocallyDisabled(true);
+  try {
+    if (!vapidKey || !(await isSupported().catch(() => false))) return;
+    const registration = await navigator.serviceWorker.getRegistration('/firebase-messaging-sw.js');
+    if (!registration) return;
+    const messaging = getMessaging(getFirebase().app);
+    const token = await getToken(messaging, { vapidKey, serviceWorkerRegistration: registration });
+    if (token) {
+      const { db } = getFirebase();
+      await deleteDoc(doc(db, 'users', uid, 'devices', token));
+    }
+  } catch {
+    // best effort — the flag alone stops re-registration
+  }
 };
 
 export const pushPermissionState = (): 'unsupported' | NotificationPermission => {

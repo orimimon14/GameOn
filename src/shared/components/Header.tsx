@@ -1,6 +1,8 @@
 
 import React, { useState } from 'react';
 
+import { disablePushDevice, isPushLocallyDisabled, registerPushDevice, setPushLocallyDisabled, unlockAudio } from '@/features/notifications/pushApi';
+import { useUserStore } from '@/shared/store/userStore';
 import { GamerProfile } from '@/shared/types';
 
 interface HeaderProps {
@@ -25,7 +27,21 @@ export const Header: React.FC<HeaderProps> = ({
 }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isNotifMenuOpen, setIsNotifMenuOpen] = useState(false);
-  const [areNotificationsEnabled, setAreNotificationsEnabled] = useState(true);
+  const pushUid = useUserStore((s) => s.userDoc?.uid);
+  const [areNotificationsEnabled, setAreNotificationsEnabled] = useState(!isPushLocallyDisabled());
+
+  // The bell toggle is the real push opt-out/in (notifications are on by default).
+  const toggleNotifications = (enabled: boolean) => {
+    setAreNotificationsEnabled(enabled);
+    if (!pushUid) return;
+    if (enabled) {
+      unlockAudio();
+      setPushLocallyDisabled(false);
+      void registerPushDevice(pushUid).catch(() => undefined);
+    } else {
+      void disablePushDevice(pushUid).catch(() => undefined);
+    }
+  };
   const [notifications, setNotifications] = useState([
     { id: 1, text: "יש לך התאמה חדשה עם דני!", type: 'match', time: 'לפני 2 דק׳', read: false },
     { id: 2, text: "יעל שלחה לך הודעה חדשה", type: 'message', time: 'לפני 10 דק׳', read: false },
@@ -95,7 +111,7 @@ export const Header: React.FC<HeaderProps> = ({
                         <div className="p-4 border-b dark:border-white/5 border-gray-100 flex items-center justify-between">
                           <div className="flex items-center gap-2">
                             <button 
-                                onClick={() => setAreNotificationsEnabled(!areNotificationsEnabled)}
+                                onClick={() => toggleNotifications(!areNotificationsEnabled)}
                                 className={`relative w-9 h-5 rounded-full transition-colors duration-300 ${areNotificationsEnabled ? 'bg-primary' : 'bg-gray-600'}`}
                             >
                                 <div className={`absolute top-1 w-3 h-3 rounded-full bg-white transition-transform duration-300 ${areNotificationsEnabled ? 'left-5' : 'left-1'}`}></div>
@@ -114,7 +130,7 @@ export const Header: React.FC<HeaderProps> = ({
                                 <p className="font-bold text-white mb-1">ההתראות כבויות</p>
                                 <p className="text-xs text-text-muted">הפעל אותן כדי לא לפספס אף התאמה</p>
                                 <button 
-                                    onClick={() => setAreNotificationsEnabled(true)}
+                                    onClick={() => toggleNotifications(true)}
                                     className="mt-4 px-6 py-2 bg-primary text-white text-[10px] font-black uppercase rounded-full shadow-glow"
                                 >
                                     הפעל עכשיו

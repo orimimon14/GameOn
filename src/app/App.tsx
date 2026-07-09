@@ -12,8 +12,7 @@ import { ChatView } from '@/features/chat/ChatView';
 import { GamesView } from '@/features/discovery/GamesView';
 import { SwipeView } from '@/features/discovery/SwipeView';
 import { LikesGrid } from '@/features/matches/LikesGrid';
-import { NotificationsPrompt } from '@/features/notifications/NotificationsPrompt';
-import { listenForegroundPush, pushPermissionState, registerPushDevice } from '@/features/notifications/pushApi';
+import { isPushLocallyDisabled, listenForegroundPush, pushPermissionState, registerPushDevice, unlockAudio } from '@/features/notifications/pushApi';
 import { OnboardingPage } from '@/features/onboarding/OnboardingPage';
 import { RequireOnboarding } from '@/features/onboarding/RequireOnboarding';
 import { MyProfilePage } from '@/features/profile/MyProfilePage';
@@ -94,12 +93,26 @@ const AppShell: React.FC = () => {
   // pushes while the app is in the foreground.
   useEffect(() => {
     if (!userDoc?.uid) return;
-    // Auto-refresh the token only when permission was already granted;
-    // first-time permission is requested from the NotificationsPrompt tap.
-    if (pushPermissionState() === 'granted') {
-      void registerPushDevice(userDoc.uid).catch(() => undefined);
+    const uid = userDoc.uid;
+    // Notifications are on by default: already-granted devices refresh their
+    // token silently; new devices get the browser permission prompt on the
+    // FIRST tap anywhere (browsers require a user gesture). The header bell
+    // is the opt-out switch.
+    if (!isPushLocallyDisabled() && pushPermissionState() === 'granted') {
+      void registerPushDevice(uid).catch(() => undefined);
     }
-    return listenForegroundPush(() => undefined);
+    const onFirstTap = () => {
+      unlockAudio();
+      if (!isPushLocallyDisabled() && pushPermissionState() === 'default') {
+        void registerPushDevice(uid).catch(() => undefined);
+      }
+    };
+    window.addEventListener('pointerdown', onFirstTap, { once: true });
+    const stopListen = listenForegroundPush(() => undefined);
+    return () => {
+      window.removeEventListener('pointerdown', onFirstTap);
+      stopListen();
+    };
   }, [userDoc?.uid]);
 
   const path = location.pathname;
@@ -136,8 +149,6 @@ const AppShell: React.FC = () => {
       )}
 
       <CallManager />
-
-      <NotificationsPrompt />
 
       <SideNav activePath={path} userProfile={userProfile} onNavigate={handleNavigate} />
 
