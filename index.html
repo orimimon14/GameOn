@@ -5,6 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>Swish & Game - Find Your Squad</title>
 
+    <!-- Canonical domain: Google sign-in state must live on the same origin
+         as the OAuth-whitelisted auth handler (firebaseapp.com). Old web.app
+         links redirect before the app boots. -->
+    <script>
+      if (location.hostname === 'swish-game-dev.web.app') {
+        location.replace('https://swish-game-dev.firebaseapp.com' + location.pathname + location.search + location.hash);
+      }
+    </script>
+
     <!-- Fonts: Rubik -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
