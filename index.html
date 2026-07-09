@@ -5,6 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>Swish & Game - Find Your Squad</title>
 
+    <!-- PWA install (required for iOS web push: standalone display) -->
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="theme-color" content="#0f172a" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Swish & Game" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
     <!-- Canonical domain: Google sign-in state must live on the same origin
          as the OAuth-whitelisted auth handler (firebaseapp.com). Old web.app
          links redirect before the app boots. -->

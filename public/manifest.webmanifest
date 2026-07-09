@@ -1,0 +1,24 @@
+{
+  "name": "Swish & Game",
+  "short_name": "Swish&Game",
+  "description": "מציאת שותפים למשחקים — החלקות, מאצ'ים, צ'אט ושיחות וידאו",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "dir": "rtl",
+  "lang": "he",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
