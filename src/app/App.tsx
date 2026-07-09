@@ -143,11 +143,11 @@ const AppShell: React.FC = () => {
       {currentBg && (
         <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
           {isColorBackground(currentBg) ? (
-            <div style={{ background: currentBg }} className="w-full h-full opacity-40 bg-moving" />
+            <div style={{ background: currentBg }} className="w-full h-full opacity-90 bg-moving" />
           ) : (
             <img src={currentBg} className="w-full h-full object-cover opacity-25 blur-[2px] bg-moving" alt="" />
           )}
-          <div className={`absolute inset-0 ${isDarkMode ? 'bg-gradient-to-b from-background/30 via-background/85 to-background' : 'bg-gradient-to-b from-slate-100/30 via-slate-100/85 to-slate-100'}`}></div>
+          <div className={`absolute inset-0 ${isColorBackground(currentBg) ? (isDarkMode ? 'bg-gradient-to-b from-background/10 via-background/35 to-background/60' : 'bg-gradient-to-b from-slate-100/10 via-slate-100/35 to-slate-100/60') : isDarkMode ? 'bg-gradient-to-b from-background/30 via-background/85 to-background' : 'bg-gradient-to-b from-slate-100/30 via-slate-100/85 to-slate-100'}`}></div>
         </div>
       )}
 

@@ -10,11 +10,13 @@ const vapidKey = import.meta.env.VITE_FIREBASE_VAPID_KEY as string | undefined;
 
 export const registerPushDevice = async (uid: string): Promise<void> => {
   if (!vapidKey || import.meta.env.VITE_USE_EMULATORS === 'true') return;
-  if (!(await isSupported().catch(() => false))) return;
   if (!('Notification' in window) || !('serviceWorker' in navigator)) return;
 
+  // The permission request must be the FIRST await inside the user gesture —
+  // browsers drop the "user activation" after slow work like SW registration.
   const permission = await Notification.requestPermission();
   if (permission !== 'granted') return;
+  if (!(await isSupported().catch(() => false))) return;
 
   const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
   const messaging = getMessaging(getFirebase().app);

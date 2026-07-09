@@ -117,6 +117,15 @@ export const startCall = async (
     localStream.getTracks().forEach((track) => track.stop());
   };
 
+  // If the peer connection dies (remote closed the tab, network dropped),
+  // end this side too — Firestore status is not the only teardown signal.
+  pc.onconnectionstatechange = () => {
+    if (['disconnected', 'failed', 'closed'].includes(pc.connectionState)) {
+      cleanup();
+      onEnded();
+    }
+  };
+
   const hangUp = async () => {
     cleanup();
     await updateDoc(callRef, { status: 'ended', updatedAt: serverTimestamp() });
@@ -155,7 +164,7 @@ export const answerCall = async (
   unsubscribers.push(
     onSnapshot(callRef, (snap) => {
       const data = snap.data() as CallDocument | undefined;
-      if (data?.status === 'ended') {
+      if (data?.status === 'ended' || data?.status === 'declined') {
         cleanup();
         onEnded();
       }
@@ -176,6 +185,13 @@ export const answerCall = async (
     unsubscribers.forEach((unsub) => unsub());
     pc.close();
     localStream.getTracks().forEach((track) => track.stop());
+  };
+
+  pc.onconnectionstatechange = () => {
+    if (['disconnected', 'failed', 'closed'].includes(pc.connectionState)) {
+      cleanup();
+      onEnded();
+    }
   };
 
   const hangUp = async () => {
