@@ -19,6 +19,7 @@ import { MyProfilePage } from '@/features/profile/MyProfilePage';
 import { ProfileView } from '@/features/profile/ProfileView';
 import { SettingsView } from '@/features/profile/SettingsView';
 import { ShopView } from '@/features/shop/ShopView';
+import { useCosmetics } from '@/features/shop/useCosmetics';
 import { SubscriptionsView } from '@/features/subscription/SubscriptionsView';
 import { Header } from '@/shared/components/Header';
 import { SideNav } from '@/shared/components/SideNav';
@@ -68,13 +69,15 @@ const AppShell: React.FC = () => {
 
   const [viewingProfile, setViewingProfile] = useState<GamerProfile | null>(null);
   const userDoc = useUserStore((s) => s.userDoc);
+  // Equipped cosmetics drive the real visuals (P5: purchases must be visible).
+  const cosmetics = useCosmetics();
   // Live nav profile from the real users doc (mock only as a typed shell).
   const userProfile: GamerProfile = {
     ...currentUserProfile,
     name: userDoc?.displayName ?? '',
     image: userDoc?.profileImageUrl ?? '',
     bannerImage: userDoc?.bannerImageUrl ?? '',
-    avatarBorder: undefined,
+    avatarBorder: cosmetics.borderGradient,
   } as GamerProfile;
   const setUserProfile = (_p: GamerProfile) => undefined;
   const [globalBackground, setGlobalBackground] = useState<string | null>(null);
@@ -124,7 +127,7 @@ const AppShell: React.FC = () => {
   };
 
   const currentBg = isGlobalBgEnabled
-    ? globalBackground || userProfile.bannerImage
+    ? cosmetics.backgroundGradient || globalBackground || userProfile.bannerImage
     : path === '/profile'
       ? viewingProfile?.bannerImage || userProfile.bannerImage
       : null;

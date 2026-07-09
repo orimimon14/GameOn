@@ -83,7 +83,10 @@ export const SideNav: React.FC<SideNavProps> = ({ activePath, userProfile, onNav
         aria-label={t('titles.profile')}
         className={`flex flex-col items-center justify-center gap-1 py-2.5 flex-1 transition-colors ${activePath === '/profile' ? 'text-primary' : 'dark:text-white/60 text-gray-500'}`}
       >
-        <div className="w-6 h-6 rounded-full overflow-hidden bg-primary/40 flex items-center justify-center">
+        <div
+          className="w-6 h-6 rounded-full overflow-hidden bg-primary/40 flex items-center justify-center"
+          style={userProfile.avatarBorder ? { boxShadow: '0 0 0 2px transparent', border: '2px solid transparent', backgroundImage: `linear-gradient(#1E1F22,#1E1F22), ${userProfile.avatarBorder}`, backgroundOrigin: 'border-box', backgroundClip: 'content-box, border-box' } : undefined}
+        >
           {userProfile.image ? (
             <img src={userProfile.image} alt="" className="w-full h-full object-cover" />
           ) : (

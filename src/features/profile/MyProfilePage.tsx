@@ -7,6 +7,7 @@ import { OwnedCollection } from './OwnedCollection';
 import { loadMyGames, updateMyProfile } from './profileApi';
 
 import { useAuthStore } from '@/features/auth/authStore';
+import { useCosmetics } from '@/features/shop/useCosmetics';
 import { Platform, PLATFORMS, SKILL_LEVELS } from '@/shared/enums';
 import { useLabels } from '@/shared/labels';
 import type { UserGameDocument } from '@/shared/models';
@@ -27,6 +28,7 @@ export const MyProfilePage: React.FC = () => {
   const labels = useLabels();
   const user = useAuthStore((s) => s.user);
   const userDoc = useUserStore((s) => s.userDoc);
+  const { bannerGradient } = useCosmetics();
 
   const [games, setGames] = useState<UserGameDocument[] | null>(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -92,6 +94,10 @@ export const MyProfilePage: React.FC = () => {
   return (
     <div className="h-full overflow-y-auto pb-32 pt-24 px-6 relative z-10 no-scrollbar">
       <div className="max-w-2xl mx-auto flex flex-col gap-6">
+        {bannerGradient && (
+          <div className="w-full h-24 rounded-3xl mb-6" style={{ background: bannerGradient }} />
+        )}
+
         {!isEditing && (
           <>
             <div className="flex items-start justify-between">
