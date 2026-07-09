@@ -16,6 +16,10 @@
     "scan:bundle": "node scripts/scan-bundle.mjs"
   },
   "dependencies": {
+    "@capacitor/android": "^8.4.1",
+    "@capacitor/cli": "^8.4.1",
+    "@capacitor/core": "^8.4.1",
+    "@capacitor/ios": "^8.4.1",
     "@hookform/resolvers": "^5.4.0",
     "firebase": "^12.15.0",
     "framer-motion": "^12.42.2",
