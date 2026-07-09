@@ -2,14 +2,8 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
-import { CallOverlay } from './CallOverlay';
-import {
-  answerCall,
-  declineCall,
-  startCall,
-  subscribeIncomingCalls,
-  type ActiveCall,
-} from './callService';
+import { startCall } from './callService';
+import { useCallStore } from './callStore';
 import {
   loadChatPartnerProfiles,
   resolveMediaUrl,
@@ -22,7 +16,7 @@ import { VideoMessageRecorder } from './VideoMessageRecorder';
 
 import { blockUser, createReport, type ReportReason } from '@/features/safety/safetyApi';
 import type { CallType } from '@/shared/enums';
-import type { CallDocument, ChatDocument, MessageDocument, PublicProfileDocument } from '@/shared/models';
+import type { ChatDocument, MessageDocument, PublicProfileDocument } from '@/shared/models';
 import { useUserStore } from '@/shared/store/userStore';
 
 // P4-T01/02/03 + ADR-041 proposal — real-time chat between matched users:
@@ -78,8 +72,8 @@ export const ChatView: React.FC = () => {
   const [reporting, setReporting] = useState(false);
   const [safetyNotice, setSafetyNotice] = useState<string | null>(null);
   const [showProUpsell, setShowProUpsell] = useState(false);
-  const [activeCall, setActiveCall] = useState<ActiveCall | null>(null);
-  const [incomingCall, setIncomingCall] = useState<CallDocument | null>(null);
+  const activeCall = useCallStore((s) => s.activeCall);
+  const setActiveCall = useCallStore((s) => s.setActiveCall);
   const [callError, setCallError] = useState(false);
 
   const endRef = useRef<HTMLDivElement>(null);
@@ -108,11 +102,6 @@ export const ChatView: React.FC = () => {
     setMessages([]);
     setSelectedChatId(chatId);
   }, []);
-
-  useEffect(() => {
-    if (!uid || activeCall) return;
-    return subscribeIncomingCalls(uid, setIncomingCall);
-  }, [uid, activeCall]);
 
   useEffect(() => {
     endRef.current?.scrollIntoView?.({ behavior: 'smooth' });
@@ -182,47 +171,11 @@ export const ChatView: React.FC = () => {
       const call = await startCall(selectedChat.chatId, uid, calleeUid, type, () =>
         setActiveCall(null),
       );
-      setActiveCall(call);
+      setActiveCall(call, selectedPartner?.displayName ?? '');
     } catch {
       setCallError(true);
     }
   };
-
-  const handleAnswer = async () => {
-    if (!incomingCall) return;
-    setCallError(false);
-    try {
-      const call = await answerCall(incomingCall, () => setActiveCall(null));
-      setIncomingCall(null);
-      setActiveCall(call);
-    } catch {
-      setCallError(true);
-      setIncomingCall(null);
-    }
-  };
-
-  const handleDecline = async () => {
-    if (!incomingCall) return;
-    try {
-      await declineCall(incomingCall);
-    } finally {
-      setIncomingCall(null);
-    }
-  };
-
-  const handleHangUp = async () => {
-    if (!activeCall) return;
-    try {
-      await activeCall.hangUp();
-    } finally {
-      setActiveCall(null);
-    }
-  };
-
-  const incomingPartnerName = incomingCall
-    ? Object.values(partners).find((p) => p.uid === incomingCall.callerUid)?.displayName ??
-      t('chat.call.unknownCaller')
-    : '';
 
   if (status === 'loading') {
     return (
@@ -281,45 +234,6 @@ export const ChatView: React.FC = () => {
                 {t('chat.videoMessage.cancel')}
               </button>
             </div>
-          </div>
-        </div>
-      )}
-
-      {activeCall && (
-        <CallOverlay
-          call={activeCall}
-          partnerName={selectedPartner?.displayName ?? ''}
-          onHangUp={() => void handleHangUp()}
-        />
-      )}
-
-      {incomingCall && !activeCall && (
-        <div
-          role="dialog"
-          aria-label={t('chat.call.incomingTitle')}
-          className="fixed top-6 inset-x-0 z-50 flex justify-center px-6"
-        >
-          <div className="w-full max-w-md bg-surface/95 backdrop-blur-xl border border-primary/40 rounded-3xl p-5 shadow-glow flex items-center gap-4">
-            <div className="flex-1 text-right">
-              <h4 className="text-white font-black text-lg">{incomingPartnerName}</h4>
-              <p className="text-text-muted text-sm font-bold">
-                {t(incomingCall.type === 'video' ? 'chat.call.incomingVideo' : 'chat.call.incomingVoice')}
-              </p>
-            </div>
-            <button
-              onClick={() => void handleAnswer()}
-              aria-label={t('chat.call.accept')}
-              className="w-12 h-12 rounded-full bg-green-500 text-white flex items-center justify-center text-lg hover:scale-105 transition-all"
-            >
-              <i className="fa-solid fa-phone"></i>
-            </button>
-            <button
-              onClick={() => void handleDecline()}
-              aria-label={t('chat.call.decline')}
-              className="w-12 h-12 rounded-full bg-danger text-white flex items-center justify-center text-lg hover:scale-105 transition-all"
-            >
-              <i className="fa-solid fa-phone-slash"></i>
-            </button>
           </div>
         </div>
       )}

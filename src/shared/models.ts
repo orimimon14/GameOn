@@ -44,6 +44,7 @@ export interface UserDocument {
 
   avatarBorderItemId?: string;
   globalBackgroundItemId?: string;
+  profileBannerItemId?: string;
 
   coins: number;
 

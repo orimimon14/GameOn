@@ -7,6 +7,7 @@ import { signOutUser } from '@/features/auth/authService';
 import { initAuthListener } from '@/features/auth/authStore';
 import { LoginPage } from '@/features/auth/LoginPage';
 import { RequireAuth } from '@/features/auth/RequireAuth';
+import { CallManager } from '@/features/chat/CallManager';
 import { ChatView } from '@/features/chat/ChatView';
 import { GamesView } from '@/features/discovery/GamesView';
 import { SwipeView } from '@/features/discovery/SwipeView';
@@ -119,6 +120,8 @@ const AppShell: React.FC = () => {
           <div className={`absolute inset-0 ${isDarkMode ? 'bg-gradient-to-b from-background/30 via-background/85 to-background' : 'bg-gradient-to-b from-slate-100/30 via-slate-100/85 to-slate-100'}`}></div>
         </div>
       )}
+
+      <CallManager />
 
       <SideNav activePath={path} userProfile={userProfile} onNavigate={handleNavigate} />
 

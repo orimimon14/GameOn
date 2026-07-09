@@ -55,7 +55,11 @@ export const ShopView: React.FC = () => {
   const coins = userDoc?.coins ?? 0;
   const owned = useMemo(() => new Set(userDoc?.ownedItemIds ?? []), [userDoc?.ownedItemIds]);
   const equipped = new Set(
-    [userDoc?.avatarBorderItemId, userDoc?.globalBackgroundItemId].filter(Boolean) as string[],
+    [
+      userDoc?.avatarBorderItemId,
+      userDoc?.globalBackgroundItemId,
+      userDoc?.profileBannerItemId,
+    ].filter(Boolean) as string[],
   );
 
   const visible = items.filter((item) => category === 'all' || item.category === category);

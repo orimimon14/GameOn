@@ -2,12 +2,8 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 
-import {
-  answerCall,
-  declineCall,
-  startCall,
-  subscribeIncomingCalls,
-} from './callService';
+import { startCall, subscribeIncomingCalls } from './callService';
+import { useCallStore } from './callStore';
 import {
   loadChatPartnerProfiles,
   sendTextMessage,
@@ -65,6 +61,7 @@ describe('ChatView', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     useUserStore.setState({ userDoc: { uid: 'me', isPro: false } as never, status: 'ready' });
+    useCallStore.setState({ activeCall: null, partnerName: '' });
     (subscribeMyChats as Mock).mockImplementation((_uid, onChats) => {
       onChats([chat('chat1', 'u2')]);
       return () => undefined;
@@ -116,52 +113,8 @@ describe('ChatView', () => {
     await waitFor(() =>
       expect(startCall).toHaveBeenCalledWith('chat1', 'me', 'u2', 'video', expect.any(Function)),
     );
-    expect(await screen.findByRole('dialog', { name: 'בשיחה' })).toBeInTheDocument();
-  });
-
-  it('shows an incoming call banner and answers it', async () => {
-    (subscribeIncomingCalls as Mock).mockImplementation((_uid, onIncoming) => {
-      onIncoming({
-        callId: 'call2',
-        chatId: 'chat1',
-        callerUid: 'u2',
-        calleeUid: 'me',
-        type: 'voice',
-        status: 'ringing',
-      });
-      return () => undefined;
-    });
-    (answerCall as Mock).mockResolvedValue({
-      callId: 'call2',
-      chatId: 'chat1',
-      type: 'voice',
-      localStream: { getTracks: () => [], getAudioTracks: () => [], getVideoTracks: () => [] },
-      remoteStream: {},
-      hangUp: vi.fn(),
-    });
-    renderView();
-    expect(await screen.findByRole('dialog', { name: 'שיחה נכנסת' })).toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: 'ענה' }));
-    await waitFor(() => expect(answerCall).toHaveBeenCalled());
-    expect(await screen.findByRole('dialog', { name: 'בשיחה' })).toBeInTheDocument();
-  });
-
-  it('declines an incoming call', async () => {
-    (subscribeIncomingCalls as Mock).mockImplementation((_uid, onIncoming) => {
-      onIncoming({
-        callId: 'call3',
-        chatId: 'chat1',
-        callerUid: 'u2',
-        calleeUid: 'me',
-        type: 'video',
-        status: 'ringing',
-      });
-      return () => undefined;
-    });
-    (declineCall as Mock).mockResolvedValue(undefined);
-    renderView();
-    fireEvent.click(await screen.findByRole('button', { name: 'דחה' }));
-    await waitFor(() => expect(declineCall).toHaveBeenCalled());
+    await waitFor(() => expect(useCallStore.getState().activeCall).toBeTruthy());
+    expect(useCallStore.getState().partnerName).toBe('יעל');
   });
 
   it('shows the Pro upsell when a Basic user taps the video-message button', async () => {
