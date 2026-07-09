@@ -63,6 +63,7 @@
 | ADR-034 | Coin Granting & Earning Mechanism (MVP) | C — החלטות מוצר מוצעות | Proposed – pending confirmation |
 | ADR-040 | Cross-Game Likes & Dead-End Like Prevention | C — החלטות מוצר מוצעות | Accepted (2026-07-07): cross-game likes allowed in MVP |
 | ADR-041 | Live Voice & Video Calls in MVP | C — החלטות מוצר מוצעות | Accepted |
+| ADR-042 | Profile Media Gallery (tier-gated) | C — החלטות מוצר מוצעות | Accepted (2026-07-09) |
 | ADR-027 | AI Request Limits by Tier | D — נושאים פתוחים | Open |
 | ADR-028 | Chat Abuse Threshold | D — נושאים פתוחים | Open |
 | ADR-029 | Daily Limit Reset Timezone | D — נושאים פתוחים | Open |
@@ -1020,6 +1021,23 @@ Option B לבדו אינו מספיק (שגיאות בזמן swipe), ו-Option A
 - PRD/ARCHITECTURE יעודכנו מ-"out of scope" ל-"in MVP" עם אישור ADR זה.
 - open items: TURN relay, מדיניות ניתוב שיחות כשהיעד offline, אינטגרציה עם blocks (Phase 8).
 
+
+### ADR-042: Profile Media Gallery (tier-gated)
+
+**Status:** Accepted (2026-07-09) — בקשת מוצר ישירה.
+
+**החלטה:** למשתמש יש גלריית מדיה בפרופיל שמוצגת לכל המשתמשים (בדק ה-discovery ובצפייה בפרופיל):
+
+- **Basic:** עד 3 תמונות. ללא וידאו.
+- **Pro:** עד 9 פריטים, כולל סרטוני גיימפליי (וידאו).
+
+**מנגנון:**
+
+- שדה `galleryMedia` (client-writable) על `users/{uid}` — ראה `DATA_MODEL.md` §4.1; משוכפל sanitized ל-`publicProfiles/{uid}` ע"י `syncPublicProfileForUser`.
+- קבצים ב-Storage תחת `profileMedia/{uid}/{fileId}` — תמונות לכולם (≤10MB, נדחסות client-side), וידאו (`video/webm|mp4|quicktime`, ≤50MB) רק ל-Pro (נאכף ב-Storage Rules).
+- מכסות הפריטים נאכפות ב-Firestore Rules לפי `isPro` (3 ל-Basic, 9 ל-Pro).
+- אכיפת "וידאו רק ל-Pro" היא בשכבת ה-Storage (העלאה). פריט וידאו מזויף שמצביע על URL זר אינו מסוכן (render בלבד) — מקובל ל-MVP.
+
 ---
 
 ## Category D — נושאים פתוחים
@@ -1379,3 +1397,4 @@ stack שכבתי לפי שימוש:
 | ADR-034 | Coins via one-time signup_bonus + admin_grant only in MVP; amount via system/config | Product |
 | ADR-040 | Symmetric game requirement in submitSwipe + deck limited to caller's games; "add game" CTA for other games | Product/Engineering |
 | ADR-041 | ~~Live WebRTC voice/video calls in MVP~~ **Accepted 2026-07-06**: live 1:1 calls free for all; recorded video messages Pro-only | — |
+| ADR-042 | Profile media gallery: Basic עד 3 תמונות, Pro עד 9 פריטים כולל וידאו; Storage `profileMedia/{uid}`; מכסות ב-Rules | Product |

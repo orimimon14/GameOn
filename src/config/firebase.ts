@@ -52,5 +52,18 @@ export const getFirebase = () => {
   const storage = getStorage(firebaseApp);
   const functions = getFunctions(firebaseApp);
   connectEmulatorsOnce(auth, db, storage, functions);
+
+  // Emulator-only test hook so browser-driven QA can create/sign in accounts
+  // (the UI itself is Google-only). Never active against the cloud project.
+  if (import.meta.env.DEV && useEmulators) {
+    void import('firebase/auth').then((authMod) => {
+      (window as unknown as Record<string, unknown>).__swishTestAuth = {
+        auth,
+        createUserWithEmailAndPassword: authMod.createUserWithEmailAndPassword,
+        signInWithEmailAndPassword: authMod.signInWithEmailAndPassword,
+      };
+    });
+  }
+
   return { app: firebaseApp, auth, db, storage, functions };
 };

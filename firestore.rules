@@ -152,7 +152,8 @@ service cloud.firestore {
         "platforms",
         "isDiscoverable",
         "profileImageUrl",
-        "bannerImageUrl"
+        "bannerImageUrl",
+        "galleryMedia"
       ];
     }
 
@@ -206,7 +207,17 @@ service cloud.firestore {
         && (!("platforms" in data) || isValidPlatformList(data.platforms))
         && (!("isDiscoverable" in data) || data.isDiscoverable is bool)
         && (!("profileImageUrl" in data) || data.profileImageUrl is string)
-        && (!("bannerImageUrl" in data) || data.bannerImageUrl is string);
+        && (!("bannerImageUrl" in data) || data.bannerImageUrl is string)
+        && isValidGalleryMedia(data);
+    }
+
+    // ADR-042 — profile media gallery caps by tier (isPro is server-owned on
+    // the same doc, so it is trustworthy here). Video uploads themselves are
+    // Pro-gated in Storage Rules (profileMedia/{uid}).
+    function isValidGalleryMedia(data) {
+      return !("galleryMedia" in data)
+        || (data.galleryMedia is list
+          && data.galleryMedia.size() <= (data.isPro == true ? 9 : 3));
     }
 
     function isValidUserGameData(data) {

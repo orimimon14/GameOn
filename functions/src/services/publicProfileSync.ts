@@ -39,6 +39,24 @@ export const syncPublicProfileForUser = async (uid: string): Promise<boolean> =>
 
   if (user.profileImageUrl) publicProfile.profileImageUrl = user.profileImageUrl;
   if (user.bannerImageUrl) publicProfile.bannerImageUrl = user.bannerImageUrl;
+  // ADR-042 — mirror the media gallery, sanitized to the contract shape.
+  if (Array.isArray(user.galleryMedia)) {
+    publicProfile.galleryMedia = user.galleryMedia
+      .filter(
+        (m: Record<string, unknown>) =>
+          m &&
+          (m.type === 'image' || m.type === 'video') &&
+          typeof m.url === 'string' &&
+          typeof m.id === 'string',
+      )
+      .slice(0, 9)
+      .map((m: Record<string, unknown>) => ({
+        id: m.id,
+        type: m.type,
+        url: m.url,
+        filePath: typeof m.filePath === 'string' ? m.filePath : '',
+      }));
+  }
   if (user.avatarBorderItemId) publicProfile.avatarBorderItemId = user.avatarBorderItemId;
   if (user.globalBackgroundItemId) publicProfile.globalBackgroundItemId = user.globalBackgroundItemId;
   if (primaryDoc && primary) {

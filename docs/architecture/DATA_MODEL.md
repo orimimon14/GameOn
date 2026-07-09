@@ -322,6 +322,7 @@ export type UserDocument = {
 
   profileImageUrl?: string;
   bannerImageUrl?: string;
+  galleryMedia?: GalleryMediaItem[];
 
   avatarBorderItemId?: string;
   globalBackgroundItemId?: string;
@@ -358,6 +359,7 @@ export type UserDocument = {
 | `isDiscoverable` | `boolean` | כן | Client-writable | MVP | האם המשתמש יכול להופיע ב-discovery. כפוף ל-safety/server overrides. |
 | `profileImageUrl` | `string` | אופציונלי | Client-writable | MVP | URL מאושר מ-Firebase Storage או default avatar. |
 | `bannerImageUrl` | `string` | אופציונלי | Client-writable | MVP | URL מאושר לבאנר פרופיל. |
+| `galleryMedia` | `GalleryMediaItem[]` | אופציונלי | Client-writable | MVP | ADR-042 — גלריית מדיה לפרופיל. Basic: עד 3 תמונות; Pro: עד 9 פריטים כולל וידאו. כל פריט: `{ id: string; type: "image" | "video"; url: string; filePath: string }`. קבצים ב-`profileMedia/{uid}` (וידאו Pro-only ב-Storage Rules). |
 | `avatarBorderItemId` | `string` | אופציונלי | Server-owned | MVP | reference ל-`shopItems/{itemId}` מסוג `avatar_border`. לא CSS גולמי. |
 | `globalBackgroundItemId` | `string` | אופציונלי | Server-owned | MVP | reference ל-`shopItems/{itemId}` מסוג `global_background`. |
 | `coins` | `number` | כן | Server-owned | MVP | יתרת coins. כל שינוי מחייב transaction audit. |
@@ -432,6 +434,7 @@ export type PublicProfileDocument = {
 
   profileImageUrl?: string;
   bannerImageUrl?: string;
+  galleryMedia?: GalleryMediaItem[];
 
   avatarBorderItemId?: string;
   globalBackgroundItemId?: string;
@@ -463,6 +466,7 @@ export type PublicProfileDocument = {
 | `platforms` | `Platform[]` | כן | Server-owned | MVP | משוכפל מ-`users/{uid}.platforms`. |
 | `profileImageUrl` | `string` | אופציונלי | Server-owned | MVP | משוכפל מ-`users/{uid}`. |
 | `bannerImageUrl` | `string` | אופציונלי | Server-owned | MVP | משוכפל מ-`users/{uid}`. |
+| `galleryMedia` | `GalleryMediaItem[]` | אופציונלי | Server-owned | MVP | משוכפל (sanitized) מ-`users/{uid}.galleryMedia` — ADR-042. |
 | `avatarBorderItemId` | `string` | אופציונלי | Server-owned | MVP | reference ל-shop item. |
 | `globalBackgroundItemId` | `string` | אופציונלי | Server-owned | MVP | reference ל-shop item. |
 | `isPro` | `boolean` | כן | Server-owned | MVP | משוכפל מ-subscription entitlement. |

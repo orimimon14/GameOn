@@ -291,7 +291,8 @@ function userClientWritableKeys() {
     "platforms",
     "isDiscoverable",
     "profileImageUrl",
-    "bannerImageUrl"
+    "bannerImageUrl",
+    "galleryMedia"
   ];
 }
 
@@ -496,7 +497,8 @@ service cloud.firestore {
         "platforms",
         "isDiscoverable",
         "profileImageUrl",
-        "bannerImageUrl"
+        "bannerImageUrl",
+        "galleryMedia"
       ];
     }
 
@@ -550,7 +552,17 @@ service cloud.firestore {
         && (!("platforms" in data) || isValidPlatformList(data.platforms))
         && (!("isDiscoverable" in data) || data.isDiscoverable is bool)
         && (!("profileImageUrl" in data) || data.profileImageUrl is string)
-        && (!("bannerImageUrl" in data) || data.bannerImageUrl is string);
+        && (!("bannerImageUrl" in data) || data.bannerImageUrl is string)
+        && isValidGalleryMedia(data);
+    }
+
+    // ADR-042 — profile media gallery caps by tier (isPro is server-owned on
+    // the same doc, so it is trustworthy here). Video uploads themselves are
+    // Pro-gated in Storage Rules (profileMedia/{uid}).
+    function isValidGalleryMedia(data) {
+      return !("galleryMedia" in data)
+        || (data.galleryMedia is list
+          && data.galleryMedia.size() <= (data.isPro == true ? 9 : 3));
     }
 
     function isValidUserGameData(data) {
@@ -972,6 +984,21 @@ service firebase.storage {
       allow delete: if isOwner(uid) || isAdmin();
     }
 
+    // ADR-042 — profile media gallery: images for everyone, gameplay
+    // videos Pro-only. Item caps per tier live in Firestore rules (users doc).
+    match /profileMedia/{uid}/{fileId} {
+      allow read: if isSignedIn();
+
+      allow write: if isOwner(uid)
+        && isNotSuspended()
+        && ((isValidImage() && isMaxSize(10 * 1024 * 1024))
+          || (request.resource.contentType in ["video/webm", "video/mp4", "video/quicktime"]
+            && isMaxSize(50 * 1024 * 1024)
+            && isProUser()));
+
+      allow delete: if isOwner(uid) || isAdmin();
+    }
+
     match /bannerImages/{uid}/{fileId} {
       allow read: if isSignedIn();
 
@@ -1032,6 +1059,7 @@ service firebase.storage {
 - Basic user לא יכול להעלות ל-`chatMedia`.
 - `shopAssets` ו-`moderationEvidence` הם admin-only writes.
 - `profileImages` ו-`bannerImages` מוגבלים ל-5MB.
+- `profileMedia` (ADR-042): תמונות ≤10MB לכולם; וידאו (`webm/mp4/quicktime`) ≤50MB ל-Pro בלבד. מכסות פריטים לפי tier נאכפות ב-Firestore Rules.
 - `chatMedia` מוגבל ל-10MB.
 - כל הנתיבים image-only למעט `shopAssets`, שבו admin אחראי ל-upload.
 

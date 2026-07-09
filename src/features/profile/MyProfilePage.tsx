@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import { OwnedCollection } from './OwnedCollection';
+import { ProfileGallery } from './ProfileGallery';
 import { loadMyGames, updateMyProfile, uploadProfilePhoto } from './profileApi';
 
 import { useAuthStore } from '@/features/auth/authStore';
@@ -203,6 +204,8 @@ export const MyProfilePage: React.FC = () => {
                 ))}
               </div>
             </div>
+
+            <ProfileGallery />
 
             <OwnedCollection />
           </>

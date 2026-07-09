@@ -23,6 +23,15 @@ import type {
 // docs/architecture/DATA_MODEL.md §4 (ADR-003). Server-owned fields are
 // never written by the client (SECURITY §6); they appear here for reads.
 
+// ADR-042 — profile media gallery item (users.galleryMedia, mirrored to
+// publicProfiles). Files live at profileMedia/{uid}/{fileId}.
+export interface GalleryMediaItem {
+  id: string;
+  type: 'image' | 'video';
+  url: string;
+  filePath: string;
+}
+
 // users/{uid} — DATA_MODEL §4.1
 export interface UserDocument {
   uid: string;
@@ -41,6 +50,7 @@ export interface UserDocument {
 
   profileImageUrl?: string;
   bannerImageUrl?: string;
+  galleryMedia?: GalleryMediaItem[];
 
   avatarBorderItemId?: string;
   globalBackgroundItemId?: string;
@@ -92,6 +102,7 @@ export interface PublicProfileDocument {
 
   profileImageUrl?: string;
   bannerImageUrl?: string;
+  galleryMedia?: GalleryMediaItem[];
 
   avatarBorderItemId?: string;
   globalBackgroundItemId?: string;

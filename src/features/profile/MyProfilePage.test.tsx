@@ -11,10 +11,13 @@ import type { UserDocument, UserGameDocument } from '@/shared/models';
 import { useUserStore } from '@/shared/store/userStore';
 
 
-vi.mock('./profileApi', () => ({
+vi.mock('./profileApi', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('./profileApi')>()),
   updateMyProfile: vi.fn().mockResolvedValue(undefined),
   updateMyPreferredLocale: vi.fn(),
   loadMyGames: vi.fn(),
+  uploadGalleryMedia: vi.fn(),
+  removeGalleryMedia: vi.fn(),
 }));
 
 const testUser = { uid: 'u1' } as unknown as User;

@@ -1,5 +1,5 @@
 import { motion, useMotionValue, useReducedMotion, useTransform } from 'framer-motion';
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 
 import { SwipeHud } from './SwipeHud';
 
@@ -32,6 +32,21 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({ profile, exitDirection, di
 
   const exitX = exitDirection === 'like' ? 480 : -480;
 
+  // ADR-042 — media carousel: main photo first, then the gallery (photos +
+  // gameplay videos). Stories-style: tap the right half for next, left for
+  // previous (motion onTap, so drags never trigger it).
+  const media = useMemo(() => {
+    const gallery = profile.galleryMedia ?? [];
+    return profile.profileImageUrl
+      ? [{ id: 'main', type: 'image' as const, url: profile.profileImageUrl }, ...gallery]
+      : gallery;
+  }, [profile.profileImageUrl, profile.galleryMedia]);
+  const [mediaIndex, setMediaIndex] = useState(0);
+  const active = media[Math.min(mediaIndex, media.length - 1)];
+  // Suppress the click that fires after a real drag release — only near-zero
+  // movement counts as a tap.
+  const isTap = () => Math.abs(x.get()) < 6;
+
   return (
     <motion.div
       className="absolute inset-0 rounded-[40px] overflow-hidden shadow-2xl border-2 dark:border-white/10 border-gray-200 group bg-surface/20 backdrop-blur-md"
@@ -48,19 +63,53 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({ profile, exitDirection, di
         else if (info.offset.x < -DRAG_SWIPE_THRESHOLD_PX) onSwipe('skip');
       }}
     >
-      {profile.profileImageUrl ? (
-        <img
-          src={profile.profileImageUrl}
-          alt={profile.displayName}
-          draggable={false}
-          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-        />
+      {active ? (
+        active.type === 'video' ? (
+          <video
+            key={active.id}
+            src={active.url}
+            muted
+            autoPlay
+            loop
+            playsInline
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <img
+            key={active.id}
+            src={active.url}
+            alt={profile.displayName}
+            draggable={false}
+            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+          />
+        )
       ) : (
         <div className="w-full h-full bg-gradient-to-br from-primary/60 via-surface to-background flex items-center justify-center">
           <span className="text-8xl font-black text-white/80">{profile.displayName.charAt(0)}</span>
         </div>
       )}
       <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"></div>
+
+      {media.length > 1 && (
+        <>
+          <div className="absolute top-4 inset-x-6 z-20 flex gap-1.5 pointer-events-none" dir="ltr">
+            {media.map((m, i) => (
+              <span
+                key={m.id}
+                className={`h-1 flex-1 rounded-full transition-colors ${i === mediaIndex ? 'bg-white' : 'bg-white/30'}`}
+              />
+            ))}
+          </div>
+          <div
+            className="absolute inset-y-0 left-0 w-1/3 z-20"
+            onClick={() => isTap() && setMediaIndex((i) => Math.max(0, i - 1))}
+          />
+          <div
+            className="absolute inset-y-0 right-0 w-1/3 z-20"
+            onClick={() => isTap() && setMediaIndex((i) => Math.min(media.length - 1, i + 1))}
+          />
+        </>
+      )}
 
       {!reducedMotion && (
         <>
