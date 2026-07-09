@@ -7,6 +7,7 @@ import { answerCall, declineCall, subscribeIncomingCalls } from './callService';
 import { useCallStore } from './callStore';
 
 import { getFirebase } from '@/config/firebase';
+import { stopRing } from '@/features/notifications/pushApi';
 import type { CallDocument, PublicProfileDocument } from '@/shared/models';
 import { useUserStore } from '@/shared/store/userStore';
 
@@ -46,6 +47,7 @@ export const CallManager: React.FC = () => {
 
   const handleAnswer = async () => {
     if (!incomingCall) return;
+    stopRing();
     try {
       const call = await answerCall(incomingCall, () => setActiveCall(null));
       setIncomingCall(null);
@@ -57,6 +59,7 @@ export const CallManager: React.FC = () => {
 
   const handleDecline = async () => {
     if (!incomingCall) return;
+    stopRing();
     try {
       await declineCall(incomingCall);
     } finally {

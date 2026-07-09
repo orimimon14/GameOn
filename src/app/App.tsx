@@ -12,6 +12,7 @@ import { ChatView } from '@/features/chat/ChatView';
 import { GamesView } from '@/features/discovery/GamesView';
 import { SwipeView } from '@/features/discovery/SwipeView';
 import { LikesGrid } from '@/features/matches/LikesGrid';
+import { listenForegroundPush, registerPushDevice } from '@/features/notifications/pushApi';
 import { OnboardingPage } from '@/features/onboarding/OnboardingPage';
 import { RequireOnboarding } from '@/features/onboarding/RequireOnboarding';
 import { MyProfilePage } from '@/features/profile/MyProfilePage';
@@ -87,6 +88,14 @@ const AppShell: React.FC = () => {
     document.documentElement.classList.toggle('dark', isDarkMode);
     document.body.className = isDarkMode ? 'dark overflow-hidden' : 'light overflow-hidden';
   }, [isDarkMode]);
+
+  // Push notifications: register this device and ring on incoming-call
+  // pushes while the app is in the foreground.
+  useEffect(() => {
+    if (!userDoc?.uid) return;
+    void registerPushDevice(userDoc.uid).catch(() => undefined);
+    return listenForegroundPush(() => undefined);
+  }, [userDoc?.uid]);
 
   const path = location.pathname;
   const viewTitle = t(TITLE_KEYS[path] ?? 'common.appName');

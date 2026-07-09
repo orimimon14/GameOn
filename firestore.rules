@@ -325,6 +325,17 @@ service cloud.firestore {
         allow delete: if false;
       }
 
+      // Push notification tokens (FCM) — owner-managed device registry.
+      match /devices/{token} {
+        allow read: if isOwner(uid) || isAdmin();
+        allow create, update: if isOwner(uid)
+          && isNotSuspended()
+          && request.resource.data.keys().hasOnly(["token", "platform", "updatedAt"])
+          && request.resource.data.token == token;
+        allow delete: if isOwner(uid);
+      }
+
+
       match /blocks/{blockedUid} {
         allow read: if isOwner(uid) || isAdmin();
         allow create: if false;
