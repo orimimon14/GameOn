@@ -218,6 +218,11 @@ export const en: TranslationCatalog = {
     tierBasic: 'Basic',
     tierPro: 'Pro',
   },
+  notifications: {
+    promptText: "Turn on notifications for messages, likes and calls — even when you're away",
+    enable: 'Enable',
+    dismiss: 'Dismiss',
+  },
   settings: {
     deleteAccount: 'Delete account permanently',
     deletingAccount: 'Deleting account…',

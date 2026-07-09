@@ -29,12 +29,32 @@ export const registerPushDevice = async (uid: string): Promise<void> => {
   });
 };
 
+export const pushPermissionState = (): 'unsupported' | NotificationPermission => {
+  if (!vapidKey || import.meta.env.VITE_USE_EMULATORS === 'true') return 'unsupported';
+  if (!('Notification' in window) || !('serviceWorker' in navigator)) return 'unsupported';
+  return Notification.permission;
+};
+
+// Browsers only allow audio after a user gesture — we keep one AudioContext
+// unlocked from the enable-notifications tap (or any first tap).
+let sharedCtx: AudioContext | null = null;
+
+export const unlockAudio = (): void => {
+  try {
+    sharedCtx = sharedCtx ?? new AudioContext();
+    void sharedCtx.resume();
+  } catch {
+    sharedCtx = null;
+  }
+};
+
 // Foreground pushes: ring for incoming calls, notify otherwise.
 let ringAudio: { stop: () => void } | null = null;
 
 const startRing = (): void => {
   stopRing();
-  const ctx = new AudioContext();
+  const ctx = sharedCtx ?? new AudioContext();
+  void ctx.resume();
   const gain = ctx.createGain();
   gain.gain.value = 0.15;
   gain.connect(ctx.destination);
@@ -53,7 +73,7 @@ const startRing = (): void => {
       clearInterval(interval);
       clearTimeout(timeout);
       osc.stop();
-      void ctx.close();
+      if (ctx !== sharedCtx) void ctx.close();
     },
   };
 };

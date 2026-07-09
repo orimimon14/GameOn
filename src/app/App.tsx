@@ -12,7 +12,8 @@ import { ChatView } from '@/features/chat/ChatView';
 import { GamesView } from '@/features/discovery/GamesView';
 import { SwipeView } from '@/features/discovery/SwipeView';
 import { LikesGrid } from '@/features/matches/LikesGrid';
-import { listenForegroundPush, registerPushDevice } from '@/features/notifications/pushApi';
+import { NotificationsPrompt } from '@/features/notifications/NotificationsPrompt';
+import { listenForegroundPush, pushPermissionState, registerPushDevice } from '@/features/notifications/pushApi';
 import { OnboardingPage } from '@/features/onboarding/OnboardingPage';
 import { RequireOnboarding } from '@/features/onboarding/RequireOnboarding';
 import { MyProfilePage } from '@/features/profile/MyProfilePage';
@@ -93,7 +94,11 @@ const AppShell: React.FC = () => {
   // pushes while the app is in the foreground.
   useEffect(() => {
     if (!userDoc?.uid) return;
-    void registerPushDevice(userDoc.uid).catch(() => undefined);
+    // Auto-refresh the token only when permission was already granted;
+    // first-time permission is requested from the NotificationsPrompt tap.
+    if (pushPermissionState() === 'granted') {
+      void registerPushDevice(userDoc.uid).catch(() => undefined);
+    }
     return listenForegroundPush(() => undefined);
   }, [userDoc?.uid]);
 
@@ -131,6 +136,8 @@ const AppShell: React.FC = () => {
       )}
 
       <CallManager />
+
+      <NotificationsPrompt />
 
       <SideNav activePath={path} userProfile={userProfile} onNavigate={handleNavigate} />
 

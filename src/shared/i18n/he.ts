@@ -216,6 +216,11 @@ export const he = {
     tierBasic: 'Basic',
     tierPro: 'Pro',
   },
+  notifications: {
+    promptText: 'הפעל התראות כדי לדעת על הודעות, לייקים ושיחות — גם כשאתה לא כאן',
+    enable: 'הפעל',
+    dismiss: 'סגור',
+  },
   settings: {
     deleteAccount: 'מחק חשבון לצמיתות',
     deletingAccount: 'מוחק חשבון…',
