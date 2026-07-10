@@ -100,7 +100,7 @@ export const ChatView: React.FC = () => {
   const setActiveCall = useCallStore((s) => s.setActiveCall);
   const [callError, setCallError] = useState(false);
 
-  const endRef = useRef<HTMLDivElement>(null);
+  const messagesRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!uid) return;
@@ -142,7 +142,8 @@ export const ChatView: React.FC = () => {
   }, [chats, selectedChatId, uid]);
 
   useEffect(() => {
-    endRef.current?.scrollIntoView?.({ behavior: 'smooth' });
+    const el = messagesRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
   }, [messages, selectedChatId]);
 
   const partnerOf = useCallback(
@@ -297,11 +298,11 @@ export const ChatView: React.FC = () => {
 
       {/* Conversation panel */}
       <div
-        className={`flex-1 flex flex-col h-full dark:bg-background/40 bg-white/40 backdrop-blur-md border-l dark:border-white/5 border-gray-200 transition-all ${!selectedChatId ? 'hidden md:flex' : 'flex'}`}
+        className={`flex-1 min-w-0 flex flex-col h-full dark:bg-background/40 bg-white/40 backdrop-blur-md border-l dark:border-white/5 border-gray-200 transition-all ${!selectedChatId ? 'hidden md:flex' : 'flex'}`}
       >
         {selectedChat ? (
           <>
-            <div className="h-20 flex items-center px-6 border-b dark:border-white/5 border-gray-200 shrink-0">
+            <div className="h-20 flex items-center px-3 sm:px-6 gap-2 border-b dark:border-white/5 border-gray-200 shrink-0">
               <button
                 onClick={() => openChat(null)}
                 aria-label={t('chat.back')}
@@ -312,9 +313,9 @@ export const ChatView: React.FC = () => {
               <button
                 onClick={() => selectedPartner && setViewingPartner(true)}
                 aria-label={selectedPartner?.displayName ?? ''}
-                className="flex items-center gap-4 text-right flex-1 hover:opacity-80 transition-opacity"
+                className="flex items-center gap-3 text-right flex-1 min-w-0 hover:opacity-80 transition-opacity"
               >
-                <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-primary shadow-glow bg-primary/30 flex items-center justify-center">
+                <div className="w-11 h-11 sm:w-12 sm:h-12 shrink-0 rounded-full overflow-hidden border-2 border-primary shadow-glow bg-primary/30 flex items-center justify-center">
                   {selectedPartner?.profileImageUrl ? (
                     <img
                       src={selectedPartner.profileImageUrl}
@@ -327,26 +328,26 @@ export const ChatView: React.FC = () => {
                     </span>
                   )}
                 </div>
-                <div>
-                  <h3 className="font-bold dark:text-white text-text-inverse text-lg">
+                <div className="min-w-0">
+                  <h3 className="font-bold dark:text-white text-text-inverse text-lg truncate">
                     {selectedPartner?.displayName ?? ''}
                   </h3>
-                  <span className="text-xs text-text-muted font-bold">{selectedChat.gameName}</span>
+                  <span className="text-xs text-text-muted font-bold truncate block">{selectedChat.gameName}</span>
                 </div>
               </button>
 
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
                 <button
                   onClick={() => setReporting(true)}
                   aria-label={t('chat.safety.report')}
-                  className="w-11 h-11 rounded-full bg-white/10 hover:bg-yellow-500 text-white flex items-center justify-center transition-all"
+                  className="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-white/10 hover:bg-yellow-500 text-white flex items-center justify-center transition-all"
                 >
                   <i className="fa-solid fa-flag"></i>
                 </button>
                 <button
                   onClick={() => void handleBlock()}
                   aria-label={t('chat.safety.block')}
-                  className="w-11 h-11 rounded-full bg-white/10 hover:bg-danger text-white flex items-center justify-center transition-all"
+                  className="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-white/10 hover:bg-danger text-white flex items-center justify-center transition-all"
                 >
                   <i className="fa-solid fa-ban"></i>
                 </button>
@@ -354,7 +355,7 @@ export const ChatView: React.FC = () => {
                   onClick={() => void handleStartCall('voice')}
                   disabled={!!activeCall}
                   aria-label={t('chat.call.startVoice')}
-                  className="w-11 h-11 rounded-full bg-white/10 hover:bg-primary text-white flex items-center justify-center transition-all disabled:opacity-50"
+                  className="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-white/10 hover:bg-primary text-white flex items-center justify-center transition-all disabled:opacity-50"
                 >
                   <i className="fa-solid fa-phone"></i>
                 </button>
@@ -362,7 +363,7 @@ export const ChatView: React.FC = () => {
                   onClick={() => void handleStartCall('video')}
                   disabled={!!activeCall}
                   aria-label={t('chat.call.startVideo')}
-                  className="w-11 h-11 rounded-full bg-white/10 hover:bg-primary text-white flex items-center justify-center transition-all disabled:opacity-50"
+                  className="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-white/10 hover:bg-primary text-white flex items-center justify-center transition-all disabled:opacity-50"
                 >
                   <i className="fa-solid fa-video"></i>
                 </button>
@@ -380,7 +381,7 @@ export const ChatView: React.FC = () => {
               </p>
             )}
 
-            <div className="flex-1 overflow-y-auto p-6 space-y-4 no-scrollbar">
+            <div ref={messagesRef} className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 no-scrollbar">
               {messages.map((message) => {
                 const isMe = message.senderId === uid;
                 return (
@@ -402,7 +403,6 @@ export const ChatView: React.FC = () => {
                   </div>
                 );
               })}
-              <div ref={endRef} />
             </div>
 
             <div className="p-4 border-t dark:border-white/5 border-gray-200 bg-transparent shrink-0">
@@ -436,13 +436,13 @@ export const ChatView: React.FC = () => {
                   e.preventDefault();
                   void handleSend();
                 }}
-                className="flex gap-3"
+                className="flex gap-2 sm:gap-3"
               >
                 <button
                   type="button"
                   onClick={handleVideoMessageClick}
                   aria-label={t('chat.videoMessage.record')}
-                  className="w-14 h-14 rounded-2xl bg-white/10 hover:bg-primary text-white flex items-center justify-center transition-all relative"
+                  className="w-12 h-12 sm:w-14 sm:h-14 shrink-0 rounded-2xl bg-white/10 hover:bg-primary text-white flex items-center justify-center transition-all relative"
                 >
                   <i className="fa-solid fa-video text-lg"></i>
                   {!isPro && (
@@ -453,7 +453,7 @@ export const ChatView: React.FC = () => {
                 </button>
                 <label
                   aria-label={t('chat.imageMessage.attach')}
-                  className="w-14 h-14 rounded-2xl bg-white/10 hover:bg-primary text-white flex items-center justify-center transition-all relative cursor-pointer"
+                  className="w-12 h-12 sm:w-14 sm:h-14 shrink-0 rounded-2xl bg-white/10 hover:bg-primary text-white flex items-center justify-center transition-all relative cursor-pointer"
                   onClick={(e) => {
                     if (!isPro) {
                       e.preventDefault();
@@ -487,13 +487,13 @@ export const ChatView: React.FC = () => {
                   onChange={(e) => setDraft(e.target.value)}
                   placeholder={t('chat.inputPlaceholder')}
                   maxLength={2000}
-                  className="flex-1 dark:bg-black/20 bg-white/50 border dark:border-white/10 border-gray-200 rounded-2xl px-5 py-3 dark:text-white text-text-inverse focus:outline-none focus:border-primary transition-all text-right shadow-inner"
+                  className="flex-1 min-w-0 dark:bg-black/20 bg-white/50 border dark:border-white/10 border-gray-200 rounded-2xl px-4 sm:px-5 py-3 dark:text-white text-text-inverse focus:outline-none focus:border-primary transition-all text-right shadow-inner"
                 />
                 <button
                   type="submit"
                   disabled={!draft.trim()}
                   aria-label={t('chat.send')}
-                  className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all ${
+                  className={`w-12 h-12 sm:w-14 sm:h-14 shrink-0 rounded-2xl flex items-center justify-center transition-all ${
                     draft.trim() ? 'bg-primary text-white shadow-glow' : 'bg-gray-400/20 text-gray-400'
                   }`}
                 >
