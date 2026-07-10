@@ -16,6 +16,7 @@ import {
 } from './chatApi';
 import { VideoMessageRecorder } from './VideoMessageRecorder';
 
+import { PublicProfileSheet } from '@/features/profile/PublicProfileSheet';
 import { blockUser, createReport, type ReportReason } from '@/features/safety/safetyApi';
 import type { CallType } from '@/shared/enums';
 import type { ChatDocument, MessageDocument, PublicProfileDocument } from '@/shared/models';
@@ -74,6 +75,7 @@ export const ChatView: React.FC = () => {
   const [reporting, setReporting] = useState(false);
   const [safetyNotice, setSafetyNotice] = useState<string | null>(null);
   const [showProUpsell, setShowProUpsell] = useState(false);
+  const [viewingPartner, setViewingPartner] = useState(false);
   const activeCall = useCallStore((s) => s.activeCall);
   const setActiveCall = useCallStore((s) => s.setActiveCall);
   const [callError, setCallError] = useState(false);
@@ -216,6 +218,10 @@ export const ChatView: React.FC = () => {
 
   return (
     <div className="flex h-full w-full bg-transparent relative z-10">
+      {viewingPartner && selectedPartner && (
+        <PublicProfileSheet profile={selectedPartner} onClose={() => setViewingPartner(false)} />
+      )}
+
       {recording && selectedChatId && uid && (
         <VideoMessageRecorder
           onSend={(blob) => sendVideoMessage(selectedChatId, uid, blob)}
@@ -268,7 +274,11 @@ export const ChatView: React.FC = () => {
               >
                 <i className="fa-solid fa-arrow-right text-xl"></i>
               </button>
-              <div className="flex items-center gap-4 text-right flex-1">
+              <button
+                onClick={() => selectedPartner && setViewingPartner(true)}
+                aria-label={selectedPartner?.displayName ?? ''}
+                className="flex items-center gap-4 text-right flex-1 hover:opacity-80 transition-opacity"
+              >
                 <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-primary shadow-glow bg-primary/30 flex items-center justify-center">
                   {selectedPartner?.profileImageUrl ? (
                     <img
@@ -288,7 +298,7 @@ export const ChatView: React.FC = () => {
                   </h3>
                   <span className="text-xs text-text-muted font-bold">{selectedChat.gameName}</span>
                 </div>
-              </div>
+              </button>
 
               <div className="flex items-center gap-3">
                 <button

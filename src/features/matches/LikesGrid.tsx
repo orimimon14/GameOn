@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { submitSwipe } from '@/features/discovery/discoveryApi';
 import { MatchCelebration } from '@/features/discovery/MatchCelebration';
 import { loadLikesYou, type InboundLike } from '@/features/matches/likesApi';
+import { PublicProfileSheet } from '@/features/profile/PublicProfileSheet';
 import type { PublicProfileDocument } from '@/shared/models';
 import { useUserStore } from '@/shared/store/userStore';
 
@@ -29,6 +30,7 @@ export const LikesGrid: React.FC = () => {
   const [pendingUid, setPendingUid] = useState<string | null>(null);
   const [likeBackError, setLikeBackError] = useState<'generic' | 'unavailable' | null>(null);
   const [matchedWith, setMatchedWith] = useState<PublicProfileDocument | null>(null);
+  const [viewingProfile, setViewingProfile] = useState<PublicProfileDocument | null>(null);
   const [reloadToken, setReloadToken] = useState(0);
 
   useEffect(() => {
@@ -113,6 +115,10 @@ export const LikesGrid: React.FC = () => {
 
   return (
     <div className="p-6 pt-24 pb-32 overflow-y-auto h-full max-w-6xl mx-auto relative z-10 no-scrollbar">
+      {viewingProfile && (
+        <PublicProfileSheet profile={viewingProfile} onClose={() => setViewingProfile(null)} />
+      )}
+
       {matchedWith && (
         <MatchCelebration
           name={matchedWith.displayName}
@@ -147,17 +153,23 @@ export const LikesGrid: React.FC = () => {
               key={profile.uid}
               className="group relative aspect-[3/4.5] rounded-[24px] overflow-hidden shadow-soft hover:scale-[1.03] transition-all duration-300 border-2 border-transparent hover:border-primary/40"
             >
-              {profile.profileImageUrl ? (
-                <img
-                  src={profile.profileImageUrl}
-                  alt={profile.displayName}
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <div className="w-full h-full bg-gradient-to-br from-primary/60 via-surface to-background flex items-center justify-center">
-                  <span className="text-6xl font-black text-white/80">{profile.displayName.charAt(0)}</span>
-                </div>
-              )}
+              <button
+                onClick={() => setViewingProfile(profile)}
+                aria-label={profile.displayName}
+                className="absolute inset-0 w-full h-full"
+              >
+                {profile.profileImageUrl ? (
+                  <img
+                    src={profile.profileImageUrl}
+                    alt={profile.displayName}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gradient-to-br from-primary/60 via-surface to-background flex items-center justify-center">
+                    <span className="text-6xl font-black text-white/80">{profile.displayName.charAt(0)}</span>
+                  </div>
+                )}
+              </button>
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"></div>
 
               <div className="absolute inset-0 flex flex-col justify-end p-4 text-right">

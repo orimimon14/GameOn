@@ -18,9 +18,10 @@ interface SwipeCardProps {
   exitDirection: SwipeDirection | null;
   disabled: boolean;
   onSwipe: (direction: SwipeDirection) => void;
+  onOpenProfile?: () => void;
 }
 
-export const SwipeCard: React.FC<SwipeCardProps> = ({ profile, exitDirection, disabled, onSwipe }) => {
+export const SwipeCard: React.FC<SwipeCardProps> = ({ profile, exitDirection, disabled, onSwipe, onOpenProfile }) => {
   const labels = useLabels();
   const borderGradient = useItemGradient(profile.avatarBorderItemId);
   const reducedMotion = useReducedMotion() ?? false;
@@ -92,7 +93,7 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({ profile, exitDirection, di
 
       {media.length > 1 && (
         <>
-          <div className="absolute top-4 inset-x-6 z-20 flex gap-1.5 pointer-events-none" dir="ltr">
+          <div className="absolute top-1.5 inset-x-8 z-30 flex gap-1.5 pointer-events-none" dir="ltr">
             {media.map((m, i) => (
               <span
                 key={m.id}
@@ -142,6 +143,16 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({ profile, exitDirection, di
       )}
 
       <SwipeHud profile={profile} />
+
+      {onOpenProfile && (
+        <button
+          onClick={() => isTap() && onOpenProfile()}
+          aria-label={profile.displayName}
+          className="absolute bottom-24 end-4 z-30 w-11 h-11 rounded-full bg-black/55 backdrop-blur text-white border border-white/20 hover:bg-primary transition-colors flex items-center justify-center"
+        >
+          <i className="fa-solid fa-circle-info text-lg"></i>
+        </button>
+      )}
 
       <div className="absolute inset-0 p-8 flex flex-col justify-end text-right pointer-events-none">
         <h2 className="text-4xl font-black text-white italic uppercase tracking-tighter mb-2 flex items-center justify-end gap-2">

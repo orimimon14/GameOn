@@ -8,6 +8,7 @@ import { MatchCelebration } from './MatchCelebration';
 import { SwipeActions } from './SwipeActions';
 import { SwipeCard } from './SwipeCard';
 
+import { PublicProfileSheet } from '@/features/profile/PublicProfileSheet';
 import { SKILL_LEVELS, type SkillLevel, type SwipeDirection } from '@/shared/enums';
 import { useLabels } from '@/shared/labels';
 import type { PublicProfileDocument } from '@/shared/models';
@@ -45,6 +46,7 @@ export const SwipeView: React.FC = () => {
   const [limitReached, setLimitReached] = useState(false);
   const [matchedWith, setMatchedWith] = useState<PublicProfileDocument | null>(null);
   const [exitDirection, setExitDirection] = useState<SwipeDirection | null>(null);
+  const [viewingProfile, setViewingProfile] = useState<PublicProfileDocument | null>(null);
 
   const [reloadToken, setReloadToken] = useState(0);
 
@@ -236,6 +238,10 @@ export const SwipeView: React.FC = () => {
         />
       )}
 
+      {viewingProfile && (
+        <PublicProfileSheet profile={viewingProfile} onClose={() => setViewingProfile(null)} />
+      )}
+
       <div className="relative w-full max-w-md aspect-[3/4.5] flex-shrink min-h-0">
         <AnimatePresence initial={false}>
           <SwipeCard
@@ -244,6 +250,7 @@ export const SwipeView: React.FC = () => {
             exitDirection={exitDirection}
             disabled={pending}
             onSwipe={(direction) => void handleSwipe(direction)}
+            onOpenProfile={() => setViewingProfile(currentProfile)}
           />
         </AnimatePresence>
       </div>
