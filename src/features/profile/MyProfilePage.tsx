@@ -3,9 +3,10 @@ import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
+import { AvatarCropModal } from './AvatarCropModal';
 import { OwnedCollection } from './OwnedCollection';
 import { ProfileGallery } from './ProfileGallery';
-import { addGameToProfile, loadMyGames, removeGameFromProfile, updateMyProfile, uploadProfilePhoto } from './profileApi';
+import { addGameToProfile, loadMyGames, removeGameFromProfile, updateMyProfile, uploadCroppedProfilePhoto, uploadProfilePhoto } from './profileApi';
 
 import { useAuthStore } from '@/features/auth/authStore';
 import { useCosmetics } from '@/features/shop/useCosmetics';
@@ -48,7 +49,11 @@ export const MyProfilePage: React.FC = () => {
   // message so remote debugging from a screenshot is possible.
   const [photoError, setPhotoError] = useState<string | null>(null);
 
-  const onPickPhoto = async (file: File | undefined) => {
+  // Picking a photo opens the circular cropper; the crop result uploads as
+  // a ready square JPEG. Undecodable formats fall back to the direct path.
+  const [cropFile, setCropFile] = useState<File | null>(null);
+
+  const onPickPhoto = (file: File | undefined) => {
     if (!file || !user) return;
     // Camera captures may come with an empty MIME type — let decode decide.
     if (file.type && !file.type.startsWith('image/')) {
@@ -59,6 +64,12 @@ export const MyProfilePage: React.FC = () => {
       setPhotoError(`${Math.round(file.size / 1024 / 1024)}MB`);
       return;
     }
+    setPhotoError(null);
+    setCropFile(file);
+  };
+
+  const uploadDirect = async (file: File) => {
+    if (!user) return;
     setUploadingPhoto(true);
     setPhotoError(null);
     try {
@@ -170,6 +181,21 @@ export const MyProfilePage: React.FC = () => {
 
   return (
     <div className="h-full overflow-y-auto pb-32 pt-24 px-6 relative z-10 no-scrollbar">
+      {cropFile && user && (
+        <AvatarCropModal
+          file={cropFile}
+          onCancel={() => setCropFile(null)}
+          onSave={async (blob) => {
+            await uploadCroppedProfilePhoto(user.uid, blob);
+            setCropFile(null);
+          }}
+          onDecodeError={() => {
+            const file = cropFile;
+            setCropFile(null);
+            void uploadDirect(file);
+          }}
+        />
+      )}
       <div className="max-w-2xl mx-auto flex flex-col gap-6">
         {bannerGradient && (
           <div className="w-full h-24 rounded-3xl mb-6" style={{ background: bannerGradient }} />
@@ -196,7 +222,10 @@ export const MyProfilePage: React.FC = () => {
               accept="image/*"
               className="hidden"
               disabled={uploadingPhoto}
-              onChange={(e) => void onPickPhoto(e.target.files?.[0])}
+              onChange={(e) => {
+                onPickPhoto(e.target.files?.[0]);
+                e.target.value = '';
+              }}
             />
           </label>
         </div>

@@ -96,8 +96,21 @@ const compressOrOriginal = async (
 };
 
 export const uploadProfilePhoto = async (uid: string, file: File): Promise<string> => {
-  const { storage, db } = getFirebase();
   const { blob, contentType, ext } = await compressOrOriginal(file, 5 * 1024 * 1024);
+  return uploadAvatarBlob(uid, blob, contentType, ext);
+};
+
+// Cropped avatars arrive as a ready square JPEG from AvatarCropModal.
+export const uploadCroppedProfilePhoto = (uid: string, blob: Blob): Promise<string> =>
+  uploadAvatarBlob(uid, blob, 'image/jpeg', 'jpg');
+
+const uploadAvatarBlob = async (
+  uid: string,
+  blob: Blob,
+  contentType: string,
+  ext: string,
+): Promise<string> => {
+  const { storage, db } = getFirebase();
   const path = `profileImages/${uid}/${Date.now()}.${ext}`;
   await uploadBytes(storageRef(storage, path), blob, { contentType });
   const url = await getDownloadURL(storageRef(storage, path));

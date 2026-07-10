@@ -256,6 +256,13 @@ export const en: TranslationCatalog = {
     removeGame: 'Remove game',
     gameActionError: 'The action failed — try again',
     changePhoto: 'Change profile photo',
+    crop: {
+      title: 'Pick the part for your profile photo',
+      hint: 'Drag to position, use the slider to zoom — the circle is what shows on your profile',
+      zoom: 'Zoom',
+      save: 'Save photo',
+      error: 'Saving failed — try again',
+    },
     photoError: 'Photo upload failed — try another image',
     gallery: {
       title: 'My Gallery',
