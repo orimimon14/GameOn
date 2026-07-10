@@ -1200,3 +1200,16 @@ If secret leak suspected:
 | Secret rotation cadence | Open | Must be defined before production launch. |
 | Production data access policy | Open | Needed for support/admin workflows. |
 | Emulator seed dataset ownership | Open | Needs deterministic seed fixtures and reset commands. |
+
+
+## הרשאת Cross-Service ל-Storage Rules (חובה בכל פרויקט!)
+
+חוקי ה-Storage שלנו קוראים מסמכים מ-Firestore (`isNotSuspended`, `isProUser`, `isChatParticipant`). בענן זה דורש הענקה חד-פעמית של התפקיד `roles/firebaserules.firestoreServiceAgent` ל-service agent של Storage:
+
+```
+service-<PROJECT_NUMBER>@gcp-sa-firebasestorage.iam.gserviceaccount.com
+```
+
+בלי זה **כל ההעלאות נכשלות** עם `storage/unauthorized` (תמונות פרופיל, גלריה, הודעות וידאו) — האמולטור לא אוכף את זה ולכן הבאג לא נתפס מקומית (התגלה ותוקן ב-swish-game-dev ב-2026-07-10).
+
+**לביצוע:** Firebase Console → Storage → Rules מציג כפתור הענקה אוטומטי, או `gcloud projects add-iam-policy-binding`. ⚠️ יש לחזור על זה ב-`swish-game-prod` לפני עלייה לאוויר.

@@ -1,4 +1,5 @@
 // Canonical Firebase Storage Rules — copied verbatim from docs/architecture/SECURITY.md §5.
+// Cross-service rules: reads users/chats docs from Firestore (service agent grant required).
 // Chat media (images + recorded video messages) is Pro-only (ADR-041).
 rules_version = '2';
 
