@@ -1,11 +1,13 @@
 import React, { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { AvatarCropModal } from './AvatarCropModal';
 import {
   GALLERY_MAX_BASIC,
   GALLERY_MAX_PRO,
   galleryRejection,
   removeGalleryMedia,
+  uploadCroppedGalleryPhoto,
   uploadGalleryMedia,
   type GalleryRejection,
 } from './profileApi';
@@ -33,6 +35,7 @@ export const ProfileGallery: React.FC = () => {
   const [errorKey, setErrorKey] = useState<string | null>(null);
   const [errorDetail, setErrorDetail] = useState<string | null>(null);
   const [viewing, setViewing] = useState<GalleryMediaItem | null>(null);
+  const [cropFile, setCropFile] = useState<File | null>(null);
 
   if (!userDoc) return null;
   const uid = userDoc.uid;
@@ -40,7 +43,7 @@ export const ProfileGallery: React.FC = () => {
   const items: GalleryMediaItem[] = userDoc.galleryMedia ?? [];
   const max = isPro ? GALLERY_MAX_PRO : GALLERY_MAX_BASIC;
 
-  const onPick = async (file: File | undefined) => {
+  const onPick = (file: File | undefined) => {
     if (!file || busy) return;
     setErrorKey(null);
     setErrorDetail(null);
@@ -49,6 +52,16 @@ export const ProfileGallery: React.FC = () => {
       setErrorKey(REJECTION_KEYS[rejection]);
       return;
     }
+    if (inputRef.current) inputRef.current.value = '';
+    // Photos go through the square cropper; videos upload as-is.
+    if (!file.type || file.type.startsWith('image/')) {
+      setCropFile(file);
+    } else {
+      void uploadDirect(file);
+    }
+  };
+
+  const uploadDirect = async (file: File) => {
     setBusy(true);
     try {
       await uploadGalleryMedia(uid, file, items);
@@ -59,7 +72,6 @@ export const ProfileGallery: React.FC = () => {
       );
     } finally {
       setBusy(false);
-      if (inputRef.current) inputRef.current.value = '';
     }
   };
 
@@ -80,6 +92,24 @@ export const ProfileGallery: React.FC = () => {
     <div>
       {viewing && (
         <MediaLightbox type={viewing.type} url={viewing.url} onClose={() => setViewing(null)} />
+      )}
+      {cropFile && (
+        <AvatarCropModal
+          file={cropFile}
+          shape="square"
+          titleKey="profile.gallery.cropTitle"
+          hintKey="profile.gallery.cropHint"
+          onCancel={() => setCropFile(null)}
+          onSave={async (blob) => {
+            await uploadCroppedGalleryPhoto(uid, blob, items);
+            setCropFile(null);
+          }}
+          onDecodeError={() => {
+            const file = cropFile;
+            setCropFile(null);
+            if (file) void uploadDirect(file);
+          }}
+        />
       )}
       <div className="text-end mb-3">
         <h2 className="text-xl font-black italic uppercase text-text">
@@ -161,7 +191,7 @@ export const ProfileGallery: React.FC = () => {
         type="file"
         accept={isPro ? 'image/*,video/mp4,video/webm,video/quicktime' : 'image/*'}
         className="hidden"
-        onChange={(e) => void onPick(e.target.files?.[0])}
+        onChange={(e) => onPick(e.target.files?.[0])}
       />
     </div>
   );

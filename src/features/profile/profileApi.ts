@@ -144,6 +144,22 @@ export const galleryRejection = (
   return null;
 };
 
+// Cropped gallery photos arrive as a ready square JPEG from the crop modal.
+export const uploadCroppedGalleryPhoto = async (
+  uid: string,
+  blob: Blob,
+  existing: GalleryMediaItem[],
+): Promise<GalleryMediaItem> => {
+  const { storage, db } = getFirebase();
+  const id = `${Date.now()}`;
+  const filePath = `profileMedia/${uid}/${id}.jpg`;
+  await uploadBytes(storageRef(storage, filePath), blob, { contentType: 'image/jpeg' });
+  const url = await getDownloadURL(storageRef(storage, filePath));
+  const item: GalleryMediaItem = { id, type: 'image', url, filePath };
+  await updateDoc(doc(db, 'users', uid), { galleryMedia: [...existing, item] });
+  return item;
+};
+
 export const uploadGalleryMedia = async (
   uid: string,
   file: File,

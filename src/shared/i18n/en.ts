@@ -276,6 +276,8 @@ export const en: TranslationCatalog = {
       badType: 'Unsupported file — use an image or a video (MP4/MOV/WebM)',
       proHint: 'With Pro you can add up to 9 items, including gameplay videos 🎮',
       counter: '{{count}} of {{max}}',
+      cropTitle: 'Crop the gallery photo',
+      cropHint: 'Drag to position and zoom with the slider — the square is what shows in your gallery',
     },
     collection: 'My Collection',
     noGames: 'No games yet',

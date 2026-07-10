@@ -11,6 +11,10 @@ interface AvatarCropModalProps {
   // Some phones hand over formats the browser cannot decode (e.g. HEIC on
   // Android) — the caller falls back to the direct upload path.
   onDecodeError: () => void;
+  // circle = avatar; square = gallery tiles. i18n keys let callers retitle.
+  shape?: 'circle' | 'square';
+  titleKey?: string;
+  hintKey?: string;
 }
 
 const VIEW = 288; // crop viewport size in px
@@ -21,6 +25,9 @@ export const AvatarCropModal: React.FC<AvatarCropModalProps> = ({
   onCancel,
   onSave,
   onDecodeError,
+  shape = 'circle',
+  titleKey = 'profile.crop.title',
+  hintKey = 'profile.crop.hint',
 }) => {
   const { t } = useTranslation();
   const imgRef = useRef<HTMLImageElement | null>(null);
@@ -112,14 +119,14 @@ export const AvatarCropModal: React.FC<AvatarCropModalProps> = ({
   return (
     <div
       role="dialog"
-      aria-label={t('profile.crop.title')}
+      aria-label={t(titleKey)}
       className="fixed inset-0 z-[60] bg-black/85 backdrop-blur-sm flex items-center justify-center p-6"
     >
       <div className="bg-background border border-white/10 rounded-[28px] p-6 w-full max-w-sm flex flex-col items-center gap-4 shadow-2xl">
         <h2 className="text-lg font-black italic uppercase text-text text-center">
-          {t('profile.crop.title')}
+          {t(titleKey)}
         </h2>
-        <p className="text-text-muted text-sm text-center -mt-2">{t('profile.crop.hint')}</p>
+        <p className="text-text-muted text-sm text-center -mt-2">{t(hintKey)}</p>
 
         <div
           className="relative overflow-hidden rounded-2xl bg-black touch-none cursor-move select-none"
@@ -140,9 +147,9 @@ export const AvatarCropModal: React.FC<AvatarCropModalProps> = ({
             className="absolute top-0 left-0 max-w-none pointer-events-none"
             style={{ width: width || undefined, height: height || undefined, transform: `translate(${pos.x}px, ${pos.y}px)` }}
           />
-          {/* circular mask — everything outside the circle is dimmed */}
+          {/* crop mask — everything outside is dimmed */}
           <div
-            className="absolute rounded-full pointer-events-none border-2 border-white/80"
+            className={`absolute pointer-events-none border-2 border-white/80 ${shape === 'circle' ? 'rounded-full' : 'rounded-xl'}`}
             style={{ inset: 0, boxShadow: '0 0 0 9999px rgba(0,0,0,0.62)' }}
           />
         </div>
