@@ -41,7 +41,6 @@ export const SwipeView: React.FC = () => {
   const [gameId, setGameId] = useState<string | null>(null);
   const [deck, setDeck] = useState<PublicProfileDocument[]>([]);
   const [index, setIndex] = useState(0);
-  const [pending, setPending] = useState(false);
   const [swipeError, setSwipeError] = useState(false);
   const [limitReached, setLimitReached] = useState(false);
   const [matchedWith, setMatchedWith] = useState<PublicProfileDocument | null>(null);
@@ -120,30 +119,27 @@ export const SwipeView: React.FC = () => {
     </div>
   );
 
-  const handleSwipe = async (direction: SwipeDirection) => {
-    if (pending || !currentProfile || !gameId) return;
-    setPending(true);
+  // Optimistic swipe: the card flies away IMMEDIATELY and the backend call
+  // runs in the background (it is idempotent server-side). A match pops the
+  // celebration when the answer arrives; the daily-limit and error states
+  // surface a card or two later — worth it, likes feel instant.
+  const handleSwipe = (direction: SwipeDirection) => {
+    if (!currentProfile || !gameId) return;
+    const swiped = currentProfile;
     setSwipeError(false);
     setExitDirection(direction);
-    try {
-      const outcome = await submitSwipe({
-        targetUid: currentProfile.uid,
-        gameId,
-        direction,
+    setIndex((prev) => prev + 1);
+    void submitSwipe({ targetUid: swiped.uid, gameId, direction })
+      .then((outcome) => {
+        if (outcome.result === 'matched') setMatchedWith(swiped);
+      })
+      .catch((error) => {
+        if (isCallableError(error, 'resource-exhausted')) {
+          setLimitReached(true);
+        } else {
+          setSwipeError(true);
+        }
       });
-      setIndex((prev) => prev + 1);
-      if (outcome.result === 'matched') {
-        setMatchedWith(currentProfile);
-      }
-    } catch (error) {
-      if (isCallableError(error, 'resource-exhausted')) {
-        setLimitReached(true);
-      } else {
-        setSwipeError(true);
-      }
-    } finally {
-      setPending(false);
-    }
   };
 
   if (status === 'loading') {
@@ -248,17 +244,17 @@ export const SwipeView: React.FC = () => {
             key={currentProfile.uid}
             profile={currentProfile}
             exitDirection={exitDirection}
-            disabled={pending}
-            onSwipe={(direction) => void handleSwipe(direction)}
+            disabled={false}
+            onSwipe={handleSwipe}
             onOpenProfile={() => setViewingProfile(currentProfile)}
           />
         </AnimatePresence>
       </div>
 
       <SwipeActions
-        disabled={pending}
+        disabled={false}
         showError={swipeError}
-        onSwipe={(direction) => void handleSwipe(direction)}
+        onSwipe={handleSwipe}
       />
     </div>
   );

@@ -27,7 +27,6 @@ export const LikesGrid: React.FC = () => {
 
   const [status, setStatus] = useState<LikesStatus>('loading');
   const [likes, setLikes] = useState<InboundLike[]>([]);
-  const [pendingUid, setPendingUid] = useState<string | null>(null);
   const [likeBackError, setLikeBackError] = useState<'generic' | 'unavailable' | null>(null);
   const [matchedWith, setMatchedWith] = useState<PublicProfileDocument | null>(null);
   const [viewingProfile, setViewingProfile] = useState<PublicProfileDocument | null>(null);
@@ -58,32 +57,25 @@ export const LikesGrid: React.FC = () => {
     setReloadToken((token) => token + 1);
   }, []);
 
-  const handleLikeBack = async (like: InboundLike) => {
-    if (pendingUid) return;
-    setPendingUid(like.profile.uid);
+  // Optimistic like-back: the card leaves immediately; on a transient
+  // failure it comes back with an error note (server call is idempotent).
+  const handleLikeBack = (like: InboundLike) => {
     setLikeBackError(null);
-    try {
-      const outcome = await submitSwipe({
-        targetUid: like.profile.uid,
-        gameId: like.gameId,
-        direction: 'like',
+    setLikes((prev) => prev.filter((entry) => entry.profile.uid !== like.profile.uid));
+    void submitSwipe({ targetUid: like.profile.uid, gameId: like.gameId, direction: 'like' })
+      .then((outcome) => {
+        if (outcome.result === 'matched') setMatchedWith(like.profile);
+      })
+      .catch((error) => {
+        // failed-precondition is permanent for this like (liker no longer
+        // plays / not discoverable — API_CONTRACT §3.1): keep the card gone.
+        if (isCallableError(error, 'failed-precondition') || isCallableError(error, 'not-found')) {
+          setLikeBackError('unavailable');
+        } else {
+          setLikes((prev) => [like, ...prev]);
+          setLikeBackError('generic');
+        }
       });
-      setLikes((prev) => prev.filter((entry) => entry.profile.uid !== like.profile.uid));
-      if (outcome.result === 'matched') {
-        setMatchedWith(like.profile);
-      }
-    } catch (error) {
-      // failed-precondition is permanent for this like (liker no longer plays
-      // the game / not discoverable — API_CONTRACT §3.1), so drop the card.
-      if (isCallableError(error, 'failed-precondition') || isCallableError(error, 'not-found')) {
-        setLikes((prev) => prev.filter((entry) => entry.profile.uid !== like.profile.uid));
-        setLikeBackError('unavailable');
-      } else {
-        setLikeBackError('generic');
-      }
-    } finally {
-      setPendingUid(null);
-    }
   };
 
   if (status === 'loading') {
@@ -182,8 +174,7 @@ export const LikesGrid: React.FC = () => {
                   <span>{profile.displayName}, {profile.age}</span>
                 </h3>
                 <button
-                  onClick={() => void handleLikeBack({ profile, gameId })}
-                  disabled={pendingUid !== null}
+                  onClick={() => handleLikeBack({ profile, gameId })}
                   aria-label={t('likes.likeBack')}
                   className="w-full py-2.5 flex items-center justify-center gap-2 bg-primary text-white text-xs font-black rounded-xl shadow-glow hover:scale-105 transition-transform uppercase italic disabled:opacity-50"
                 >
