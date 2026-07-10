@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { loadGameCatalog } from '@/shared/api/gameCatalog';
+import { MediaLightbox } from '@/shared/components/MediaLightbox';
 import { useLabels } from '@/shared/labels';
 import type { GameCatalogDocument, PublicProfileDocument } from '@/shared/models';
 
@@ -21,6 +22,7 @@ export const PublicProfileSheet: React.FC<PublicProfileSheetProps> = ({ profile,
   const { t } = useTranslation();
   const labels = useLabels();
   const [catalog, setCatalog] = useState<GameCatalogDocument[]>(catalogCache ?? []);
+  const [viewing, setViewing] = useState<{ type: 'image' | 'video'; url: string } | null>(null);
 
   useEffect(() => {
     if (catalogCache) return;
@@ -53,6 +55,9 @@ export const PublicProfileSheet: React.FC<PublicProfileSheetProps> = ({ profile,
       className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-end sm:items-center justify-center"
       onClick={onClose}
     >
+      {viewing && (
+        <MediaLightbox type={viewing.type} url={viewing.url} onClose={() => setViewing(null)} />
+      )}
       <div
         className="w-full sm:max-w-lg max-h-[92vh] bg-background border border-white/10 rounded-t-[32px] sm:rounded-[32px] overflow-y-auto no-scrollbar shadow-2xl"
         onClick={(e) => e.stopPropagation()}
@@ -62,7 +67,7 @@ export const PublicProfileSheet: React.FC<PublicProfileSheetProps> = ({ profile,
           {media.length > 0 ? (
             <div className="flex overflow-x-auto snap-x snap-mandatory no-scrollbar" dir="ltr">
               {media.map((item) => (
-                <div key={item.id} className="w-full shrink-0 snap-center aspect-[4/5] bg-black">
+                <div key={item.id} className="relative w-full shrink-0 snap-center aspect-[4/5] bg-black">
                   {item.type === 'video' ? (
                     <video
                       src={item.url}
@@ -75,6 +80,13 @@ export const PublicProfileSheet: React.FC<PublicProfileSheetProps> = ({ profile,
                   ) : (
                     <img src={item.url} alt="" className="w-full h-full object-cover" />
                   )}
+                  <button
+                    onClick={() => setViewing({ type: item.type, url: item.url })}
+                    aria-label={t('media.expand')}
+                    className="absolute top-3 start-3 w-9 h-9 rounded-full bg-black/60 text-white hover:bg-primary transition-colors flex items-center justify-center"
+                  >
+                    <i className="fa-solid fa-up-right-and-down-left-from-center text-sm"></i>
+                  </button>
                 </div>
               ))}
             </div>

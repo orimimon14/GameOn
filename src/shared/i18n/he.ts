@@ -225,6 +225,11 @@ export const he = {
     suggestSent: 'ההצעה נשלחה — תודה! נוסיף אותו בקרוב',
     suggestError: 'השליחה נכשלה — נסו שוב',
   },
+  media: {
+    viewer: 'תצוגת מדיה',
+    expand: 'הגדלה למסך מלא',
+    close: 'סגירה',
+  },
   publicProfile: {
     games: 'משחקים ודירוגים',
     close: 'סגירה',

@@ -17,6 +17,7 @@ import {
 import { VideoMessageRecorder } from './VideoMessageRecorder';
 
 import { PublicProfileSheet } from '@/features/profile/PublicProfileSheet';
+import { MediaLightbox } from '@/shared/components/MediaLightbox';
 import { blockUser, createReport, type ReportReason } from '@/features/safety/safetyApi';
 import type { CallType } from '@/shared/enums';
 import type { ChatDocument, MessageDocument, PublicProfileDocument } from '@/shared/models';
@@ -28,7 +29,9 @@ import { useUserStore } from '@/shared/store/userStore';
 type ChatStatus = 'loading' | 'ready' | 'error';
 
 const MediaBubble: React.FC<{ message: MessageDocument }> = ({ message }) => {
+  const { t } = useTranslation();
   const [url, setUrl] = useState<string | null>(null);
+  const [expanded, setExpanded] = useState(false);
   useEffect(() => {
     let cancelled = false;
     const resolve = message.filePath
@@ -45,10 +48,25 @@ const MediaBubble: React.FC<{ message: MessageDocument }> = ({ message }) => {
   if (!url) {
     return <div className="w-48 h-32 rounded-xl bg-white/10 animate-pulse" />;
   }
-  return message.type === 'video' ? (
-    <video src={url} controls playsInline className="rounded-xl max-h-72 w-full bg-black" />
-  ) : (
-    <img src={url} alt="" className="rounded-xl max-h-72 w-full object-cover" />
+  const type = message.type === 'video' ? 'video' : 'image';
+  return (
+    <div className="relative">
+      {expanded && <MediaLightbox type={type} url={url} onClose={() => setExpanded(false)} />}
+      {type === 'video' ? (
+        <video src={url} controls playsInline className="rounded-xl max-h-72 w-full bg-black" />
+      ) : (
+        <button onClick={() => setExpanded(true)} className="block w-full">
+          <img src={url} alt="" className="rounded-xl max-h-72 w-full object-cover" />
+        </button>
+      )}
+      <button
+        onClick={() => setExpanded(true)}
+        aria-label={t('media.expand')}
+        className="absolute top-2 start-2 w-8 h-8 rounded-full bg-black/60 text-white hover:bg-primary transition-colors flex items-center justify-center"
+      >
+        <i className="fa-solid fa-up-right-and-down-left-from-center text-xs"></i>
+      </button>
+    </div>
   );
 };
 

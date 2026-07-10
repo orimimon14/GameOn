@@ -10,6 +10,7 @@ import {
   type GalleryRejection,
 } from './profileApi';
 
+import { MediaLightbox } from '@/shared/components/MediaLightbox';
 import type { GalleryMediaItem } from '@/shared/models';
 import { useUserStore } from '@/shared/store/userStore';
 
@@ -31,6 +32,7 @@ export const ProfileGallery: React.FC = () => {
   const [busy, setBusy] = useState(false);
   const [errorKey, setErrorKey] = useState<string | null>(null);
   const [errorDetail, setErrorDetail] = useState<string | null>(null);
+  const [viewing, setViewing] = useState<GalleryMediaItem | null>(null);
 
   if (!userDoc) return null;
   const uid = userDoc.uid;
@@ -76,6 +78,9 @@ export const ProfileGallery: React.FC = () => {
 
   return (
     <div>
+      {viewing && (
+        <MediaLightbox type={viewing.type} url={viewing.url} onClose={() => setViewing(null)} />
+      )}
       <div className="text-end mb-3">
         <h2 className="text-xl font-black italic uppercase text-text">
           {t('profile.gallery.title')}
@@ -101,11 +106,17 @@ export const ProfileGallery: React.FC = () => {
             key={item.id}
             className="relative aspect-square rounded-2xl overflow-hidden border border-white/10 bg-surface/60"
           >
-            {item.type === 'video' ? (
-              <video src={item.url} muted playsInline preload="metadata" className="w-full h-full object-cover" />
-            ) : (
-              <img src={item.url} alt="" className="w-full h-full object-cover" />
-            )}
+            <button
+              onClick={() => setViewing(item)}
+              aria-label={t('media.expand')}
+              className="absolute inset-0 w-full h-full"
+            >
+              {item.type === 'video' ? (
+                <video src={item.url} muted playsInline preload="metadata" className="w-full h-full object-cover" />
+              ) : (
+                <img src={item.url} alt="" className="w-full h-full object-cover" />
+              )}
+            </button>
             {item.type === 'video' && (
               <span className="absolute bottom-1.5 start-1.5 w-6 h-6 rounded-full bg-black/60 text-white text-[10px] flex items-center justify-center pointer-events-none">
                 <i className="fa-solid fa-play"></i>

@@ -227,6 +227,11 @@ export const en: TranslationCatalog = {
     suggestSent: 'Suggestion sent — thanks! We will add it soon',
     suggestError: 'Sending failed — try again',
   },
+  media: {
+    viewer: 'Media viewer',
+    expand: 'Expand to fullscreen',
+    close: 'Close',
+  },
   publicProfile: {
     games: 'Games & Ranks',
     close: 'Close',
