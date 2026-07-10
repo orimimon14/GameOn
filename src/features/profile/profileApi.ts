@@ -2,6 +2,7 @@ import { collection, doc, getDocs, setDoc, updateDoc } from 'firebase/firestore'
 import { deleteObject, getDownloadURL, ref as storageRef, uploadBytes } from 'firebase/storage';
 
 import { getFirebase } from '@/config/firebase';
+import { compressOrOriginal } from '@/shared/api/imageCompression';
 import type { GalleryMediaItem, UserGameDocument } from '@/shared/models';
 import type { ProfileBasicsInput } from '@/shared/schemas/profileForm';
 
@@ -52,49 +53,6 @@ export const removeGameFromProfile = async (uid: string, gameId: string): Promis
 // Profile photo: upload to the rules-gated path (profileImages/{uid} — owner,
 // image MIME, ≤5MB) and point users.profileImageUrl at it (client-writable;
 // publicProfiles resyncs via the onUserProfileUpdated trigger).
-// Phone photos are often 8-15MB — resize to ≤1080px JPEG before upload so
-// the 5MB Storage rule never bites and profiles load fast.
-const compressImage = (file: File): Promise<Blob> =>
-  new Promise((resolve, reject) => {
-    const img = new Image();
-    const url = URL.createObjectURL(file);
-    img.onload = () => {
-      URL.revokeObjectURL(url);
-      const max = 1080;
-      const scale = Math.min(1, max / Math.max(img.width, img.height));
-      const canvas = document.createElement('canvas');
-      canvas.width = Math.round(img.width * scale);
-      canvas.height = Math.round(img.height * scale);
-      canvas.getContext('2d')?.drawImage(img, 0, 0, canvas.width, canvas.height);
-      canvas.toBlob(
-        (blob) => (blob ? resolve(blob) : reject(new Error('compress_failed'))),
-        'image/jpeg',
-        0.85,
-      );
-    };
-    img.onerror = () => {
-      URL.revokeObjectURL(url);
-      reject(new Error('bad_image'));
-    };
-    img.src = url;
-  });
-
-// Some phones hand over photos the browser can't decode (HEIC on Android)
-// or camera captures with an empty MIME type. When compression fails, fall
-// back to uploading the original if it fits the Storage rule size cap.
-const compressOrOriginal = async (
-  file: File,
-  maxOriginalBytes: number,
-): Promise<{ blob: Blob; contentType: string; ext: string }> => {
-  try {
-    return { blob: await compressImage(file), contentType: 'image/jpeg', ext: 'jpg' };
-  } catch {
-    if (file.size > maxOriginalBytes) throw new Error('photo_unsupported');
-    const contentType = file.type.split(';')[0] || 'image/jpeg';
-    return { blob: file, contentType, ext: contentType.split('/')[1] ?? 'jpg' };
-  }
-};
-
 export const uploadProfilePhoto = async (uid: string, file: File): Promise<string> => {
   const { blob, contentType, ext } = await compressOrOriginal(file, 5 * 1024 * 1024);
   return uploadAvatarBlob(uid, blob, contentType, ext);

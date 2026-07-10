@@ -8,6 +8,7 @@ import {
   loadChatPartnerProfiles,
   markChatRead,
   resolveMediaUrl,
+  sendImageMessage,
   sendTextMessage,
   sendVideoMessage,
   subscribeMessages,
@@ -93,6 +94,7 @@ export const ChatView: React.FC = () => {
   const [reporting, setReporting] = useState(false);
   const [safetyNotice, setSafetyNotice] = useState<string | null>(null);
   const [showProUpsell, setShowProUpsell] = useState(false);
+  const [sendingImage, setSendingImage] = useState(false);
   const [viewingPartner, setViewingPartner] = useState(false);
   const activeCall = useCallStore((s) => s.activeCall);
   const setActiveCall = useCallStore((s) => s.setActiveCall);
@@ -195,6 +197,21 @@ export const ChatView: React.FC = () => {
       setRecording(true);
     } else {
       setShowProUpsell(true);
+    }
+  };
+
+  // Photo attachment — Pro-only like all chat media (ADR-041).
+  const handlePickImage = async (file: File | undefined) => {
+    if (!file || !selectedChatId || !uid || sendingImage) return;
+    if (file.type && !file.type.startsWith('image/')) return;
+    setSendingImage(true);
+    setSendError(false);
+    try {
+      await sendImageMessage(selectedChatId, uid, file);
+    } catch {
+      setSendError(true);
+    } finally {
+      setSendingImage(false);
     }
   };
 
@@ -434,6 +451,37 @@ export const ChatView: React.FC = () => {
                     </span>
                   )}
                 </button>
+                <label
+                  aria-label={t('chat.imageMessage.attach')}
+                  className="w-14 h-14 rounded-2xl bg-white/10 hover:bg-primary text-white flex items-center justify-center transition-all relative cursor-pointer"
+                  onClick={(e) => {
+                    if (!isPro) {
+                      e.preventDefault();
+                      setShowProUpsell(true);
+                    }
+                  }}
+                >
+                  {sendingImage ? (
+                    <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  ) : (
+                    <i className="fa-solid fa-image text-lg"></i>
+                  )}
+                  {!isPro && (
+                    <span className="absolute -top-1 -left-1 text-[9px] bg-gradient-to-r from-yellow-400 to-amber-500 text-black font-black px-1.5 py-0.5 rounded-full uppercase">
+                      Pro
+                    </span>
+                  )}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    disabled={sendingImage || !isPro}
+                    onChange={(e) => {
+                      void handlePickImage(e.target.files?.[0]);
+                      e.target.value = '';
+                    }}
+                  />
+                </label>
                 <input
                   value={draft}
                   onChange={(e) => setDraft(e.target.value)}

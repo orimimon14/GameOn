@@ -152,6 +152,9 @@ export const en: TranslationCatalog = {
         other: 'Something else',
       },
     },
+    imageMessage: {
+      attach: 'Send a photo',
+    },
     videoMessage: {
       title: 'Video message',
       record: 'Record a video message',
@@ -159,7 +162,7 @@ export const en: TranslationCatalog = {
       uploading: 'Sending…',
       cancel: 'Cancel',
       error: 'Recording failed — check camera permissions and try again',
-      proOnly: 'Video messages are a Pro perk — upgrade to send!',
+      proOnly: 'Photos and video messages in chat are a Pro perk — upgrade to send!',
       upgrade: 'Upgrade to Pro',
       dismiss: 'Dismiss',
     },

@@ -150,6 +150,9 @@ export const he = {
         other: 'משהו אחר',
       },
     },
+    imageMessage: {
+      attach: 'שליחת תמונה',
+    },
     videoMessage: {
       title: 'הודעת וידאו',
       record: 'הקלט הודעת וידאו',
@@ -157,7 +160,7 @@ export const he = {
       uploading: 'שולח…',
       cancel: 'ביטול',
       error: 'ההקלטה נכשלה — בדוק הרשאות מצלמה ונסה שוב',
-      proOnly: 'הודעות וידאו הן הטבת Pro — שדרג כדי לשלוח!',
+      proOnly: 'תמונות והודעות וידאו בצ׳אט הן הטבת Pro — שדרגו כדי לשלוח!',
       upgrade: 'שדרג ל-Pro',
       dismiss: 'סגור',
     },

@@ -123,7 +123,7 @@ describe('ChatView', () => {
     renderView();
     fireEvent.click(await screen.findByText('הודעה אחרונה'));
     fireEvent.click(await screen.findByRole('button', { name: 'הקלט הודעת וידאו' }));
-    expect(await screen.findByText('הודעות וידאו הן הטבת Pro — שדרג כדי לשלוח!')).toBeInTheDocument();
+    expect(await screen.findByText('תמונות והודעות וידאו בצ׳אט הן הטבת Pro — שדרגו כדי לשלוח!')).toBeInTheDocument();
   });
 
   it('opens the recorder for a Pro user', async () => {

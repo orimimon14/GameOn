@@ -16,6 +16,7 @@ import { httpsCallable } from 'firebase/functions';
 import { getDownloadURL, ref as storageRef, uploadBytes } from 'firebase/storage';
 
 import { getFirebase } from '@/config/firebase';
+import { compressOrOriginal } from '@/shared/api/imageCompression';
 import type { ChatDocument, MessageDocument, PublicProfileDocument } from '@/shared/models';
 
 // P4-T01/02/03 — chat data layer. Chats/messages are participants-only under
@@ -97,6 +98,32 @@ export const loadChatPartnerProfiles = async (
 // Recorded video messages (ADR-041, Pro-only): upload to the Storage path the
 // rules gate (chatMedia/{chatId}/{uid}/...), then let the backend validate and
 // create the message via sendChatMediaMessage (API_CONTRACT §3.4).
+// Photo attachments (API_CONTRACT §3.4, Pro-only like all chat media):
+// compress client-side, upload to the rules-gated chatMedia path, then let
+// the backend create the message doc.
+export const sendImageMessage = async (
+  chatId: string,
+  senderId: string,
+  file: File,
+): Promise<void> => {
+  const { storage, functions } = getFirebase();
+  const { blob, contentType, ext } = await compressOrOriginal(file, 25 * 1024 * 1024);
+  const fileMimeType = ['image/jpeg', 'image/png', 'image/webp'].includes(contentType)
+    ? contentType
+    : 'image/jpeg';
+  const clientMessageId = `${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
+  const filePath = `chatMedia/${chatId}/${senderId}/${clientMessageId}.${ext}`;
+
+  await uploadBytes(storageRef(storage, filePath), blob, { contentType: fileMimeType });
+  await httpsCallable(functions, 'sendChatMediaMessage')({
+    chatId,
+    filePath,
+    fileMimeType,
+    fileSizeBytes: blob.size,
+    clientMessageId,
+  });
+};
+
 export const sendVideoMessage = async (
   chatId: string,
   senderId: string,
