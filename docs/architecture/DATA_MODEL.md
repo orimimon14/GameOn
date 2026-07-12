@@ -635,6 +635,7 @@ export type ChatDocument = {
 
   unreadCounts?: Record<string, number>;
   lastReadAt?: Record<string, FirebaseFirestore.Timestamp>;
+  typing?: Record<string, FirebaseFirestore.Timestamp>;
 
   isActive: boolean;
 
@@ -658,6 +659,7 @@ export type ChatDocument = {
 | `lastTimestamp` | `Timestamp` | אופציונלי | Server-owned | MVP | timestamp של הודעה אחרונה. |
 | `unreadCounts` | `Record<string, number>` | אופציונלי | Server-owned* | MVP | מונה unread לכל uid; increment ע"י `onMessageCreated`. *חריג: משתתף רשאי לאפס (ל-0) רק את המפתח של עצמו בעת פתיחת הצ'אט (נאכף ב-Rules). |
 | `lastReadAt` | `Record<string, Timestamp>` | אופציונלי | Server-owned* | MVP | Read receipts — מתי כל משתתף קרא לאחרונה. *חריג: משתתף רשאי לעדכן רק את המפתח של עצמו ל-`request.time` (נאכף ב-Rules). הודעה נחשבת "נקראה" אם `createdAt <= lastReadAt[הצד השני]`. |
+| `typing` | `Record<string, Timestamp>` | אופציונלי | Server-owned* | MVP | חיווי הקלדה. *חריג: משתתף כותב/מוחק רק את המפתח של עצמו, ערך = `request.time` (Rules). הצד השני מציג "מקליד…" אם החותמת טרייה מ-6 שניות. |
 | `isActive` | `boolean` | כן | Server-owned | MVP | false לאחר block/archive/delete לפי policy. |
 | `createdAt` | `Timestamp` | כן | Server-owned | MVP | זמן יצירת chat. |
 | `updatedAt` | `Timestamp` | כן | Server-owned | MVP | זמן עדכון. |

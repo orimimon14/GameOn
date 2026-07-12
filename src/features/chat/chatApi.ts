@@ -1,5 +1,6 @@
 import {
   addDoc,
+  deleteField,
   collection,
   doc,
   getDoc,
@@ -161,6 +162,19 @@ export const resolveMediaUrl = async (filePath: string): Promise<string> => {
 // recipient's key; opening the chat zeroes ONLY your own key (rules-enforced).
 export const unreadCountFor = (chat: ChatDocument, uid: string): number =>
   chat.unreadCounts?.[uid] ?? 0;
+
+// Typing indicator: stamp my own typing key (rules require request.time);
+// the partner shows "typing…" while the stamp is fresher than ~6s. Sending
+// or clearing the draft deletes the key so the hint drops immediately.
+export const signalTyping = async (chatId: string, uid: string): Promise<void> => {
+  const { db } = getFirebase();
+  await updateDoc(doc(db, 'chats', chatId), { [`typing.${uid}`]: serverTimestamp() });
+};
+
+export const clearTyping = async (chatId: string, uid: string): Promise<void> => {
+  const { db } = getFirebase();
+  await updateDoc(doc(db, 'chats', chatId), { [`typing.${uid}`]: deleteField() });
+};
 
 export const markChatRead = async (chatId: string, uid: string): Promise<void> => {
   const { db } = getFirebase();

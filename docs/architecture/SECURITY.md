@@ -799,7 +799,7 @@ service cloud.firestore {
       allow update: if isSignedIn()
         && request.auth.uid in resource.data.participants
         && isNotSuspended()
-        && onlyChanged(["unreadCounts", "lastReadAt"])
+        && onlyChanged(["unreadCounts", "lastReadAt", "typing"])
         && (request.resource.data.get("unreadCounts", {}) == resource.data.get("unreadCounts", {})
           || (request.resource.data.unreadCounts
               .diff(resource.data.get("unreadCounts", {}))
@@ -811,7 +811,14 @@ service cloud.firestore {
               .diff(resource.data.get("lastReadAt", {}))
               .affectedKeys()
               .hasOnly([request.auth.uid])
-            && request.resource.data.lastReadAt[request.auth.uid] == request.time));
+            && request.resource.data.lastReadAt[request.auth.uid] == request.time))
+        && (request.resource.data.get("typing", {}) == resource.data.get("typing", {})
+          || (request.resource.data.get("typing", {})
+              .diff(resource.data.get("typing", {}))
+              .affectedKeys()
+              .hasOnly([request.auth.uid])
+            && (!(request.auth.uid in request.resource.data.get("typing", {}))
+              || request.resource.data.typing[request.auth.uid] == request.time)));
 
       allow delete: if false;
 

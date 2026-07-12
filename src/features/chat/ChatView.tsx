@@ -5,8 +5,10 @@ import { useNavigate } from 'react-router-dom';
 import { startCall } from './callService';
 import { useCallStore } from './callStore';
 import {
+  clearTyping,
   loadChatPartnerProfiles,
   markChatRead,
+  signalTyping,
   resolveMediaUrl,
   sendImageMessage,
   sendTextMessage,
@@ -101,6 +103,9 @@ export const ChatView: React.FC = () => {
   const [callError, setCallError] = useState(false);
 
   const messagesRef = useRef<HTMLDivElement>(null);
+  // Typing signal throttle + freshness ticker for the partner's indicator.
+  const lastTypingSentRef = useRef(0);
+  const [nowTick, setNowTick] = useState(() => Date.now());
 
   useEffect(() => {
     if (!uid) return;
@@ -159,12 +164,40 @@ export const ChatView: React.FC = () => {
   const partnerUid = selectedChat?.participants.find((participant) => participant !== uid);
   const partnerReadMillis =
     (partnerUid ? selectedChat?.lastReadAt?.[partnerUid] : undefined)?.toMillis?.() ?? 0;
+  const partnerTypingMillis =
+    (partnerUid ? selectedChat?.typing?.[partnerUid] : undefined)?.toMillis?.() ?? 0;
+  const partnerIsTyping = nowTick - partnerTypingMillis < 6000;
+
+  // Tick every 2s while a chat is open so a stale typing stamp expires
+  // visually even without new snapshots.
+  useEffect(() => {
+    if (!selectedChatId) return;
+    const interval = setInterval(() => setNowTick(Date.now()), 2000);
+    return () => clearInterval(interval);
+  }, [selectedChatId]);
+
+  const onDraftChange = (value: string) => {
+    setDraft(value);
+    if (!selectedChatId || !uid) return;
+    if (value.trim()) {
+      if (Date.now() - lastTypingSentRef.current > 2500) {
+        lastTypingSentRef.current = Date.now();
+        setNowTick(Date.now());
+        void signalTyping(selectedChatId, uid).catch(() => undefined);
+      }
+    } else {
+      lastTypingSentRef.current = 0;
+      void clearTyping(selectedChatId, uid).catch(() => undefined);
+    }
+  };
 
   const handleSend = async () => {
     const text = draft.trim();
     if (!text || !selectedChatId || !uid) return;
     setSendError(false);
     setDraft('');
+    lastTypingSentRef.current = 0;
+    void clearTyping(selectedChatId, uid).catch(() => undefined);
     try {
       await sendTextMessage(selectedChatId, uid, text);
     } catch {
@@ -337,7 +370,11 @@ export const ChatView: React.FC = () => {
                   <h3 className="font-bold dark:text-white text-text-inverse text-lg truncate">
                     {selectedPartner?.displayName ?? ''}
                   </h3>
-                  <span className="text-xs text-text-muted font-bold truncate block">{selectedChat.gameName}</span>
+                  {partnerIsTyping ? (
+                    <span className="text-xs text-green-400 font-bold truncate block animate-pulse">{t('chat.typing')}</span>
+                  ) : (
+                    <span className="text-xs text-text-muted font-bold truncate block">{selectedChat.gameName}</span>
+                  )}
                 </div>
               </button>
 
@@ -513,7 +550,7 @@ export const ChatView: React.FC = () => {
                 </label>
                 <input
                   value={draft}
-                  onChange={(e) => setDraft(e.target.value)}
+                  onChange={(e) => onDraftChange(e.target.value)}
                   placeholder={t('chat.inputPlaceholder')}
                   maxLength={2000}
                   className="flex-1 min-w-0 dark:bg-black/20 bg-white/50 border dark:border-white/10 border-gray-200 rounded-2xl px-4 sm:px-5 py-3 dark:text-white text-text-inverse focus:outline-none focus:border-primary transition-all text-right shadow-inner"

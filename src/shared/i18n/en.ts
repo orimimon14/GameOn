@@ -135,6 +135,7 @@ export const en: TranslationCatalog = {
     inputPlaceholder: 'Type a message...',
     send: 'Send',
     back: 'Back',
+    typing: 'Typing…',
     read: 'Read',
     sent: 'Sent',
     sendError: "The message wasn't sent — try again",
