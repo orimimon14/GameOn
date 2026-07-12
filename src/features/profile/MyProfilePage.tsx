@@ -32,7 +32,7 @@ export const MyProfilePage: React.FC = () => {
   const labels = useLabels();
   const user = useAuthStore((s) => s.user);
   const userDoc = useUserStore((s) => s.userDoc);
-  const { bannerGradient } = useCosmetics();
+  const { bannerGradient, borderGradient } = useCosmetics();
 
   const [games, setGames] = useState<UserGameDocument[] | null>(null);
   // Settings' "edit profile" entry deep-links here with ?edit=1.
@@ -214,12 +214,18 @@ export const MyProfilePage: React.FC = () => {
 
         <div className="flex justify-center -mt-2 mb-6">
           <label className="relative cursor-pointer group" aria-label={t('profile.changePhoto')}>
-            <div className="w-28 h-28 rounded-full overflow-hidden border-4 border-primary shadow-glow bg-primary/30 flex items-center justify-center">
-              {userDoc?.profileImageUrl ? (
-                <img src={userDoc.profileImageUrl} alt="" className="w-full h-full object-cover" />
-              ) : (
-                <span className="text-white font-black text-4xl">{(userDoc?.displayName ?? '?').charAt(0)}</span>
-              )}
+            {/* Equipped avatar-border cosmetic as a gradient ring (P5). */}
+            <div
+              className="rounded-full p-1 shadow-glow"
+              style={{ background: borderGradient ?? 'var(--color-primary, #6d5df6)' }}
+            >
+              <div className="w-28 h-28 rounded-full overflow-hidden border-2 border-background bg-primary/30 flex items-center justify-center">
+                {userDoc?.profileImageUrl ? (
+                  <img src={userDoc.profileImageUrl} alt="" className="w-full h-full object-cover" />
+                ) : (
+                  <span className="text-white font-black text-4xl">{(userDoc?.displayName ?? '?').charAt(0)}</span>
+                )}
+              </div>
             </div>
             <span className="absolute bottom-0 end-0 w-9 h-9 rounded-full bg-primary text-white flex items-center justify-center border-2 border-background group-hover:scale-110 transition-transform">
               {uploadingPhoto ? (

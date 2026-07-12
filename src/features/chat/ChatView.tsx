@@ -21,6 +21,7 @@ import { VideoMessageRecorder } from './VideoMessageRecorder';
 
 import { PublicProfileSheet } from '@/features/profile/PublicProfileSheet';
 import { MediaLightbox } from '@/shared/components/MediaLightbox';
+import { BorderedAvatar } from '@/shared/components/BorderedAvatar';
 import { blockUser, createReport, type ReportReason } from '@/features/safety/safetyApi';
 import type { CallType } from '@/shared/enums';
 import type { ChatDocument, MessageDocument, PublicProfileDocument } from '@/shared/models';
@@ -372,19 +373,12 @@ export const ChatView: React.FC = () => {
                 aria-label={selectedPartner?.displayName ?? ''}
                 className="flex items-center gap-3 text-right flex-1 min-w-0 hover:opacity-80 transition-opacity"
               >
-                <div className="w-11 h-11 sm:w-12 sm:h-12 shrink-0 rounded-full overflow-hidden border-2 border-primary shadow-glow bg-primary/30 flex items-center justify-center">
-                  {selectedPartner?.profileImageUrl ? (
-                    <img
-                      src={selectedPartner.profileImageUrl}
-                      className="w-full h-full object-cover"
-                      alt={selectedPartner.displayName}
-                    />
-                  ) : (
-                    <span className="text-white font-black text-lg">
-                      {selectedPartner?.displayName.charAt(0) ?? '?'}
-                    </span>
-                  )}
-                </div>
+                <BorderedAvatar
+                  imageUrl={selectedPartner?.profileImageUrl}
+                  displayName={selectedPartner?.displayName ?? '?'}
+                  borderItemId={selectedPartner?.avatarBorderItemId}
+                  sizeClass="w-11 h-11 sm:w-12 sm:h-12"
+                />
                 <div className="min-w-0">
                   <h3 className="font-bold dark:text-white text-text-inverse text-lg truncate">
                     {selectedPartner?.displayName ?? ''}
@@ -633,19 +627,12 @@ export const ChatView: React.FC = () => {
                         {unread > 99 ? '99+' : unread}
                       </span>
                     )}
-                  <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-white/20 shrink-0 bg-primary/30 flex items-center justify-center">
-                    {partner?.profileImageUrl ? (
-                      <img
-                        src={partner.profileImageUrl}
-                        className="w-full h-full object-cover"
-                        alt={partner.displayName}
-                      />
-                    ) : (
-                      <span className="text-white font-black text-lg">
-                        {partner?.displayName.charAt(0) ?? '?'}
-                      </span>
-                    )}
-                  </div>
+                  <BorderedAvatar
+                    imageUrl={partner?.profileImageUrl}
+                    displayName={partner?.displayName ?? '?'}
+                    borderItemId={partner?.avatarBorderItemId}
+                    sizeClass="w-14 h-14"
+                  />
                   </div>
                   <div className="flex-1 text-right min-w-0">
                     <div className="flex justify-between items-center mb-1">
