@@ -97,6 +97,7 @@ export const he = {
     levelFilter: 'סינון לפי רמה',
     levelAll: 'כל הרמות',
     levelMine: 'ברמה שלי',
+    tryOtherGames: 'יש שחקנים שמחכים במשחקים אחרים:',
     emptyLevelHint: 'אין כרגע שחקנים ברמה הזאת — נסה רמה אחרת או "כל הרמות"',
     limitTitle: 'נגמרו ההחלקות להיום',
     limitHint: 'חזור מחר, או שדרג ל-Pro להחלקות ללא הגבלה',

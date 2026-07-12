@@ -99,6 +99,7 @@ export const en: TranslationCatalog = {
     levelFilter: 'Filter by level',
     levelAll: 'All levels',
     levelMine: 'My level',
+    tryOtherGames: 'Players are waiting in other games:',
     emptyLevelHint: 'No players at this level right now — try another level or "All levels"',
     limitTitle: 'Out of swipes for today',
     limitHint: 'Come back tomorrow, or upgrade to Pro for unlimited swipes',

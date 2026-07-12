@@ -9,9 +9,10 @@ import { SwipeActions } from './SwipeActions';
 import { SwipeCard } from './SwipeCard';
 
 import { PublicProfileSheet } from '@/features/profile/PublicProfileSheet';
+import { loadGameCatalog, loadGamePlayerCounts } from '@/shared/api/gameCatalog';
 import { SKILL_LEVELS, type SkillLevel, type SwipeDirection } from '@/shared/enums';
 import { useLabels } from '@/shared/labels';
-import type { PublicProfileDocument } from '@/shared/models';
+import type { GameCatalogDocument, PublicProfileDocument } from '@/shared/models';
 import { useUiStore } from '@/shared/store/uiStore';
 import { useUserStore } from '@/shared/store/userStore';
 
@@ -33,6 +34,7 @@ export const SwipeView: React.FC = () => {
   const uid = useUserStore((s) => s.userDoc?.uid);
   const mySkill = useUserStore((s) => s.userDoc?.skillLevel);
   const selectedGame = useUiStore((s) => s.selectedGame);
+  const setSelectedGame = useUiStore((s) => s.setSelectedGame);
   // Level filter: 'all' shows everyone sorted by closeness to MY level;
   // a specific level hard-filters the deck.
   const [levelFilter, setLevelFilter] = useState<SkillLevel | 'all'>('all');
@@ -46,6 +48,11 @@ export const SwipeView: React.FC = () => {
   const [matchedWith, setMatchedWith] = useState<PublicProfileDocument | null>(null);
   const [exitDirection, setExitDirection] = useState<SwipeDirection | null>(null);
   const [viewingProfile, setViewingProfile] = useState<PublicProfileDocument | null>(null);
+  // Empty-deck rescue: games that DO have players right now (small community
+  // spreads thin across decks — never leave the user at a dead end).
+  const [gameSuggestions, setGameSuggestions] = useState<
+    Array<{ game: GameCatalogDocument; count: number }> | null
+  >(null);
 
   const [reloadToken, setReloadToken] = useState(0);
 
@@ -90,6 +97,28 @@ export const SwipeView: React.FC = () => {
   }, []);
 
   const currentProfile = deck[index];
+
+  const deckIsEmpty = status === 'ready' && !currentProfile;
+  useEffect(() => {
+    if (!deckIsEmpty || gameSuggestions !== null) return;
+    let cancelled = false;
+    void loadGameCatalog()
+      .then(async (catalog) => {
+        const counts = await loadGamePlayerCounts(catalog.map((g) => g.gameId));
+        if (cancelled) return;
+        setGameSuggestions(
+          catalog
+            .filter((g) => g.gameId !== gameId && (counts[g.gameId] ?? 0) > 0)
+            .map((game) => ({ game, count: counts[game.gameId] ?? 0 }))
+            .sort((a, b) => b.count - a.count)
+            .slice(0, 3),
+        );
+      })
+      .catch(() => !cancelled && setGameSuggestions([]));
+    return () => {
+      cancelled = true;
+    };
+  }, [deckIsEmpty, gameSuggestions, gameId]);
 
   const levelChips = (
     <div className="flex flex-wrap justify-center gap-2" role="group" aria-label={t('discovery.levelFilter')}>
@@ -218,6 +247,40 @@ export const SwipeView: React.FC = () => {
             {t('discovery.refresh')}
           </button>
         </div>
+
+        {gameSuggestions && gameSuggestions.length > 0 && (
+          <div className="mt-10 w-full max-w-md">
+            <p className="dark:text-white text-text-inverse font-black italic uppercase text-sm mb-4">
+              {t('discovery.tryOtherGames')}
+            </p>
+            <div className="flex flex-col gap-3">
+              {gameSuggestions.map(({ game, count }) => (
+                <button
+                  key={game.gameId}
+                  onClick={() => {
+                    setGameSuggestions(null);
+                    setSelectedGame(game.gameId);
+                  }}
+                  className="relative h-20 rounded-2xl overflow-hidden border-2 border-white/10 hover:border-primary transition-all active:scale-95 group"
+                >
+                  {game.coverUrl ? (
+                    <img src={game.coverUrl} alt="" className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  ) : (
+                    <div className="absolute inset-0 bg-gradient-to-br from-primary/40 via-surface to-background" />
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-l from-black/85 via-black/50 to-black/20" />
+                  <div className="absolute inset-0 px-5 flex items-center justify-between">
+                    <span className="text-white/90 text-xs font-bold">
+                      <span className="inline-block w-2 h-2 rounded-full bg-green-400 me-1.5 align-middle"></span>
+                      {t('games.playersCount', { count })}
+                    </span>
+                    <span className="text-white font-black italic uppercase drop-shadow">{game.name}</span>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     );
   }
