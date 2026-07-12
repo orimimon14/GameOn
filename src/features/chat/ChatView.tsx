@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import { startCall } from './callService';
 import { useCallStore } from './callStore';
@@ -85,6 +85,7 @@ export const ChatView: React.FC = () => {
   const isPro = useUserStore((s) => s.userDoc?.isPro === true);
 
   const [status, setStatus] = useState<ChatStatus>('loading');
+  const [searchParams, setSearchParams] = useSearchParams();
   const [chats, setChats] = useState<ChatDocument[]>([]);
   const [partners, setPartners] = useState<Record<string, PublicProfileDocument>>({});
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
@@ -135,6 +136,24 @@ export const ChatView: React.FC = () => {
     },
     [uid],
   );
+
+  // Deep link (?open=<chatId>) from push notifications, the bell and the
+  // match celebration — jump straight into the conversation.
+  useEffect(() => {
+    const requested = searchParams.get('open');
+    if (!requested || status !== 'ready') return;
+    // Deferred (setTimeout, NOT rAF — rAF never fires in hidden/background
+    // tabs): setState directly inside an effect trips the compiler lint.
+    const timer = setTimeout(() => {
+      if (chats.some((chat) => chat.chatId === requested)) {
+        openChat(requested);
+      }
+      setSearchParams({}, { replace: true });
+    }, 0);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- run once chats are ready
+  }, [searchParams, status, chats]);
+
 
   // Messages that arrive while this chat is open are read immediately —
   // the counter increments server-side, so zero it again as it lands.

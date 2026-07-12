@@ -45,7 +45,7 @@ export const SwipeView: React.FC = () => {
   const [index, setIndex] = useState(0);
   const [swipeError, setSwipeError] = useState(false);
   const [limitReached, setLimitReached] = useState(false);
-  const [matchedWith, setMatchedWith] = useState<PublicProfileDocument | null>(null);
+  const [matchedWith, setMatchedWith] = useState<{ profile: PublicProfileDocument; chatId?: string } | null>(null);
   const [exitDirection, setExitDirection] = useState<SwipeDirection | null>(null);
   const [viewingProfile, setViewingProfile] = useState<PublicProfileDocument | null>(null);
   // Empty-deck rescue: games that DO have players right now (small community
@@ -160,7 +160,7 @@ export const SwipeView: React.FC = () => {
     setIndex((prev) => prev + 1);
     void submitSwipe({ targetUid: swiped.uid, gameId, direction })
       .then((outcome) => {
-        if (outcome.result === 'matched') setMatchedWith(swiped);
+        if (outcome.result === 'matched') setMatchedWith({ profile: swiped, chatId: outcome.chatId });
       })
       .catch((error) => {
         if (isCallableError(error, 'resource-exhausted')) {
@@ -290,9 +290,9 @@ export const SwipeView: React.FC = () => {
       {levelChips}
       {matchedWith && (
         <MatchCelebration
-          name={matchedWith.displayName}
-          imageUrl={matchedWith.profileImageUrl}
-          onOpenChat={() => navigate('/chat')}
+          name={matchedWith.profile.displayName}
+          imageUrl={matchedWith.profile.profileImageUrl}
+          onOpenChat={() => navigate(matchedWith.chatId ? `/chat?open=${matchedWith.chatId}` : '/chat')}
           onKeepSwiping={() => setMatchedWith(null)}
         />
       )}

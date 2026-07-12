@@ -28,7 +28,7 @@ export const LikesGrid: React.FC = () => {
   const [status, setStatus] = useState<LikesStatus>('loading');
   const [likes, setLikes] = useState<InboundLike[]>([]);
   const [likeBackError, setLikeBackError] = useState<'generic' | 'unavailable' | null>(null);
-  const [matchedWith, setMatchedWith] = useState<PublicProfileDocument | null>(null);
+  const [matchedWith, setMatchedWith] = useState<{ profile: PublicProfileDocument; chatId?: string } | null>(null);
   const [viewingProfile, setViewingProfile] = useState<PublicProfileDocument | null>(null);
   const [reloadToken, setReloadToken] = useState(0);
 
@@ -64,7 +64,7 @@ export const LikesGrid: React.FC = () => {
     setLikes((prev) => prev.filter((entry) => entry.profile.uid !== like.profile.uid));
     void submitSwipe({ targetUid: like.profile.uid, gameId: like.gameId, direction: 'like' })
       .then((outcome) => {
-        if (outcome.result === 'matched') setMatchedWith(like.profile);
+        if (outcome.result === 'matched') setMatchedWith({ profile: like.profile, chatId: outcome.chatId });
       })
       .catch((error) => {
         // failed-precondition is permanent for this like (liker no longer
@@ -113,9 +113,9 @@ export const LikesGrid: React.FC = () => {
 
       {matchedWith && (
         <MatchCelebration
-          name={matchedWith.displayName}
-          imageUrl={matchedWith.profileImageUrl}
-          onOpenChat={() => navigate('/chat')}
+          name={matchedWith.profile.displayName}
+          imageUrl={matchedWith.profile.profileImageUrl}
+          onOpenChat={() => navigate(matchedWith.chatId ? `/chat?open=${matchedWith.chatId}` : '/chat')}
           onKeepSwiping={() => setMatchedWith(null)}
         />
       )}

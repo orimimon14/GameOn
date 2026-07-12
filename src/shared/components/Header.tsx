@@ -50,7 +50,7 @@ export const Header: React.FC<HeaderProps> = ({
   };
   // Real events: pending inbound likes + latest incoming chat messages.
   const [notifications, setNotifications] = useState<
-    Array<{ id: string; text: string; type: string; time: string; read: boolean }>
+    Array<{ id: string; text: string; type: string; time: string; read: boolean; chatId?: string }>
   >([]);
 
   useEffect(() => {
@@ -76,6 +76,7 @@ export const Header: React.FC<HeaderProps> = ({
             .filter((c) => c.lastMessage && c.lastMessageSenderId && c.lastMessageSenderId !== pushUid)
             .map((c) => ({
               id: `msg_${c.chatId}_${c.lastTimestamp?.toMillis() ?? 0}`,
+              chatId: c.chatId,
               text: t('notifications.messageText', { preview: (c.lastMessage ?? '').slice(0, 40) }),
               type: 'message',
               time: c.lastTimestamp ? c.lastTimestamp.toDate().toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' }) : '',
@@ -201,7 +202,7 @@ export const Header: React.FC<HeaderProps> = ({
                                 tabIndex={0}
                                 onClick={() => {
                                   setIsNotifMenuOpen(false);
-                                  navigate(n.type === 'like' ? '/likes' : '/chat');
+                                  navigate(n.type === 'like' ? '/likes' : n.chatId ? `/chat?open=${n.chatId}` : '/chat');
                                 }}
                                 className={`p-4 flex items-start gap-4 hover:bg-white/5 transition-colors border-b dark:border-white/5 border-gray-50 cursor-pointer ${!n.read ? 'bg-primary/5' : ''}`}>
                                 <div className="text-right flex-1">

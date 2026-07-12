@@ -21,7 +21,7 @@ export const onCallCreated = onDocumentCreated(
         kind: 'call',
         title: callerName ? `📞 ${callerName} מתקשר אליך` : '📞 שיחה נכנסת',
         body: call.type === 'video' ? 'שיחת וידאו נכנסת — היכנס לענות' : 'שיחה קולית נכנסת — היכנס לענות',
-        url: '/chat',
+        url: `/chat?open=${event.params.chatId}`,
       });
     } catch (error) {
       logger.error('call push failed', { error });

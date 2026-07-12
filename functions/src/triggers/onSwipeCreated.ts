@@ -28,13 +28,13 @@ export const onSwipeCreated = onDocumentCreated(
             kind: 'match',
             title: '🎉 יש מאץ׳!',
             body: fromName ? `אתה ו-${fromName} אהבתם אחד את השני` : 'יש לך התאמה חדשה',
-            url: '/chat',
+            url: `/chat?open=${matchSnap.id}`,
           }),
           sendPushToUser(swipe.fromUid, {
             kind: 'match',
             title: '🎉 יש מאץ׳!',
             body: 'יש לך התאמה חדשה — פתחו שיחה!',
-            url: '/chat',
+            url: `/chat?open=${matchSnap.id}`,
           }),
         ]);
       } else {

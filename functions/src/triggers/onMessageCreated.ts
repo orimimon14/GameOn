@@ -83,7 +83,7 @@ export const onMessageCreated = onDocumentCreated(
           kind: 'message',
           title: senderName ? `💬 הודעה חדשה מ-${senderName}` : '💬 הודעה חדשה',
           body: message.type === 'text' ? preview : 'נשלחה אליך מדיה',
-          url: '/chat',
+          url: `/chat?open=${chatId}`,
         });
       }
     } catch (error) {
