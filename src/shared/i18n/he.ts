@@ -235,6 +235,8 @@ export const he = {
     close: 'סגירה',
   },
   publicProfile: {
+    activeToday: 'פעיל היום',
+    activeThisWeek: 'פעיל השבוע',
     games: 'משחקים ודירוגים',
     close: 'סגירה',
     swipeMedia_one: 'פריט מדיה אחד',

@@ -4,6 +4,7 @@ import React, { useMemo, useState } from 'react';
 import { SwipeHud } from './SwipeHud';
 
 import { useItemGradient } from '@/features/shop/useCosmetics';
+import { activityStatus } from '@/shared/api/activityStatus';
 import { useLabels } from '@/shared/labels';
 import type { PublicProfileDocument } from '@/shared/models';
 import type { SwipeDirection } from '@/shared/enums';
@@ -156,6 +157,9 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({ profile, exitDirection, di
 
       <div className="absolute inset-0 p-8 flex flex-col justify-end text-right pointer-events-none">
         <h2 className="text-4xl font-black text-white italic uppercase tracking-tighter mb-2 flex items-center justify-end gap-2">
+          {activityStatus(profile.lastActiveAt) === 'today' && (
+            <span className="w-3.5 h-3.5 rounded-full bg-green-400 border-2 border-white/70 shrink-0 shadow-glow" title="" />
+          )}
           {profile.verifiedBadge && (
             <span className="w-6 h-6 rounded-full bg-sky-500 text-white text-xs flex items-center justify-center shrink-0" title="Pro">
               <i className="fa-solid fa-check"></i>

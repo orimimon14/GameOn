@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { activityStatus } from '@/shared/api/activityStatus';
 import { loadGameCatalog } from '@/shared/api/gameCatalog';
 import { MediaLightbox } from '@/shared/components/MediaLightbox';
 import { useLabels } from '@/shared/labels';
@@ -47,6 +48,7 @@ export const PublicProfileSheet: React.FC<PublicProfileSheetProps> = ({ profile,
   ];
 
   const gameName = (gameId: string) => catalog.find((g) => g.gameId === gameId)?.name ?? gameId;
+  const activity = activityStatus(profile.lastActiveAt);
 
   return (
     <div
@@ -123,6 +125,12 @@ export const PublicProfileSheet: React.FC<PublicProfileSheetProps> = ({ profile,
               </span>
             </h2>
             <div className="flex flex-wrap gap-2 justify-end mt-3">
+              {activity && (
+                <span className={`px-3 py-1.5 rounded-xl text-xs font-black uppercase border ${activity === 'today' ? 'bg-green-500/15 border-green-500/40 text-green-400' : 'bg-white/5 border-white/10 text-text-muted'}`}>
+                  <span className={`inline-block w-2 h-2 rounded-full me-1.5 align-middle ${activity === 'today' ? 'bg-green-400' : 'bg-gray-400'}`}></span>
+                  {t(activity === 'today' ? 'publicProfile.activeToday' : 'publicProfile.activeThisWeek')}
+                </span>
+              )}
               <span className="px-3 py-1.5 rounded-xl bg-primary/15 border border-primary/30 text-primary text-xs font-black uppercase">
                 <i className="fa-solid fa-trophy me-1.5 text-yellow-400"></i>
                 {labels.skillLevel[profile.skillLevel]}

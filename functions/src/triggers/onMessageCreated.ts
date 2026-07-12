@@ -10,6 +10,7 @@ import { sendPushToUser } from '../services/pushNotifications';
 // retries; an older retry may briefly overwrite a newer preview, which is
 // self-healing on the next message.
 const PREVIEW_MAX_CHARS = 120;
+const ACTIVE_THROTTLE_MS = 30 * 60 * 1000; // refresh lastActiveAt at most twice an hour
 
 export const onMessageCreated = onDocumentCreated(
   'chats/{chatId}/messages/{messageId}',
@@ -58,6 +59,18 @@ export const onMessageCreated = onDocumentCreated(
     } catch (error) {
       logger.error('onMessageCreated failed', { chatId, messageId, error });
       throw error;
+    }
+
+    // Presence: sending a message is real activity (throttled — see
+    // DATA_MODEL §4.1; the users write retriggers the publicProfiles sync).
+    try {
+      const senderSnap = await db.doc(`users/${message.senderId}`).get();
+      const lastActive = senderSnap.data()?.lastActiveAt?.toMillis?.() ?? 0;
+      if (senderSnap.exists && Date.now() - lastActive > ACTIVE_THROTTLE_MS) {
+        await senderSnap.ref.update({ lastActiveAt: FieldValue.serverTimestamp() });
+      }
+    } catch (error) {
+      logger.warn('lastActiveAt refresh failed', { chatId, error });
     }
 
     // New-message push to the other participant (best effort).

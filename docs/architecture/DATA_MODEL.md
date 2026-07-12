@@ -372,7 +372,7 @@ export type UserDocument = {
 | `isDeleted` | `boolean` | כן | Server-owned | MVP | soft delete. |
 | `createdAt` | `Timestamp` | כן | Server-owned | MVP | זמן יצירת המשתמש. |
 | `updatedAt` | `Timestamp` | כן | Server-owned | MVP | זמן עדכון אחרון. |
-| `lastActiveAt` | `Timestamp` | כן | Server-owned | MVP | פעילות אחרונה, מתעדכן באופן throttled. |
+| `lastActiveAt` | `Timestamp` | כן | Server-owned | MVP | פעילות אחרונה. מתעדכן server-side בפעולות אמיתיות — `submitSwipe` ו-`onMessageCreated` (שולח) — עם throttle של 30 דקות. |
 
 ---
 

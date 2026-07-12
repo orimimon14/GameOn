@@ -9,6 +9,7 @@ import { submitSwipeSchema } from '../schemas/swipe';
 // transaction with deterministic IDs, so double-submits and races cannot
 // produce duplicates (TC-DISC-010, TC-MATCH-003/004).
 const DEFAULT_DAILY_SWIPE_LIMIT = 30; // ADR-015 draft; overridden by system/config
+const ACTIVE_THROTTLE_MS = 30 * 60 * 1000; // refresh lastActiveAt at most twice an hour
 
 // UTC day key — final reset timezone is an open decision (ADR-029).
 const todayKey = () => new Date().toISOString().slice(0, 10);
@@ -110,6 +111,14 @@ export const submitSwipe = onCall(async (request) => {
     const currentCount: number = usageSnap.data()?.swipeCount ?? 0;
     if (caller.isPro !== true && !alreadySwiped && currentCount >= dailyLimit) {
       throw new HttpsError('resource-exhausted', 'resource_exhausted');
+    }
+
+    // Presence (DATA_MODEL §4.1): swiping is real activity — refresh the
+    // server-owned lastActiveAt, throttled so the publicProfiles resync
+    // trigger doesn't fire on every swipe.
+    const lastActive = caller.lastActiveAt?.toMillis?.() ?? 0;
+    if (Date.now() - lastActive > ACTIVE_THROTTLE_MS) {
+      tx.update(refs.caller, { lastActiveAt: FieldValue.serverTimestamp() });
     }
 
     tx.set(

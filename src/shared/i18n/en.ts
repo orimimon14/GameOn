@@ -237,6 +237,8 @@ export const en: TranslationCatalog = {
     close: 'Close',
   },
   publicProfile: {
+    activeToday: 'Active today',
+    activeThisWeek: 'Active this week',
     games: 'Games & Ranks',
     close: 'Close',
     swipeMedia_one: '1 media item',
