@@ -57,8 +57,8 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
     return (
         <div className="pt-24 px-6 h-full overflow-y-auto pb-32 max-w-2xl mx-auto relative z-10">
             <div className="text-right mb-10">
-                <h2 className="text-4xl font-black dark:text-white text-text-inverse italic uppercase tracking-tighter mb-2">הגדרות</h2>
-                <p className="dark:text-text-muted text-gray-500 text-lg">התאם את החוויה שלך</p>
+                <h2 className="text-4xl font-black dark:text-white text-text-inverse italic uppercase tracking-tighter mb-2">{t('settings.title')}</h2>
+                <p className="dark:text-text-muted text-gray-500 text-lg">{t('settings.subtitle')}</p>
             </div>
 
             <div className="space-y-6">
@@ -73,8 +73,8 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                         </div>
                     </button>
                     <div className="text-right">
-                        <h4 className="dark:text-white text-text-inverse font-bold text-lg">מצב כהה / בהיר</h4>
-                        <p className="dark:text-text-muted text-gray-500 text-sm">החלף בין ערכות הנושא של האתר</p>
+                        <h4 className="dark:text-white text-text-inverse font-bold text-lg">{t('settings.themeTitle')}</h4>
+                        <p className="dark:text-text-muted text-gray-500 text-sm">{t('settings.themeNote')}</p>
                     </div>
                 </div>
 
@@ -87,8 +87,8 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                         <div className={`absolute top-1 w-6 h-6 rounded-full bg-white transition-transform duration-300 shadow-md ${isGlobalBgEnabled ? 'left-9' : 'left-1'}`}></div>
                     </button>
                     <div className="text-right">
-                        <h4 className="dark:text-white text-text-inverse font-bold text-lg">רקע גלובלי</h4>
-                        <p className="dark:text-text-muted text-gray-500 text-sm">הצג את רקע הפרופיל שלך בכל דפי האתר</p>
+                        <h4 className="dark:text-white text-text-inverse font-bold text-lg">{t('settings.globalBgTitle')}</h4>
+                        <p className="dark:text-text-muted text-gray-500 text-sm">{t('settings.globalBgNote')}</p>
                     </div>
                 </div>
 
@@ -116,15 +116,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
 
                 {/* Account Section */}
                 <div className="dark:bg-surface/40 bg-white/40 p-6 rounded-[32px] border dark:border-white/5 border-gray-200">
-                    <h4 className="dark:text-white text-text-inverse font-black text-sm italic uppercase mb-4 opacity-50">חשבון</h4>
-                    <button className="w-full text-right py-4 px-2 hover:bg-white/5 rounded-xl transition-colors dark:text-white text-text-inverse flex items-center justify-between border-b dark:border-white/5 border-gray-200">
-                        <i className="fa-solid fa-chevron-left text-xs opacity-30"></i>
-                        <span>ערוך פרטי משתמש</span>
-                    </button>
-                    <button className="w-full text-right py-4 px-2 hover:bg-white/5 rounded-xl transition-colors dark:text-white text-text-inverse flex items-center justify-between border-b dark:border-white/5 border-gray-200">
-                        <i className="fa-solid fa-chevron-left text-xs opacity-30"></i>
-                        <span>הגדרות פרטיות</span>
-                    </button>
+                    <h4 className="dark:text-white text-text-inverse font-black text-sm italic uppercase mb-4 opacity-50">{t('settings.accountSection')}</h4>
                     <button onClick={onLogout} className="w-full text-right py-4 px-2 text-danger hover:bg-danger/10 rounded-xl transition-colors flex items-center justify-between border-b dark:border-white/5 border-gray-200">
                          <i className="fa-solid fa-right-from-bracket text-xs"></i>
                          <span>{t('auth.logout')}</span>

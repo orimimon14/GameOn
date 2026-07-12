@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { generateSquadStrategy, SquadStrategy } from './geminiService';
 
@@ -7,6 +8,7 @@ import { loadMyActiveGameIds } from '@/features/discovery/discoveryApi';
 import { useUserStore } from '@/shared/store/userStore';
 
 export const GeminiSquadEngine: React.FC = () => {
+    const { t } = useTranslation();
     const [input, setInput] = useState('');
     const [loading, setLoading] = useState(false);
     const [result, setResult] = useState<SquadStrategy | null>(null);
@@ -28,8 +30,8 @@ export const GeminiSquadEngine: React.FC = () => {
             const code = (err as { code?: string })?.code;
             setError(
                 code === 'functions/resource-exhausted'
-                    ? 'מנוע ה-AI לא זמין כרגע (מכסה יומית או שירות בטעינה) — נסה שוב מאוחר יותר'
-                    : 'המנוע נתקל בתקלה — נסה שוב',
+                    ? t('ai.unavailable')
+                    : t('ai.error'),
             );
         } finally {
             setLoading(false);
@@ -40,26 +42,26 @@ export const GeminiSquadEngine: React.FC = () => {
         <div className="p-6 pt-24 pb-32 max-w-4xl mx-auto relative z-10 no-scrollbar overflow-y-auto h-full">
             <div className="text-right mb-10 flex flex-col items-end">
                 <div className="flex items-center justify-end gap-3 mb-2">
-                    <h2 className="text-4xl font-black dark:text-white text-text-inverse italic uppercase tracking-tighter">מנוע הסקוואד</h2>
+                    <h2 className="text-4xl font-black dark:text-white text-text-inverse italic uppercase tracking-tighter">{t('ai.title')}</h2>
                     <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center border border-primary/30">
                         <i className="fa-solid fa-microchip text-primary animate-pulse"></i>
                     </div>
                 </div>
-                <p className="dark:text-text-muted text-gray-500 font-bold max-w-sm">בינה מלאכותית שמנתחת את סגנון המשחק שלך ובונה לך את הקבוצה המנצחת</p>
+                <p className="dark:text-text-muted text-gray-500 font-bold max-w-sm">{t('ai.subtitle')}</p>
             </div>
 
             <div className="relative group">
                 <div className="absolute -inset-1 bg-gradient-to-r from-primary to-premium rounded-[36px] blur opacity-25 group-hover:opacity-40 transition duration-1000"></div>
                 <div className="relative dark:bg-surface/40 bg-white/60 backdrop-blur-xl rounded-[32px] p-8 border dark:border-white/10 border-gray-200 shadow-2xl mb-12">
                     <h3 className="text-white font-black italic uppercase mb-4 text-right flex items-center justify-end gap-2">
-                        <span>הזן סגנון משחק</span>
+                        <span>{t('ai.inputLabel')}</span>
                         <i className="fa-solid fa-terminal text-primary text-xs"></i>
                     </h3>
                     <div className="relative">
                         <textarea 
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
-                            placeholder="למשל: אני אוהב לשחק אגרסיבי ב-Warzone, צריך מישהו שיחפה עליי מרחוק ומישהו שמומחה בנהיגה..."
+                            placeholder={t('ai.placeholder')}
                             className="w-full h-36 dark:bg-black/40 bg-white/50 border dark:border-white/10 border-gray-200 rounded-2xl p-6 dark:text-white text-text-inverse focus:outline-none focus:border-primary transition-all text-right shadow-inner placeholder:opacity-30"
                         />
                         <div className="absolute left-4 bottom-4 flex gap-2">
@@ -70,12 +72,12 @@ export const GeminiSquadEngine: React.FC = () => {
                             >
                                 {loading ? (
                                     <>
-                                        <span className="relative z-10">מנתח מערכות...</span>
+                                        <span className="relative z-10">{t('ai.analyzing')}</span>
                                         <i className="fa-solid fa-sync animate-spin relative z-10"></i>
                                     </>
                                 ) : (
                                     <>
-                                        <span className="relative z-10">ג׳נרט אסטרטגיה</span>
+                                        <span className="relative z-10">{t('ai.generate')}</span>
                                         <i className="fa-solid fa-wand-magic-sparkles relative z-10"></i>
                                     </>
                                 )}
@@ -97,8 +99,8 @@ export const GeminiSquadEngine: React.FC = () => {
                         <div className="absolute inset-4 border-2 border-premium/40 border-b-transparent rounded-full animate-spin-slow"></div>
                     </div>
                     <div className="text-center">
-                        <p className="font-black italic uppercase animate-pulse dark:text-primary text-xl tracking-tighter">המערכת מעבדת נתונים</p>
-                        <p className="text-text-muted text-sm mt-1">מתחבר לשרתי Gemini...</p>
+                        <p className="font-black italic uppercase animate-pulse dark:text-primary text-xl tracking-tighter">{t('ai.processing')}</p>
+                        <p className="text-text-muted text-sm mt-1">{t('ai.connecting')}</p>
                     </div>
                 </div>
             )}
@@ -108,7 +110,7 @@ export const GeminiSquadEngine: React.FC = () => {
                     {/* Strategy Banner */}
                     <div className="relative overflow-hidden dark:bg-primary/10 bg-primary/5 border border-primary/30 p-10 rounded-[40px] text-right">
                         <div className="absolute top-0 left-0 w-32 h-32 bg-primary blur-[100px] opacity-20"></div>
-                        <span className="bg-primary text-white text-[10px] font-black px-4 py-1.5 rounded-full uppercase tracking-widest mb-4 inline-block shadow-glow">תוצאת בינה מלאכותית</span>
+                        <span className="bg-primary text-white text-[10px] font-black px-4 py-1.5 rounded-full uppercase tracking-widest mb-4 inline-block shadow-glow">{t('ai.resultBadge')}</span>
                         <h3 className="text-4xl font-black text-primary italic uppercase mb-4 drop-shadow-sm">{result.strategyName}</h3>
                         <p className="dark:text-white text-text-inverse text-xl font-bold leading-relaxed">{result.summary}</p>
                     </div>
@@ -129,7 +131,7 @@ export const GeminiSquadEngine: React.FC = () => {
                     <div className="dark:bg-black/30 bg-white/40 p-10 rounded-[40px] border dark:border-white/5 border-gray-200 relative overflow-hidden">
                         <div className="absolute bottom-0 right-0 w-48 h-48 bg-premium blur-[120px] opacity-10"></div>
                         <h4 className="font-black text-white italic uppercase mb-6 text-right flex items-center justify-end gap-3 text-2xl">
-                            <span>פרו-טיפס לניצחון</span>
+                            <span>{t('ai.proTips')}</span>
                             <i className="fa-solid fa-lightbulb text-yellow-400"></i>
                         </h4>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -149,7 +151,7 @@ export const GeminiSquadEngine: React.FC = () => {
             {/* Empty State / Suggestions */}
             {!result && !loading && (
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 opacity-50">
-                    {['סגנון התקפי מהיר', 'סגנון הגנתי וטקטי', 'משחק קבוצתי מבוסס תמיכה'].map((text, i) => (
+                    {[t('ai.examples.aggressive'), t('ai.examples.tactical'), t('ai.examples.support')].map((text, i) => (
                         <button key={i} onClick={() => setInput(text)} className="p-4 border border-dashed border-white/20 rounded-2xl hover:bg-white/5 transition-all text-xs font-bold italic uppercase text-center">
                             {text}
                         </button>

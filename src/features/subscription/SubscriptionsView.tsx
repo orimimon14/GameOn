@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface SubscriptionsViewProps {
     onSelectPlan: (planName: string) => void;
@@ -8,33 +9,33 @@ interface SubscriptionsViewProps {
 // Real-money coin packs are out of MVP scope (ADR-018/ADR-034): coins are
 // granted (signup bonus) and spent on cosmetics only — never bought with money.
 export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ onSelectPlan }) => {
+    const { t } = useTranslation();
     const comparisonPlans = [
         {
             name: 'Basic',
-            status: 'המנוי הנוכחי שלך',
-            price: 'חינם',
+            status: t('subscriptions.basicStatus'),
+            price: t('subscriptions.free'),
             isCurrent: true,
-            // Only keeping the included features for the current plan
             features: [
-                { text: 'צ׳אט בסיסי', included: true },
-                { text: 'העלאת קבצים עד 10mb', included: true },
-                { text: 'אימוג׳ים אקסקלוסיביים של האתר', included: true },
+                { text: t('subscriptions.basicFeatures.chat'), included: true },
+                { text: t('subscriptions.basicFeatures.calls'), included: true },
+                { text: t('subscriptions.basicFeatures.gallery'), included: true },
             ],
             color: 'gray'
         },
         {
             name: 'Pro Gamer',
-            status: 'הבחירה של המקצוענים',
+            status: t('subscriptions.proStatus'),
             price: '₪29.90',
-            period: '/ חודש',
+            period: t('subscriptions.perMonth'),
             isCurrent: false,
             recommended: true,
             features: [
-                { text: 'צ׳אט בסיסי ופתיחת קבוצות', included: true },
-                { text: 'העלאת קבצים עד 100MB', included: true },
-                { text: 'אימוג׳ים ללא הגבלת האתר', included: true },
-                { text: 'עיצוב פרופיל משודרג', included: true },
-                { text: 'בחירה חופשית לצבע השם', included: true },
+                { text: t('subscriptions.proFeatures.everything'), included: true },
+                { text: t('subscriptions.proFeatures.media'), included: true },
+                { text: t('subscriptions.proFeatures.gallery'), included: true },
+                { text: t('subscriptions.proFeatures.badge'), included: true },
+                { text: t('subscriptions.proFeatures.swipes'), included: true },
             ],
             color: 'gold'
         }
@@ -44,10 +45,10 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ onSelectPl
         <div className="p-6 pt-24 pb-32 max-w-6xl mx-auto relative z-10 no-scrollbar overflow-y-auto h-full">
             <div className="text-center mb-16">
                 <h2 className="text-6xl font-black dark:text-white text-text-inverse italic uppercase tracking-tighter mb-4 drop-shadow-2xl">
-                    השוואת מנויים
+                    {t('subscriptions.title')}
                 </h2>
                 <p className="dark:text-text-muted text-gray-500 font-bold text-xl">
-                    בדוק מה יש לך עכשיו ומה אתה יכול לקבל
+                    {t('subscriptions.subtitle')}
                 </p>
             </div>
 
@@ -64,7 +65,7 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ onSelectPl
                     >
                         {plan.recommended && (
                             <div className="absolute -top-5 left-1/2 -translate-x-1/2 bg-yellow-500 text-black px-6 py-2 rounded-full text-xs font-black uppercase italic tracking-widest shadow-lg">
-                                מומלץ ביותר
+                                {t('subscriptions.recommended')}
                             </div>
                         )}
 
@@ -107,7 +108,7 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ onSelectPl
                                 : 'bg-yellow-500 text-black hover:bg-yellow-400 shadow-glow active:scale-95'
                             }`}
                         >
-                            {plan.isCurrent ? 'זה המנוי שלך' : 'שדרג ל-PRO עכשיו'}
+                            {plan.isCurrent ? t('subscriptions.currentPlan') : t('subscriptions.upgradeNow')}
                         </button>
                     </div>
                 ))}

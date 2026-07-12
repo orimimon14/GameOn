@@ -1,5 +1,6 @@
 
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
 import { disablePushDevice, isPushLocallyDisabled, pushPermissionState, registerPushDevice, setPushLocallyDisabled, unlockAudio } from '@/features/notifications/pushApi';
@@ -28,6 +29,7 @@ export const Header: React.FC<HeaderProps> = ({
   showBackButton, 
   onBack 
 }) => {
+  const { t } = useTranslation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isNotifMenuOpen, setIsNotifMenuOpen] = useState(false);
   const navigate = useNavigate();
@@ -65,7 +67,7 @@ export const Header: React.FC<HeaderProps> = ({
         const items = [
           ...likes.map((like) => ({
             id: `like_${like.profile.uid}`,
-            text: `${like.profile.displayName} עשה לך לייק! 💜`,
+            text: t('notifications.likeText', { name: like.profile.displayName }),
             type: 'like',
             time: '',
             read: seenIds.has(`like_${like.profile.uid}`),
@@ -74,7 +76,7 @@ export const Header: React.FC<HeaderProps> = ({
             .filter((c) => c.lastMessage && c.lastMessageSenderId && c.lastMessageSenderId !== pushUid)
             .map((c) => ({
               id: `msg_${c.chatId}_${c.lastTimestamp?.toMillis() ?? 0}`,
-              text: `הודעה חדשה: ${(c.lastMessage ?? '').slice(0, 40)}`,
+              text: t('notifications.messageText', { preview: (c.lastMessage ?? '').slice(0, 40) }),
               type: 'message',
               time: c.lastTimestamp ? c.lastTimestamp.toDate().toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' }) : '',
               read: seenIds.has(`msg_${c.chatId}_${c.lastTimestamp?.toMillis() ?? 0}`),
@@ -160,19 +162,19 @@ export const Header: React.FC<HeaderProps> = ({
                             >
                                 <div className={`absolute top-1 w-3 h-3 rounded-full bg-white transition-transform duration-300 ${areNotificationsEnabled ? 'left-5' : 'left-1'}`}></div>
                             </button>
-                            <span className="text-[10px] font-black uppercase text-text-muted">התראות</span>
+                            <span className="text-[10px] font-black uppercase text-text-muted">{t('notifications.label')}</span>
                           </div>
-                          <h4 className="font-black text-white italic uppercase text-sm">מרכז עדכונים</h4>
+                          <h4 className="font-black text-white italic uppercase text-sm">{t('notifications.center')}</h4>
                         </div>
 
                         {/* Live push status — the honest state of THIS device */}
                         <div className="px-4 py-2 border-b dark:border-white/5 border-gray-100 text-[10px] font-bold text-text-muted text-right">
                           {(() => {
                             const s = pushPermissionState();
-                            if (s === 'granted') return '✅ התראות פעילות במכשיר הזה';
-                            if (s === 'denied') return '⛔ ההרשאה נחסמה — יש לאפשר התראות בהגדרות הדפדפן לאתר הזה';
-                            if (s === 'unsupported') return '📵 הדפדפן הזה לא תומך — באייפון: הוסף למסך הבית ופתח משם';
-                            return '⏳ ממתין לאישור — לחץ על המתג למעלה';
+                            if (s === 'granted') return t('notifications.statusGranted');
+                            if (s === 'denied') return t('notifications.statusDenied');
+                            if (s === 'unsupported') return t('notifications.statusUnsupported');
+                            return t('notifications.statusPending');
                           })()}
                         </div>
                         
@@ -182,13 +184,13 @@ export const Header: React.FC<HeaderProps> = ({
                                 <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mb-4">
                                     <i className="fa-solid fa-bell-slash text-2xl text-text-muted"></i>
                                 </div>
-                                <p className="font-bold text-white mb-1">ההתראות כבויות</p>
-                                <p className="text-xs text-text-muted">הפעל אותן כדי לא לפספס אף התאמה</p>
+                                <p className="font-bold text-white mb-1">{t('notifications.offTitle')}</p>
+                                <p className="text-xs text-text-muted">{t('notifications.offNote')}</p>
                                 <button 
                                     onClick={() => toggleNotifications(true)}
                                     className="mt-4 px-6 py-2 bg-primary text-white text-[10px] font-black uppercase rounded-full shadow-glow"
                                 >
-                                    הפעל עכשיו
+                                    {t('notifications.enableNow')}
                                 </button>
                              </div>
                           ) : notifications.length > 0 ? (
@@ -214,7 +216,7 @@ export const Header: React.FC<HeaderProps> = ({
                           ) : (
                             <div className="p-10 text-center opacity-30 flex flex-col items-center">
                               <i className="fa-solid fa-bell-slash text-4xl mb-3"></i>
-                              <p className="font-bold">אין התראות חדשות</p>
+                              <p className="font-bold">{t('notifications.empty')}</p>
                             </div>
                           )}
                         </div>
@@ -222,7 +224,7 @@ export const Header: React.FC<HeaderProps> = ({
                         {areNotificationsEnabled && notifications.length > 0 && (
                           <div className="p-3 bg-black/10">
                             <button onClick={clearNotifications} className="w-full py-2 text-[10px] font-black uppercase text-text-muted hover:text-white transition-colors">
-                              נקה הכל
+                              {t('notifications.clearAll')}
                             </button>
                           </div>
                         )}
@@ -260,28 +262,28 @@ export const Header: React.FC<HeaderProps> = ({
             <div className="absolute top-16 right-6 w-72 dark:bg-surface/95 bg-white/95 backdrop-blur-2xl rounded-[28px] shadow-2xl border dark:border-white/10 border-gray-200 z-50 overflow-hidden animate-pop origin-top-right p-3">
                 <div className="flex flex-col gap-1">
                   <div className="px-4 py-3 mb-2 border-b dark:border-white/5 border-gray-100">
-                    <p className="text-[10px] font-black uppercase text-text-muted tracking-widest mb-1">תפריט מהיר</p>
+                    <p className="text-[10px] font-black uppercase text-text-muted tracking-widest mb-1">{t('notifications.quickMenu')}</p>
                   </div>
                   
                   <button onClick={() => {onOpenProfile(); setIsMenuOpen(false)}} className="text-right px-4 py-4 rounded-2xl hover:bg-black/5 dark:hover:bg-white/5 flex items-center justify-between dark:text-white text-text-inverse font-bold transition-all group">
                     <div className="w-8 h-8 rounded-lg bg-indigo-500/10 flex items-center justify-center group-hover:bg-indigo-500 group-hover:text-white transition-colors">
                       <i className="fa-solid fa-user text-sm"></i>
                     </div>
-                    <span>הפרופיל שלי</span>
+                    <span>{t('notifications.myProfile')}</span>
                   </button>
 
                   <button onClick={() => {onOpenChat(); setIsMenuOpen(false)}} className="text-right px-4 py-4 rounded-2xl hover:bg-black/5 dark:hover:bg-white/5 flex items-center justify-between dark:text-white text-text-inverse font-bold transition-all group">
                     <div className="w-8 h-8 rounded-lg bg-sky-500/10 flex items-center justify-center group-hover:bg-sky-500 group-hover:text-white transition-colors">
                       <i className="fa-solid fa-comment text-sm"></i>
                     </div>
-                    <span>הודעות</span>
+                    <span>{t('notifications.messages')}</span>
                   </button>
 
                   <button onClick={() => {onOpenSearch(); setIsMenuOpen(false)}} className="text-right px-4 py-4 rounded-2xl hover:bg-black/5 dark:hover:bg-white/5 flex items-center justify-between dark:text-white text-text-inverse font-bold transition-all group">
                     <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center group-hover:bg-emerald-500 group-hover:text-white transition-colors">
                       <i className="fa-solid fa-layer-group text-sm"></i>
                     </div>
-                    <span>משחקים</span>
+                    <span>{t('notifications.games')}</span>
                   </button>
 
                   <div className="w-full h-[1px] dark:bg-white/5 bg-gray-100 my-2"></div>
@@ -291,8 +293,8 @@ export const Header: React.FC<HeaderProps> = ({
                       <i className="fa-solid fa-crown text-sm"></i>
                     </div>
                     <div className="flex flex-col items-end">
-                      <span className="font-black text-amber-500 group-hover:text-black transition-colors uppercase italic text-sm">שדרג ל-Premium</span>
-                      <span className="text-[9px] text-text-muted group-hover:text-black/60 transition-colors">קבל סוואייפים ללא הגבלה</span>
+                      <span className="font-black text-amber-500 group-hover:text-black transition-colors uppercase italic text-sm">{t('notifications.upgrade')}</span>
+                      <span className="text-[9px] text-text-muted group-hover:text-black/60 transition-colors">{t('notifications.upgradeNote')}</span>
                     </div>
                   </button>
                   
