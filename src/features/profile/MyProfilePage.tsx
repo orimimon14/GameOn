@@ -2,6 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
+import { useSearchParams } from 'react-router-dom';
 
 import { AvatarCropModal } from './AvatarCropModal';
 import { OwnedCollection } from './OwnedCollection';
@@ -34,6 +35,8 @@ export const MyProfilePage: React.FC = () => {
   const { bannerGradient } = useCosmetics();
 
   const [games, setGames] = useState<UserGameDocument[] | null>(null);
+  // Settings' "edit profile" entry deep-links here with ?edit=1.
+  const [searchParams, setSearchParams] = useSearchParams();
   // ADR-043 — add/remove games from the profile.
   const [catalog, setCatalog] = useState<GameCatalogDocument[]>([]);
   const [addingGame, setAddingGame] = useState(false);
@@ -99,6 +102,14 @@ export const MyProfilePage: React.FC = () => {
     if (user) loadMyGames(user.uid).then(setGames, () => setGames([]));
     loadGameCatalog().then(setCatalog, () => undefined);
   }, [user]);
+
+  useEffect(() => {
+    if (searchParams.get('edit') === '1' && userDoc && !isEditing) {
+      startEditing();
+      setSearchParams({}, { replace: true });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- run when the doc is ready
+  }, [searchParams, userDoc]);
 
   const gameName = (game: UserGameDocument) =>
     game.name ?? catalog.find((c) => c.gameId === game.gameId)?.name ?? game.gameId;

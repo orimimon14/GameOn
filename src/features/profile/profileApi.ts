@@ -19,6 +19,13 @@ export const updateMyPreferredLocale = async (uid: string, locale: 'he' | 'en'):
   await updateDoc(doc(db, 'users', uid), { preferredLocale: locale });
 };
 
+// Privacy: hide/show me in discovery (client-writable — DATA_MODEL §4.1;
+// publicProfiles resyncs via the trigger, so decks update immediately).
+export const updateMyDiscoverable = async (uid: string, isDiscoverable: boolean): Promise<void> => {
+  const { db } = getFirebase();
+  await updateDoc(doc(db, 'users', uid), { isDiscoverable });
+};
+
 export const loadMyGames = async (uid: string): Promise<UserGameDocument[]> => {
   const { db } = getFirebase();
   const snapshot = await getDocs(collection(db, 'users', uid, 'games'));
