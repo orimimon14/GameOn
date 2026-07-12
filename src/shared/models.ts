@@ -176,6 +176,7 @@ export interface ChatDocument {
   lastTimestamp?: Timestamp;
 
   unreadCounts?: Record<string, number>;
+  lastReadAt?: Record<string, Timestamp>;
 
   isActive: boolean;
 

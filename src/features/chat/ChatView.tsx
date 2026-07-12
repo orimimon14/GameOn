@@ -154,6 +154,11 @@ export const ChatView: React.FC = () => {
 
   const selectedChat = chats.find((c) => c.chatId === selectedChatId) ?? null;
   const selectedPartner = selectedChat ? partnerOf(selectedChat) : undefined;
+  // Read receipts: my message is "read" once the partner's lastReadAt
+  // (live via the chats subscription) passes its createdAt.
+  const partnerUid = selectedChat?.participants.find((participant) => participant !== uid);
+  const partnerReadMillis =
+    (partnerUid ? selectedChat?.lastReadAt?.[partnerUid] : undefined)?.toMillis?.() ?? 0;
 
   const handleSend = async () => {
     const text = draft.trim();
@@ -398,7 +403,31 @@ export const ChatView: React.FC = () => {
                       ) : (
                         <p className="text-base leading-relaxed text-right">{message.text}</p>
                       )}
-                      <div className="text-[10px] mt-1 opacity-60 text-left">{formatTime(message)}</div>
+                      <div className="text-[10px] mt-1 opacity-60 text-left flex items-center gap-1">
+                        {isMe && (
+                          <span
+                            title={t(
+                              message.createdAt && message.createdAt.toMillis() <= partnerReadMillis
+                                ? 'chat.read'
+                                : 'chat.sent',
+                            )}
+                            className={
+                              message.createdAt && message.createdAt.toMillis() <= partnerReadMillis
+                                ? 'text-sky-300'
+                                : 'text-white/60'
+                            }
+                          >
+                            <i
+                              className={`fa-solid ${
+                                message.createdAt && message.createdAt.toMillis() <= partnerReadMillis
+                                  ? 'fa-check-double'
+                                  : 'fa-check'
+                              }`}
+                            ></i>
+                          </span>
+                        )}
+                        <span>{formatTime(message)}</span>
+                      </div>
                     </div>
                   </div>
                 );

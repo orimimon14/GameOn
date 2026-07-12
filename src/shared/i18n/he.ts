@@ -133,6 +133,8 @@ export const he = {
     inputPlaceholder: 'כתוב הודעה...',
     send: 'שלח',
     back: 'חזרה',
+    read: 'נקרא',
+    sent: 'נשלח',
     sendError: 'ההודעה לא נשלחה — נסה שוב',
     safety: {
       report: 'דווח',

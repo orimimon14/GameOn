@@ -164,7 +164,11 @@ export const unreadCountFor = (chat: ChatDocument, uid: string): number =>
 
 export const markChatRead = async (chatId: string, uid: string): Promise<void> => {
   const { db } = getFirebase();
-  await updateDoc(doc(db, 'chats', chatId), { [`unreadCounts.${uid}`]: 0 });
+  await updateDoc(doc(db, 'chats', chatId), {
+    [`unreadCounts.${uid}`]: 0,
+    // Read receipt — rules require exactly request.time on your own key.
+    [`lastReadAt.${uid}`]: serverTimestamp(),
+  });
 };
 
 export const loadMyChatsOnce = async (uid: string): Promise<ChatDocument[]> => {

@@ -448,17 +448,25 @@ service cloud.firestore {
       allow create: if false;
 
       // Narrow exception to server-owned chats (DATA_MODEL §4.7): a
-      // participant may zero their OWN unreadCounts key when opening the
-      // chat. Everything else stays backend-only.
+      // participant may zero their OWN unreadCounts key and stamp their OWN
+      // lastReadAt (read receipts) when opening the chat. Everything else
+      // stays backend-only.
       allow update: if isSignedIn()
         && request.auth.uid in resource.data.participants
         && isNotSuspended()
-        && onlyChanged(["unreadCounts"])
-        && request.resource.data.unreadCounts
-          .diff(resource.data.get("unreadCounts", {}))
-          .affectedKeys()
-          .hasOnly([request.auth.uid])
-        && request.resource.data.unreadCounts[request.auth.uid] == 0;
+        && onlyChanged(["unreadCounts", "lastReadAt"])
+        && (request.resource.data.get("unreadCounts", {}) == resource.data.get("unreadCounts", {})
+          || (request.resource.data.unreadCounts
+              .diff(resource.data.get("unreadCounts", {}))
+              .affectedKeys()
+              .hasOnly([request.auth.uid])
+            && request.resource.data.unreadCounts[request.auth.uid] == 0))
+        && (request.resource.data.get("lastReadAt", {}) == resource.data.get("lastReadAt", {})
+          || (request.resource.data.lastReadAt
+              .diff(resource.data.get("lastReadAt", {}))
+              .affectedKeys()
+              .hasOnly([request.auth.uid])
+            && request.resource.data.lastReadAt[request.auth.uid] == request.time));
 
       allow delete: if false;
 
