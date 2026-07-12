@@ -51,6 +51,9 @@ export const en: TranslationCatalog = {
   onboarding: {
     title: "Let's build your profile",
     step: 'Step {{current}} of {{total}}',
+    addPhoto: 'Add a profile photo',
+    photoHint: 'Optional — but profiles with a photo get way more likes 📸',
+    photoError: 'Photo upload failed — you can continue and add it later',
     basicsTitle: 'Who are you?',
     gameTitle: 'Which games do we start with?',
     displayName: 'Display name',

@@ -6,6 +6,9 @@ import { Navigate, useNavigate } from 'react-router-dom';
 
 import { completeOnboarding, loadGameCatalog } from './onboardingApi';
 
+import { useAuthStore } from '@/features/auth/authStore';
+import { AvatarCropModal } from '@/features/profile/AvatarCropModal';
+import { uploadCroppedProfilePhoto, uploadProfilePhoto } from '@/features/profile/profileApi';
 import { LOOKING_FOR, LookingFor, Platform, PLATFORMS, SKILL_LEVELS, VOICE_PREFERENCES, VoicePreference } from '@/shared/enums';
 import { useLabels } from '@/shared/labels';
 import type { GameCatalogDocument } from '@/shared/models';
@@ -23,6 +26,33 @@ export const OnboardingPage: React.FC = () => {
   const navigate = useNavigate();
   const labels = useLabels();
   const userDoc = useUserStore((s) => s.userDoc);
+  const user = useAuthStore((s) => s.user);
+
+  // Optional profile photo right in onboarding — new users otherwise land
+  // in decks as letter avatars. Reuses the circular cropper.
+  const [photoUrl, setPhotoUrl] = useState<string | null>(null);
+  const [photoBusy, setPhotoBusy] = useState(false);
+  const [photoError, setPhotoError] = useState(false);
+  const [cropFile, setCropFile] = useState<File | null>(null);
+
+  const onPickPhoto = (file: File | undefined) => {
+    if (!file || !user || photoBusy) return;
+    if (file.type && !file.type.startsWith('image/')) return setPhotoError(true);
+    setPhotoError(false);
+    setCropFile(file);
+  };
+
+  const uploadDirect = async (file: File) => {
+    if (!user) return;
+    setPhotoBusy(true);
+    try {
+      setPhotoUrl(await uploadProfilePhoto(user.uid, file));
+    } catch {
+      setPhotoError(true);
+    } finally {
+      setPhotoBusy(false);
+    }
+  };
 
   const [step, setStep] = useState<1 | 2>(1);
   const [catalog, setCatalog] = useState<GameCatalogDocument[] | null>(null);
@@ -110,9 +140,57 @@ export const OnboardingPage: React.FC = () => {
         </p>
         <h1 className="text-3xl font-black italic uppercase tracking-tighter mb-8">{t('onboarding.title')}</h1>
 
+        {cropFile && user && (
+          <AvatarCropModal
+            file={cropFile}
+            onCancel={() => setCropFile(null)}
+            onSave={async (blob) => {
+              const url = await uploadCroppedProfilePhoto(user.uid, blob);
+              setPhotoUrl(url);
+              setCropFile(null);
+            }}
+            onDecodeError={() => {
+              const file = cropFile;
+              setCropFile(null);
+              if (file) void uploadDirect(file);
+            }}
+          />
+        )}
+
         {step === 1 && (
           <form onSubmit={handleSubmit(onBasicsSubmit)} className="flex flex-col gap-5" noValidate>
             <h2 className="text-xl font-bold text-text-muted">{t('onboarding.basicsTitle')}</h2>
+
+            <div className="flex flex-col items-center gap-2">
+              <label className="relative cursor-pointer group" aria-label={t('onboarding.addPhoto')}>
+                <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-primary/60 group-hover:border-primary transition-colors bg-surface flex items-center justify-center">
+                  {photoUrl ? (
+                    <img src={photoUrl} alt="" className="w-full h-full object-cover" />
+                  ) : photoBusy ? (
+                    <span className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                  ) : (
+                    <i className="fa-solid fa-camera text-2xl text-text-muted group-hover:text-primary transition-colors"></i>
+                  )}
+                </div>
+                <span className="absolute bottom-0 end-0 w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center border-2 border-background">
+                  <i className={`fa-solid ${photoUrl ? 'fa-pen' : 'fa-plus'} text-xs`}></i>
+                </span>
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  disabled={photoBusy}
+                  onChange={(e) => {
+                    onPickPhoto(e.target.files?.[0]);
+                    e.target.value = '';
+                  }}
+                />
+              </label>
+              <p className="text-text-muted text-xs font-bold">{t('onboarding.photoHint')}</p>
+              {photoError && (
+                <p role="alert" className="text-text-danger text-sm">{t('onboarding.photoError')}</p>
+              )}
+            </div>
 
             <div>
               <label htmlFor="displayName" className="block text-sm font-bold text-text-muted mb-1.5">

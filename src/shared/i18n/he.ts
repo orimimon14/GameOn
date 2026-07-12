@@ -49,6 +49,9 @@ export const he = {
   onboarding: {
     title: 'בוא נבנה את הפרופיל שלך',
     step: 'שלב {{current}} מתוך {{total}}',
+    addPhoto: 'הוסף תמונת פרופיל',
+    photoHint: 'לא חובה — אבל פרופילים עם תמונה מקבלים הרבה יותר לייקים 📸',
+    photoError: 'העלאת התמונה נכשלה — אפשר להמשיך ולהוסיף אותה אחר כך',
     basicsTitle: 'מי אתה?',
     gameTitle: 'באילו משחקים נתחיל?',
     displayName: 'שם תצוגה',
