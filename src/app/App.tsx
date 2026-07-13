@@ -5,6 +5,7 @@ import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-
 import { GeminiSquadEngine } from '@/features/ai/GeminiSquadEngine';
 import { signOutUser } from '@/features/auth/authService';
 import { initAuthListener } from '@/features/auth/authStore';
+import { startUpdateWatcher } from '@/shared/api/appUpdate';
 import { LoginPage } from '@/features/auth/LoginPage';
 import { RequireAuth } from '@/features/auth/RequireAuth';
 import { CallManager } from '@/features/chat/CallManager';
@@ -250,6 +251,8 @@ const AppShell: React.FC = () => {
 export const App: React.FC = () => {
   useEffect(() => {
     initAuthListener();
+    // Stale installed PWAs pick up new deploys on their own (see appUpdate).
+    startUpdateWatcher();
   }, []);
 
   return (
