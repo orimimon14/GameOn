@@ -30,4 +30,8 @@ export const startViewportLock = (): void => {
   window.visualViewport?.addEventListener('resize', () => setTimeout(snapBack, 50));
   document.addEventListener('focusout', () => setTimeout(snapBack, 120));
   window.addEventListener('scroll', () => setTimeout(snapBack, 50));
+  // returning from the background is when a leftover offset becomes visible
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') snapBack();
+  });
 };
