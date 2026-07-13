@@ -45,6 +45,24 @@ body {
   height: 100dvh;
 }
 
+/* Installed app (home screen): iOS under-reports vh/dvh by the status-bar
+   height in the fullscreen web view, leaving a dead strip under the nav that
+   can also drift between launches. There is no collapsing URL bar to track
+   there, so percentage height — which always matches the REAL web view —
+   is both safe and correct. */
+@media (display-mode: standalone), (display-mode: fullscreen) {
+  .h-screen-dynamic {
+    height: 100%;
+  }
+}
+
+/* The chain that gives percentage heights something real to resolve against. */
+html,
+body,
+#root {
+  height: 100%;
+}
+
 /* Base canvas matches the app background so iOS letterbox/overscroll areas blend. */
 html,
 body {

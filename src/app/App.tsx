@@ -6,6 +6,7 @@ import { GeminiSquadEngine } from '@/features/ai/GeminiSquadEngine';
 import { signOutUser } from '@/features/auth/authService';
 import { initAuthListener } from '@/features/auth/authStore';
 import { startUpdateWatcher } from '@/shared/api/appUpdate';
+import { startIosViewportFix } from '@/shared/api/iosViewportFix';
 import { LoginPage } from '@/features/auth/LoginPage';
 import { RequireAuth } from '@/features/auth/RequireAuth';
 import { CallManager } from '@/features/chat/CallManager';
@@ -253,6 +254,9 @@ export const App: React.FC = () => {
     initAuthListener();
     // Stale installed PWAs pick up new deploys on their own (see appUpdate).
     startUpdateWatcher();
+    // iOS keyboard dismissal can leave the web view scrolled up for good,
+    // stacking a growing dead strip under the bottom nav (see iosViewportFix).
+    startIosViewportFix();
   }, []);
 
   return (
