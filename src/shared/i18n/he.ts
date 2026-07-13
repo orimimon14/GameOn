@@ -13,7 +13,7 @@ export const he = {
     settings: 'הגדרות',
   },
   titles: {
-    discover: 'מצא שותפים למשחק',
+    discover: 'שותפים למשחק',
     likes: 'רוצים לשחק איתך',
     shop: 'חנות סטייל',
     chat: 'הודעות',

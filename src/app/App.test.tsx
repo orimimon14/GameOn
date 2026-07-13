@@ -51,7 +51,7 @@ describe('App', () => {
   it('redirects unknown routes to discover', () => {
     renderApp('/no-such-route');
 
-    expect(screen.getAllByText('מצא שותפים למשחק').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('שותפים למשחק').length).toBeGreaterThan(0);
   });
 
   it('redirects unauthenticated users from the shell to the login page', () => {
@@ -59,7 +59,7 @@ describe('App', () => {
     renderApp('/discover');
 
     expect(screen.getByText('המשך עם Google')).toBeInTheDocument();
-    expect(screen.queryByText('מצא שותפים למשחק')).not.toBeInTheDocument();
+    expect(screen.queryByText('שותפים למשחק')).not.toBeInTheDocument();
   });
 
   it('redirects authenticated users without onboarding to the wizard', () => {
@@ -67,7 +67,7 @@ describe('App', () => {
     renderApp('/discover');
 
     expect(screen.getByText('מי אתה?')).toBeInTheDocument();
-    expect(screen.queryByText('מצא שותפים למשחק')).not.toBeInTheDocument();
+    expect(screen.queryByText('שותפים למשחק')).not.toBeInTheDocument();
   });
 
   it('renders the login page on /login for signed-out users', () => {

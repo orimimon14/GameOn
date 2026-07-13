@@ -15,7 +15,7 @@ export const en: TranslationCatalog = {
     settings: 'Settings',
   },
   titles: {
-    discover: 'Find Teammates',
+    discover: 'Teammates',
     likes: 'They Want to Play',
     shop: 'Style Shop',
     chat: 'Messages',

@@ -116,7 +116,7 @@ export const Header: React.FC<HeaderProps> = ({
   };
 
   return (
-    <header className="relative w-full h-20 dark:bg-background/90 bg-white/90 backdrop-blur-xl border-b dark:border-white/5 border-gray-200 shadow-sm shrink-0 flex items-center justify-between px-6 z-40">
+    <header className="relative w-full pt-[env(safe-area-inset-top)] h-[calc(5rem+env(safe-area-inset-top))] dark:bg-background/90 bg-white/90 backdrop-blur-xl border-b dark:border-white/5 border-gray-200 shadow-sm shrink-0 flex items-center justify-between px-4 sm:px-6 z-40">
       
         {/* Right Side Controls (Hamburger and Notifications) */}
         <div className="flex items-center gap-3 z-10"> 
@@ -238,8 +238,8 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
 
         {/* Title/Brand - CENTERED */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-            <h1 className="font-sans font-black text-2xl tracking-tighter dark:text-white text-text-inverse drop-shadow-lg whitespace-nowrap italic uppercase leading-none">
+        <div className="absolute inset-x-0 top-[env(safe-area-inset-top)] bottom-0 flex flex-col items-center justify-center pointer-events-none px-28 sm:px-32">
+            <h1 className="font-sans font-black text-lg sm:text-2xl tracking-tighter dark:text-white text-text-inverse drop-shadow-lg whitespace-nowrap truncate max-w-full italic uppercase leading-none">
                 {viewTitle}
             </h1>
             <div className="h-1 w-8 bg-primary rounded-full mt-1 opacity-50"></div>
