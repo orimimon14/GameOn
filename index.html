@@ -9,7 +9,12 @@
     <link rel="manifest" href="/manifest.webmanifest" />
     <meta name="theme-color" content="#0f172a" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <!-- NOT black-translucent: on some iOS versions the fullscreen web view
+         is sized as if the status bar were excluded but anchored at y=0,
+         leaving a dead strip at the bottom (observed: 402x874 screen, 812pt
+         view, env top 62 / bottom 34). "black" keeps the view below the
+         status bar, sized and anchored consistently, with no letterbox. -->
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
     <meta name="apple-mobile-web-app-title" content="Swish & Game" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 
