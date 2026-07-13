@@ -56,6 +56,7 @@ export const he = {
     gameTitle: 'באילו משחקים נתחיל?',
     displayName: 'שם תצוגה',
     age: 'גיל',
+    birthDate: 'תאריך לידה',
     bio: 'קצת עליך',
     bioPlaceholder: 'ספר על סגנון המשחק שלך…',
     skillLevel: 'רמת מיומנות',

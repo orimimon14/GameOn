@@ -406,7 +406,7 @@ export type PrivateAccountDocument = {
 | `email` | `string` | כן | Server-owned | MVP | אימייל מה-auth provider. |
 | `authProvider` | `"google" \| "password"` | כן | Server-owned | MVP | provider ראשי ל-signup/login. |
 | `paymentCustomerId` | `string` | אופציונלי | Server-owned | MVP | מזהה לקוח אצל payment provider. |
-| `birthDate` | `string` | אופציונלי | Client-writable | MVP | תאריך לידה אם policy מחייב. פורמט סופי TBD. |
+| `birthDate` | `string` | אופציונלי | Client-writable | MVP | תאריך לידה בפורמט ISO `YYYY-MM-DD` (נאסף ב-onboarding; הציבורי הוא רק הגיל הנגזר). |
 | `country` | `string` | אופציונלי | Client-writable | MVP | מדינה לפי ISO או product locale. |
 | `locale` | `string` | אופציונלי | Client-writable | MVP | לדוגמה `he-IL`. |
 | `moderationState` | `ModerationState` | כן | Server-owned | MVP | מצב moderation פנימי. |

@@ -26,9 +26,16 @@ const renderPage = () =>
     </MemoryRouter>,
   );
 
+const isoYearsAgo = (years: number) => {
+  const d = new Date();
+  d.setFullYear(d.getFullYear() - years);
+  d.setDate(d.getDate() - 1); // safely past the birthday
+  return d.toISOString().slice(0, 10);
+};
+
 const fillBasics = () => {
   fireEvent.change(screen.getByLabelText('שם תצוגה'), { target: { value: 'אורן' } });
-  fireEvent.change(screen.getByLabelText('גיל'), { target: { value: '22' } });
+  fireEvent.change(screen.getByLabelText('תאריך לידה'), { target: { value: isoYearsAgo(22) } });
   fireEvent.change(screen.getByLabelText('קצת עליך'), { target: { value: 'גיימר תחרותי' } });
   fireEvent.click(screen.getByRole('button', { name: 'PC' }));
 };
@@ -50,7 +57,7 @@ describe('OnboardingPage', () => {
   it('blocks under-age users with a Hebrew error (ADR-013)', async () => {
     renderPage();
     fillBasics();
-    fireEvent.change(screen.getByLabelText('גיל'), { target: { value: '15' } });
+    fireEvent.change(screen.getByLabelText('תאריך לידה'), { target: { value: isoYearsAgo(15) } });
     fireEvent.click(screen.getByRole('button', { name: 'המשך' }));
 
     expect(await screen.findByText('הגיל המינימלי הוא 16')).toBeInTheDocument();

@@ -8,7 +8,8 @@ import { completeOnboarding, loadGameCatalog } from './onboardingApi';
 
 import { useAuthStore } from '@/features/auth/authStore';
 import { AvatarCropModal } from '@/features/profile/AvatarCropModal';
-import { uploadCroppedProfilePhoto, uploadProfilePhoto } from '@/features/profile/profileApi';
+import { updateMyBirthDate, uploadCroppedProfilePhoto, uploadProfilePhoto } from '@/features/profile/profileApi';
+import { computeAgeFromBirthDate } from '@/shared/api/birthDate';
 import { LOOKING_FOR, LookingFor, Platform, PLATFORMS, SKILL_LEVELS, VOICE_PREFERENCES, VoicePreference } from '@/shared/enums';
 import { useLabels } from '@/shared/labels';
 import type { GameCatalogDocument } from '@/shared/models';
@@ -34,6 +35,9 @@ export const OnboardingPage: React.FC = () => {
   const [photoBusy, setPhotoBusy] = useState(false);
   const [photoError, setPhotoError] = useState(false);
   const [cropFile, setCropFile] = useState<File | null>(null);
+  // Birth date replaces the raw age question — the public profile still
+  // carries the derived age; the date itself is stored privately.
+  const [birthDate, setBirthDate] = useState('');
 
   const onPickPhoto = (file: File | undefined) => {
     if (!file || !user || photoBusy) return;
@@ -125,6 +129,10 @@ export const OnboardingPage: React.FC = () => {
           ...(voicePreference ? { voicePreference } : {}),
         })),
       });
+      // Best effort — the private account doc stores the exact date.
+      if (user && birthDate) {
+        void updateMyBirthDate(user.uid, birthDate).catch(() => undefined);
+      }
       navigate('/discover');
     } catch {
       setSubmitError(true);
@@ -203,10 +211,22 @@ export const OnboardingPage: React.FC = () => {
             </div>
 
             <div>
-              <label htmlFor="age" className="block text-sm font-bold text-text-muted mb-1.5">
-                {t('onboarding.age')}
+              <label htmlFor="birthDate" className="block text-sm font-bold text-text-muted mb-1.5">
+                {t('onboarding.birthDate')}
               </label>
-              <input id="age" type="number" inputMode="numeric" {...register('age', { valueAsNumber: true })} className={`${inputClass} w-28`} />
+              <input
+                id="birthDate"
+                type="date"
+                value={birthDate}
+                max={new Date().toISOString().slice(0, 10)}
+                onChange={(e) => {
+                  setBirthDate(e.target.value);
+                  const age = computeAgeFromBirthDate(e.target.value);
+                  setValue('age', age ?? Number.NaN, { shouldValidate: true });
+                }}
+                className={`${inputClass} w-48`}
+                dir="ltr"
+              />
               {errors.age?.message && (
                 <p role="alert" className="text-text-danger text-sm mt-1">{t(errors.age.message)}</p>
               )}

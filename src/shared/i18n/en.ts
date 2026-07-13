@@ -58,6 +58,7 @@ export const en: TranslationCatalog = {
     gameTitle: 'Which games do we start with?',
     displayName: 'Display name',
     age: 'Age',
+    birthDate: 'Date of birth',
     bio: 'About you',
     bioPlaceholder: 'Tell us about your play style…',
     skillLevel: 'Skill level',

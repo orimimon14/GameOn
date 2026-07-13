@@ -19,6 +19,13 @@ export const updateMyPreferredLocale = async (uid: string, locale: 'he' | 'en'):
   await updateDoc(doc(db, 'users', uid), { preferredLocale: locale });
 };
 
+// Birth date (ISO YYYY-MM-DD) lives in the PRIVATE account doc — only the
+// derived age is public (DATA_MODEL §4.2).
+export const updateMyBirthDate = async (uid: string, birthDate: string): Promise<void> => {
+  const { db } = getFirebase();
+  await updateDoc(doc(db, 'users', uid, 'private', 'account'), { birthDate });
+};
+
 // Privacy: hide/show me in discovery (client-writable — DATA_MODEL §4.1;
 // publicProfiles resyncs via the trigger, so decks update immediately).
 export const updateMyDiscoverable = async (uid: string, isDiscoverable: boolean): Promise<void> => {
