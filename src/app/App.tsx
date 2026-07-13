@@ -155,7 +155,7 @@ const AppShell: React.FC = () => {
   };
 
   return (
-    <div className={`h-screen w-full relative font-sans overflow-hidden transition-colors duration-500 ${isDarkMode ? 'bg-background text-text' : 'bg-slate-100 text-text-inverse'}`}>
+    <div className={`h-screen-dynamic w-full relative font-sans overflow-hidden transition-colors duration-500 ${isDarkMode ? 'bg-background text-text' : 'bg-slate-100 text-text-inverse'}`}>
       {/* Background Layer */}
       {currentBg && (
         <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
@@ -172,7 +172,7 @@ const AppShell: React.FC = () => {
 
       <SideNav activePath={path} userProfile={userProfile} onNavigate={handleNavigate} hasUnreadChat={hasUnreadChat} />
 
-      <div className="h-full w-full md:me-[100px] pb-[64px] md:pb-0 flex flex-col relative z-10">
+      <div className="h-full w-full md:me-[100px] pb-[calc(64px+env(safe-area-inset-bottom))] md:pb-0 flex flex-col relative z-10">
         <Header
           viewTitle={viewTitle}
           userProfile={userProfile}

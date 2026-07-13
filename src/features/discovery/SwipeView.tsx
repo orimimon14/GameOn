@@ -286,7 +286,7 @@ export const SwipeView: React.FC = () => {
   }
 
   return (
-    <div className="h-full flex flex-col items-center justify-center gap-4 p-6 pt-20 relative z-10">
+    <div className="h-full flex flex-col items-center justify-center gap-2 sm:gap-4 p-3 sm:p-6 pt-2 sm:pt-4 relative z-10">
       {levelChips}
       {matchedWith && (
         <MatchCelebration
@@ -301,7 +301,7 @@ export const SwipeView: React.FC = () => {
         <PublicProfileSheet profile={viewingProfile} onClose={() => setViewingProfile(null)} />
       )}
 
-      <div className="relative w-full max-w-md aspect-[3/4.5] flex-shrink min-h-0">
+      <div className="relative w-full max-w-md flex-1 min-h-0 max-h-[640px]">
         <AnimatePresence initial={false}>
           <SwipeCard
             key={currentProfile.uid}

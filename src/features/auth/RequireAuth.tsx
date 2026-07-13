@@ -10,7 +10,7 @@ export const RequireAuth: React.FC = () => {
 
   if (status === 'loading') {
     return (
-      <div className="h-screen w-full flex items-center justify-center bg-background">
+      <div className="h-screen-dynamic w-full flex items-center justify-center bg-background">
         <i className="fa-solid fa-gamepad text-5xl text-primary animate-pulse" aria-label="loading"></i>
       </div>
     );
