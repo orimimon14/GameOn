@@ -237,7 +237,7 @@ export const SwipeView: React.FC = () => {
   if (!currentProfile) {
     return (
       <div className="flex flex-col items-center justify-center h-full text-center p-10 relative z-10">
-        <div className="mb-8">{levelChips}</div>
+        <div className="mb-8 w-full max-w-md">{levelChips}</div>
         <div className="opacity-70 flex flex-col items-center">
           <i className="fa-solid fa-ghost text-7xl mb-6 dark:text-white text-text-inverse"></i>
           <h3 className="text-2xl font-bold italic uppercase dark:text-white text-text-inverse">{t('discovery.empty')}</h3>

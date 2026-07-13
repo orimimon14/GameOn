@@ -149,6 +149,7 @@ npm run typecheck
 npm run lint
 npm run test
 npm run test:rules
+npm run audit:responsive   # after ANY UI change: sweeps 8 device sizes x 7 pages (needs emulators + dev server up)
 ```
 
 Run local Firebase emulators:

@@ -116,7 +116,7 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ onSelectPl
 
             {/* Footer / Trusted Badges */}
             <div className="mt-20 flex flex-col items-center">
-                <div className="flex gap-10 grayscale opacity-30">
+                <div className="flex flex-wrap justify-center gap-6 sm:gap-10 grayscale opacity-30">
                     <i className="fa-brands fa-cc-visa text-5xl"></i>
                     <i className="fa-brands fa-cc-mastercard text-5xl"></i>
                     <i className="fa-brands fa-google-pay text-5xl"></i>
