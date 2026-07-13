@@ -121,17 +121,21 @@ export const SwipeView: React.FC = () => {
   }, [deckIsEmpty, gameSuggestions, gameId]);
 
   const levelChips = (
-    <div className="flex flex-wrap justify-center gap-2" role="group" aria-label={t('discovery.levelFilter')}>
+    <div
+      className="flex flex-nowrap overflow-x-auto no-scrollbar sm:flex-wrap sm:justify-center gap-2 w-full max-w-md px-1 py-1"
+      role="group"
+      aria-label={t('discovery.levelFilter')}
+    >
       <button
         onClick={() => setLevelFilter('all')}
-        className={`px-4 py-1.5 rounded-full text-xs font-black uppercase italic transition-all ${levelFilter === 'all' ? 'bg-primary text-white shadow-glow-primary' : 'bg-surface/70 text-text-muted border border-white/10 hover:bg-surface-elevated'}`}
+        className={`shrink-0 px-4 py-1.5 rounded-full text-xs font-black uppercase italic transition-all ${levelFilter === 'all' ? 'bg-primary text-white shadow-glow-primary' : 'bg-surface/70 text-text-muted border border-white/10 hover:bg-surface-elevated'}`}
       >
         {t('discovery.levelAll')}
       </button>
       {mySkill && (
         <button
           onClick={() => setLevelFilter(mySkill)}
-          className={`px-4 py-1.5 rounded-full text-xs font-black uppercase italic transition-all ${levelFilter === mySkill ? 'bg-primary text-white shadow-glow-primary' : 'bg-surface/70 text-premium border border-premium/30 hover:bg-surface-elevated'}`}
+          className={`shrink-0 px-4 py-1.5 rounded-full text-xs font-black uppercase italic transition-all ${levelFilter === mySkill ? 'bg-primary text-white shadow-glow-primary' : 'bg-surface/70 text-premium border border-premium/30 hover:bg-surface-elevated'}`}
         >
           ⭐ {t('discovery.levelMine')}
         </button>
@@ -140,7 +144,7 @@ export const SwipeView: React.FC = () => {
         <button
           key={level}
           onClick={() => setLevelFilter(level)}
-          className={`px-4 py-1.5 rounded-full text-xs font-black uppercase italic transition-all ${levelFilter === level ? 'bg-primary text-white shadow-glow-primary' : 'bg-surface/70 text-text-muted border border-white/10 hover:bg-surface-elevated'}`}
+          className={`shrink-0 px-4 py-1.5 rounded-full text-xs font-black uppercase italic transition-all ${levelFilter === level ? 'bg-primary text-white shadow-glow-primary' : 'bg-surface/70 text-text-muted border border-white/10 hover:bg-surface-elevated'}`}
         >
           {labels.skillLevel[level]}
         </button>
@@ -286,7 +290,7 @@ export const SwipeView: React.FC = () => {
   }
 
   return (
-    <div className="h-full flex flex-col items-center justify-center gap-2 sm:gap-4 p-3 sm:p-6 pt-2 sm:pt-4 relative z-10">
+    <div className="h-full flex flex-col items-center gap-3 sm:gap-4 p-4 sm:p-6 pt-3 sm:pt-4 pb-4 relative z-10">
       {levelChips}
       {matchedWith && (
         <MatchCelebration
@@ -301,7 +305,7 @@ export const SwipeView: React.FC = () => {
         <PublicProfileSheet profile={viewingProfile} onClose={() => setViewingProfile(null)} />
       )}
 
-      <div className="relative w-full max-w-md flex-1 min-h-0 max-h-[640px]">
+      <div className="relative w-full max-w-md flex-1 min-h-0 max-h-[620px] my-1">
         <AnimatePresence initial={false}>
           <SwipeCard
             key={currentProfile.uid}
