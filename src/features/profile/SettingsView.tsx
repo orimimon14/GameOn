@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { httpsCallable } from 'firebase/functions';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -30,6 +30,42 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
     const { t, i18n } = useTranslation();
     const [deleting, setDeleting] = useState(false);
     const [deleteError, setDeleteError] = useState(false);
+    // Screen-vs-viewport diagnostics under the version stamp: on a phone with
+    // the dead-strip bug, the difference between what iOS reports and the real
+    // screen pinpoints the culprit from a single settings screenshot.
+    const [viewportDiag, setViewportDiag] = useState('');
+
+    useEffect(() => {
+        // deferred: reading env() insets needs a probe attached to the DOM
+        const timer = setTimeout(() => {
+            const probe = document.createElement('div');
+            probe.style.cssText =
+                'position:fixed;visibility:hidden;pointer-events:none;' +
+                'padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)';
+            document.body.appendChild(probe);
+            const probeStyle = getComputedStyle(probe);
+            const safeTop = Math.round(parseFloat(probeStyle.paddingTop) || 0);
+            const safeBottom = Math.round(parseFloat(probeStyle.paddingBottom) || 0);
+            probe.remove();
+            const standalone =
+                window.matchMedia('(display-mode: standalone)').matches ||
+                (navigator as Navigator & { standalone?: boolean }).standalone === true;
+            const vv = window.visualViewport;
+            const root = document.querySelector('.h-screen-dynamic');
+            const rootHeight = root ? Math.round(root.getBoundingClientRect().height) : 0;
+            setViewportDiag(
+                [
+                    standalone ? '📱' : '🌐',
+                    `${window.screen.width}×${window.screen.height}`,
+                    `${window.innerWidth}×${window.innerHeight}`,
+                    vv ? `${Math.round(vv.height)}↕${Math.round(vv.offsetTop)}` : '—',
+                    `⬒${safeTop}·⬓${safeBottom}`,
+                    `▭${rootHeight}`,
+                ].join(' · '),
+            );
+        }, 0);
+        return () => clearTimeout(timer);
+    }, []);
 
     // ADR-038 — mandatory in-app account deletion, double-confirmed.
     const handleDeleteAccount = async () => {
@@ -203,6 +239,11 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                         ),
                     })}
                 </p>
+                {viewportDiag && (
+                    <p className="text-[10px] dark:text-white text-text-inverse mt-1 font-mono" dir="ltr">
+                        {viewportDiag}
+                    </p>
+                )}
             </div>
         </div>
     );
