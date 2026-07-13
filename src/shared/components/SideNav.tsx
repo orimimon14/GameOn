@@ -68,7 +68,7 @@ export const SideNav: React.FC<SideNavProps> = ({ activePath, userProfile, onNav
     </div>
 
     {/* Mobile bottom tab bar (like Instagram) — desktop keeps the side rail */}
-    <nav className="md:hidden fixed bottom-0 inset-x-0 z-[60] dark:bg-background/95 bg-white/95 backdrop-blur-xl border-t dark:border-white/10 border-gray-200 flex items-stretch justify-around px-1 pb-[env(safe-area-inset-bottom)]">
+    <nav className="md:hidden fixed bottom-0 inset-x-0 z-[60] dark:bg-background/95 bg-white/95 backdrop-blur-xl border-t dark:border-white/10 border-gray-200 flex items-stretch justify-around px-1 pb-[var(--safe-bottom)]">
       {NAV_ITEMS.map((item) => {
         const isActive = activePath === item.path;
         return (

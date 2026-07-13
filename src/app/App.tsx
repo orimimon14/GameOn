@@ -6,6 +6,7 @@ import { GeminiSquadEngine } from '@/features/ai/GeminiSquadEngine';
 import { signOutUser } from '@/features/auth/authService';
 import { initAuthListener } from '@/features/auth/authStore';
 import { startUpdateWatcher } from '@/shared/api/appUpdate';
+import { startLetterboxCompensation } from '@/shared/api/letterboxCompensation';
 import { startViewportLock } from '@/shared/api/viewportLock';
 import { LoginPage } from '@/features/auth/LoginPage';
 import { RequireAuth } from '@/features/auth/RequireAuth';
@@ -174,7 +175,7 @@ const AppShell: React.FC = () => {
 
       <SideNav activePath={path} userProfile={userProfile} onNavigate={handleNavigate} hasUnreadChat={hasUnreadChat} />
 
-      <div className="h-full w-full md:me-[100px] pb-[calc(64px+env(safe-area-inset-bottom))] md:pb-0 flex flex-col relative z-10">
+      <div className="h-full w-full md:me-[100px] pb-[calc(64px+var(--safe-bottom))] md:pb-0 flex flex-col relative z-10">
         <Header
           viewTitle={viewTitle}
           userProfile={userProfile}
@@ -257,6 +258,10 @@ export const App: React.FC = () => {
     // iOS keyboard dismissal can leave the web view scrolled up for good,
     // stacking a growing dead strip under the bottom nav (see viewportLock).
     startViewportLock();
+    // Some iOS versions hand standalone apps a view that ends short of the
+    // screen bottom — absorb the dead strip into the bottom bar (see
+    // letterboxCompensation).
+    startLetterboxCompensation();
   }, []);
 
   return (

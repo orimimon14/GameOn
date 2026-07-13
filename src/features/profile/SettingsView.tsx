@@ -61,6 +61,8 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                     vv ? `${Math.round(vv.height)}↕${Math.round(vv.offsetTop)}` : '—',
                     `⬒${safeTop}·⬓${safeBottom}`,
                     `▭${rootHeight}`,
+                    // ✂ = the dead-strip compensation is active on this phone
+                    ...(document.documentElement.classList.contains('ios-bottom-letterbox') ? ['✂'] : []),
                 ].join(' · '),
             );
         }, 0);

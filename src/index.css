@@ -63,6 +63,24 @@ body,
   height: 100%;
 }
 
+/* Bottom safe-area padding, indirected so the letterbox compensation can
+   zero it (see letterboxCompensation.ts). */
+:root {
+  --safe-bottom: env(safe-area-inset-bottom);
+}
+
+/* Some iOS versions size the standalone web view WITHOUT the status bar but
+   anchor it fullscreen, so the view ends ~60pt above the real screen bottom
+   and iOS paints the rest with the manifest background color. The home
+   indicator lives in that dead strip — reserving env(safe-area-inset-bottom)
+   inside the view on top of it doubles the float. When the bug is detected
+   (html gets .ios-bottom-letterbox) the in-view reservation is dropped: the
+   nav sits flush on the view edge and the same-colored strip below reads as
+   the bar's own safe zone. */
+.ios-bottom-letterbox {
+  --safe-bottom: 0px;
+}
+
 /* Base canvas matches the app background so iOS letterbox/overscroll areas blend. */
 html,
 body {
