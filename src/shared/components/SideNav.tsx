@@ -24,7 +24,7 @@ export const SideNav: React.FC<SideNavProps> = ({ activePath, userProfile, onNav
 
   return (
     <>
-    <div className="hidden md:flex fixed top-0 end-0 bottom-0 w-[100px] dark:bg-[#1E1F22]/95 bg-white/95 backdrop-blur-xl z-[60] flex-col items-center py-8 gap-5 border-s dark:border-white/5 border-gray-200 shadow-2xl">
+    <div className="hidden md:flex fixed top-0 end-0 bottom-0 w-[100px] dark:bg-background/95 bg-white/95 backdrop-blur-xl z-[60] flex-col items-center py-8 gap-5 border-s dark:border-white/5 border-gray-200 shadow-2xl">
       <button
         onClick={() => onNavigate('/profile')}
         className={`w-16 h-16 rounded-[24px] overflow-hidden transition-all duration-300 hover:rounded-[16px] mb-6 relative p-0.5 ${activePath === '/profile' ? 'rounded-[16px] ring-2 ring-primary shadow-glow' : 'opacity-80 hover:opacity-100'}`}
@@ -68,7 +68,7 @@ export const SideNav: React.FC<SideNavProps> = ({ activePath, userProfile, onNav
     </div>
 
     {/* Mobile bottom tab bar (like Instagram) — desktop keeps the side rail */}
-    <nav className="md:hidden fixed bottom-0 inset-x-0 z-[60] dark:bg-[#1E1F22]/95 bg-white/95 backdrop-blur-xl border-t dark:border-white/10 border-gray-200 flex items-stretch justify-around px-1 pb-[env(safe-area-inset-bottom)]">
+    <nav className="md:hidden fixed bottom-0 inset-x-0 z-[60] dark:bg-background/95 bg-white/95 backdrop-blur-xl border-t dark:border-white/10 border-gray-200 flex items-stretch justify-around px-1 pb-[env(safe-area-inset-bottom)]">
       {NAV_ITEMS.map((item) => {
         const isActive = activePath === item.path;
         return (
