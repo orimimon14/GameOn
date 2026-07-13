@@ -42,6 +42,11 @@ export const SwipeView: React.FC = () => {
   const [status, setStatus] = useState<DeckStatus>('loading');
   const [gameId, setGameId] = useState<string | null>(null);
   const [deck, setDeck] = useState<PublicProfileDocument[]>([]);
+  // Skipped players held back for a second round: likes stay hidden, but a
+  // small community exhausts the fresh deck fast — instead of a dead empty
+  // screen on every launch, skips come back (the backend allows re-swiping).
+  const [recycledPool, setRecycledPool] = useState<PublicProfileDocument[]>([]);
+  const [round, setRound] = useState<'fresh' | 'recycled'>('fresh');
   const [index, setIndex] = useState(0);
   const [swipeError, setSwipeError] = useState(false);
   const [limitReached, setLimitReached] = useState(false);
@@ -68,15 +73,18 @@ export const SwipeView: React.FC = () => {
           setStatus('no-game');
           return;
         }
-        const cards = await loadDeck(uid, resolvedGameId);
+        const { fresh, recycled } = await loadDeck(uid, resolvedGameId);
         if (cancelled) return;
         setGameId(resolvedGameId);
-        setDeck(
-          sortByLevelCloseness(
-            levelFilter === 'all' ? cards : cards.filter((c) => c.skillLevel === levelFilter),
-            mySkill,
-          ),
-        );
+        const byLevel = (cards: PublicProfileDocument[]) =>
+          levelFilter === 'all' ? cards : cards.filter((c) => c.skillLevel === levelFilter);
+        const freshDeck = sortByLevelCloseness(byLevel(fresh), mySkill);
+        const recycledDeck = byLevel(recycled); // keeps oldest-skip-first order
+        // No fresh players? Start straight on the second round — the user
+        // should never open the app onto an empty screen.
+        setDeck(freshDeck.length > 0 ? freshDeck : recycledDeck);
+        setRound(freshDeck.length > 0 ? 'fresh' : 'recycled');
+        setRecycledPool(freshDeck.length > 0 ? recycledDeck : []);
         setIndex(0);
         setSwipeError(false);
         setStatus('ready');
@@ -99,8 +107,17 @@ export const SwipeView: React.FC = () => {
   const currentProfile = deck[index];
 
   const deckIsEmpty = status === 'ready' && !currentProfile;
+
+  // Ran out of fresh players mid-session — offer the second round in place.
+  const startRecycledRound = useCallback(() => {
+    setDeck(recycledPool);
+    setRecycledPool([]);
+    setRound('recycled');
+    setIndex(0);
+  }, [recycledPool]);
+
   useEffect(() => {
-    if (!deckIsEmpty || gameSuggestions !== null) return;
+    if (!deckIsEmpty || recycledPool.length > 0 || gameSuggestions !== null) return;
     let cancelled = false;
     void loadGameCatalog()
       .then(async (catalog) => {
@@ -234,11 +251,35 @@ export const SwipeView: React.FC = () => {
     );
   }
 
-  if (!currentProfile) {
+  if (!currentProfile && recycledPool.length > 0) {
     return (
       <div className="flex flex-col items-center justify-center h-full text-center p-10 relative z-10">
         <div className="mb-8 w-full max-w-md">{levelChips}</div>
-        <div className="opacity-70 flex flex-col items-center">
+        <i className="fa-solid fa-rotate-right text-7xl mb-6 text-primary"></i>
+        <h3 className="text-2xl font-bold italic uppercase dark:text-white text-text-inverse">
+          {t('discovery.seenEveryone')}
+        </h3>
+        <p className="font-bold dark:text-text-muted text-gray-500 mb-6">
+          {t('discovery.seenEveryoneHint')}
+        </p>
+        <button
+          onClick={startRecycledRound}
+          className="px-8 py-3 bg-primary text-white rounded-full font-black uppercase tracking-wide hover:scale-105 transition-all active:scale-95 shadow-glow"
+        >
+          {t('discovery.showSkippedAgain')}
+        </button>
+      </div>
+    );
+  }
+
+  if (!currentProfile) {
+    return (
+      // Taller than the viewport once game suggestions render — must scroll,
+      // and the ghost centers itself (my-auto) only when there IS room.
+      <div className="h-full overflow-y-auto no-scrollbar relative z-10">
+        <div className="min-h-full flex flex-col items-center text-center px-4 pt-3 pb-6 sm:px-6 sm:pt-4">
+        <div className="w-full max-w-md">{levelChips}</div>
+        <div className="my-auto py-8 opacity-70 flex flex-col items-center">
           <i className="fa-solid fa-ghost text-7xl mb-6 dark:text-white text-text-inverse"></i>
           <h3 className="text-2xl font-bold italic uppercase dark:text-white text-text-inverse">{t('discovery.empty')}</h3>
           <p className="font-bold dark:text-text-muted text-gray-500 mb-6">
@@ -253,7 +294,7 @@ export const SwipeView: React.FC = () => {
         </div>
 
         {gameSuggestions && gameSuggestions.length > 0 && (
-          <div className="mt-10 w-full max-w-md">
+          <div className="w-full max-w-md">
             <p className="dark:text-white text-text-inverse font-black italic uppercase text-sm mb-4">
               {t('discovery.tryOtherGames')}
             </p>
@@ -285,6 +326,7 @@ export const SwipeView: React.FC = () => {
             </div>
           </div>
         )}
+        </div>
       </div>
     );
   }
@@ -292,6 +334,12 @@ export const SwipeView: React.FC = () => {
   return (
     <div className="h-full flex flex-col items-center gap-3 sm:gap-4 p-4 sm:p-6 pt-3 sm:pt-4 pb-4 relative z-10">
       {levelChips}
+      {round === 'recycled' && (
+        <div className="shrink-0 px-4 py-1 rounded-full bg-primary/15 border border-primary/30 text-primary text-xs font-bold">
+          <i className="fa-solid fa-rotate-right me-1.5"></i>
+          {t('discovery.recycledRound')}
+        </div>
+      )}
       {matchedWith && (
         <MatchCelebration
           name={matchedWith.profile.displayName}

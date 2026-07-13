@@ -103,6 +103,10 @@ export const he = {
     levelMine: 'ברמה שלי',
     tryOtherGames: 'יש שחקנים שמחכים במשחקים אחרים:',
     emptyLevelHint: 'אין כרגע שחקנים ברמה הזאת — נסה רמה אחרת או "כל הרמות"',
+    seenEveryone: 'עברת על כל השחקנים החדשים!',
+    seenEveryoneHint: 'אפשר לתת צ׳אנס שני למי שדילגת עליו',
+    showSkippedAgain: 'סבב שני',
+    recycledRound: 'סבב שני — שחקנים שדילגת עליהם',
     limitTitle: 'נגמרו ההחלקות להיום',
     limitHint: 'חזור מחר, או שדרג ל-Pro להחלקות ללא הגבלה',
     match: {

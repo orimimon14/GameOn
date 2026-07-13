@@ -105,6 +105,10 @@ export const en: TranslationCatalog = {
     levelMine: 'My level',
     tryOtherGames: 'Players are waiting in other games:',
     emptyLevelHint: 'No players at this level right now — try another level or "All levels"',
+    seenEveryone: 'You went through all the new players!',
+    seenEveryoneHint: 'Give the players you skipped a second chance',
+    showSkippedAgain: 'Second round',
+    recycledRound: 'Second round — players you skipped',
     limitTitle: 'Out of swipes for today',
     limitHint: 'Come back tomorrow, or upgrade to Pro for unlimited swipes',
     match: {

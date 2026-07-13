@@ -49,6 +49,16 @@ const AUDIT_SNIPPET = `(() => {
       problems.push('bleeds horizontally: ' + (el.tagName + '.' + String(el.className).slice(0, 50)));
       if (problems.length > 4) break;
     }
+    // content sitting above the screen top while nothing is scrolled is
+    // unreachable — the classic overflowing justify-center trap
+    if (r.top < -4) {
+      let anc = el.parentElement, scrolled = false;
+      while (anc) { if (anc.scrollTop > 0) { scrolled = true; break; } anc = anc.parentElement; }
+      if (!scrolled) {
+        problems.push('clipped above viewport: ' + (el.tagName + '.' + String(el.className).slice(0, 50)));
+        if (problems.length > 4) break;
+      }
+    }
   }
   // 3. the bottom nav must end exactly at the viewport bottom (mobile only)
   const nav = document.querySelector('nav');

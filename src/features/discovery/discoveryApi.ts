@@ -30,11 +30,22 @@ export const submitSwipe = async (payload: SubmitSwipePayload): Promise<SubmitSw
 
 const DECK_SIZE = 50;
 
+export interface DeckResult {
+  // Players the caller never swiped on in this game.
+  fresh: PublicProfileDocument[];
+  // Players the caller SKIPPED before, oldest skip first. Likes stay hidden
+  // (they are pending matches), but skips come back when the fresh deck runs
+  // dry — in a small community a permanent skip empties the deck for good.
+  // The backend allows re-swiping (submitSwipe updates direction), so a
+  // recycled skip that becomes a like can still match.
+  recycled: PublicProfileDocument[];
+}
+
 // Deck query (P3-T01, ADR-021 MVP): shared conditions go in the Firestore
 // query; personal exclusions (self / already swiped / my blocks) are filtered
 // client-side from the caller's own subcollections. Reverse blocks stay
 // invisible to the client by design — the server rejects those swipes.
-export const loadDeck = async (uid: string, gameId: string): Promise<PublicProfileDocument[]> => {
+export const loadDeck = async (uid: string, gameId: string): Promise<DeckResult> => {
   const { db } = getFirebase();
   const [profilesSnap, swipesSnap, blocksSnap] = await Promise.all([
     getDocs(
@@ -49,19 +60,36 @@ export const loadDeck = async (uid: string, gameId: string): Promise<PublicProfi
     getDocs(collection(db, 'users', uid, 'blocks')),
   ]);
 
-  const swipedIds = new Set(swipesSnap.docs.map((d) => d.id));
+  const likedIds = new Set<string>();
+  const skippedAtMillis = new Map<string, number>();
+  for (const doc of swipesSnap.docs) {
+    const swipe = doc.data() as { direction?: string; createdAt?: { toMillis: () => number } };
+    if (swipe.direction === 'like') likedIds.add(doc.id);
+    else skippedAtMillis.set(doc.id, swipe.createdAt?.toMillis() ?? 0);
+  }
   const blockedUids = new Set(blocksSnap.docs.map((d) => d.id));
 
-  return profilesSnap.docs
+  const eligible = profilesSnap.docs
     .map((d) => d.data() as PublicProfileDocument)
     .filter(
       (p) =>
         p.uid !== uid &&
         p.isSuspended !== true &&
         p.isDeleted !== true &&
-        !swipedIds.has(`${p.uid}_${gameId}`) &&
+        !likedIds.has(`${p.uid}_${gameId}`) &&
         !blockedUids.has(p.uid),
     );
+
+  return {
+    fresh: eligible.filter((p) => !skippedAtMillis.has(`${p.uid}_${gameId}`)),
+    recycled: eligible
+      .filter((p) => skippedAtMillis.has(`${p.uid}_${gameId}`))
+      .sort(
+        (a, b) =>
+          (skippedAtMillis.get(`${a.uid}_${gameId}`) ?? 0) -
+          (skippedAtMillis.get(`${b.uid}_${gameId}`) ?? 0),
+      ),
+  };
 };
 
 // Default deck game when none is selected: the caller's first active game.

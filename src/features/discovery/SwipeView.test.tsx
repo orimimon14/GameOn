@@ -45,7 +45,10 @@ describe('SwipeView', () => {
     vi.clearAllMocks();
     useUserStore.setState({ userDoc: { uid: 'me' } as never, status: 'ready' });
     useUiStore.setState({ selectedGame: 'valorant' });
-    (loadDeck as Mock).mockResolvedValue([profile('u2', 'יעל'), profile('u3', 'אורן')]);
+    (loadDeck as Mock).mockResolvedValue({
+      fresh: [profile('u2', 'יעל'), profile('u3', 'אורן')],
+      recycled: [],
+    });
     (submitSwipe as Mock).mockResolvedValue({ result: 'liked', swipeId: 'u2_valorant' });
   });
 
@@ -106,12 +109,39 @@ describe('SwipeView', () => {
     expect(await screen.findByText('נגמרו ההחלקות להיום')).toBeInTheDocument();
   });
 
-  it('shows the empty state when the deck runs out', async () => {
-    (loadDeck as Mock).mockResolvedValue([]);
+  it('shows the empty state when there is truly no one left', async () => {
+    (loadDeck as Mock).mockResolvedValue({ fresh: [], recycled: [] });
 
     renderView();
 
     expect(await screen.findByText('אין יותר שחקנים כרגע')).toBeInTheDocument();
+  });
+
+  it('starts straight on the recycled round when no fresh players remain', async () => {
+    (loadDeck as Mock).mockResolvedValue({ fresh: [], recycled: [profile('u4', 'תומר')] });
+
+    renderView();
+
+    // Deck opens with the previously-skipped player, flagged as round two.
+    expect(await screen.findByText('תומר, 24')).toBeInTheDocument();
+    expect(screen.getByText('סבב שני — שחקנים שדילגת עליהם')).toBeInTheDocument();
+    expect(screen.queryByText('אין יותר שחקנים כרגע')).not.toBeInTheDocument();
+  });
+
+  it('offers a second round when the fresh deck runs out mid-session', async () => {
+    (loadDeck as Mock).mockResolvedValue({
+      fresh: [profile('u2', 'יעל')],
+      recycled: [profile('u4', 'תומר')],
+    });
+
+    renderView();
+    fireEvent.click(await screen.findByRole('button', { name: 'like' }));
+
+    expect(await screen.findByText('עברת על כל השחקנים החדשים!')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'סבב שני' }));
+
+    expect(await screen.findByText('תומר, 24')).toBeInTheDocument();
+    expect(screen.getByText('סבב שני — שחקנים שדילגת עליהם')).toBeInTheDocument();
   });
 
   it('prompts to pick a game when the user has none', async () => {
