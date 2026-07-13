@@ -267,6 +267,15 @@ export const en: TranslationCatalog = {
     addGameConfirm: 'Add to profile',
     removeGame: 'Remove game',
     gameActionError: 'The action failed — try again',
+    completeness: {
+      title: 'Profile completeness',
+      subtitle: 'Complete profiles get way more likes. Still missing:',
+      photo: 'Add a profile photo',
+      bio: 'Write a few words about yourself (10+ characters)',
+      gallery: 'Add a photo or video to your gallery',
+      games: 'Add at least 2 games',
+      rank: 'Fill in a rank for one of your games',
+    },
     changePhoto: 'Change profile photo',
     crop: {
       title: 'Pick the part for your profile photo',

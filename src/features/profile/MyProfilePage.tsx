@@ -6,6 +6,7 @@ import { useSearchParams } from 'react-router-dom';
 
 import { AvatarCropModal } from './AvatarCropModal';
 import { OwnedCollection } from './OwnedCollection';
+import { ProfileCompletenessCard } from './ProfileCompletenessCard';
 import { ProfileGallery } from './ProfileGallery';
 import { addGameToProfile, loadMyGames, removeGameFromProfile, updateMyProfile, uploadCroppedProfilePhoto, uploadProfilePhoto } from './profileApi';
 
@@ -255,6 +256,8 @@ export const MyProfilePage: React.FC = () => {
 
         {!isEditing && (
           <>
+            <ProfileCompletenessCard userDoc={userDoc} games={games} />
+
             <div className="flex items-start justify-between">
               <button
                 onClick={startEditing}
