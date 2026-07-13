@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { AvatarCropModal } from './AvatarCropModal';
@@ -26,10 +26,18 @@ const REJECTION_KEYS: Record<GalleryRejection, string> = {
   bad_type: 'profile.gallery.badType',
 };
 
-export const ProfileGallery: React.FC = () => {
+interface ProfileGalleryProps {
+  // Lets the completeness card open the gallery picker directly.
+  registerOpenPicker?: (open: () => void) => void;
+}
+
+export const ProfileGallery: React.FC<ProfileGalleryProps> = ({ registerOpenPicker }) => {
   const { t } = useTranslation();
   const userDoc = useUserStore((s) => s.userDoc);
   const inputRef = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    registerOpenPicker?.(() => inputRef.current?.click());
+  }, [registerOpenPicker]);
 
   const [busy, setBusy] = useState(false);
   const [errorKey, setErrorKey] = useState<string | null>(null);

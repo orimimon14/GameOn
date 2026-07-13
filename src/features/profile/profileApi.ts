@@ -58,6 +58,11 @@ export const addGameToProfile = async (
   });
 };
 
+export const updateGameRank = async (uid: string, gameId: string, rank: string): Promise<void> => {
+  const { db } = getFirebase();
+  await updateDoc(doc(db, 'users', uid, 'games', gameId), { rank });
+};
+
 export const removeGameFromProfile = async (uid: string, gameId: string): Promise<void> => {
   const { db } = getFirebase();
   await updateDoc(doc(db, 'users', uid, 'games', gameId), { isActive: false });

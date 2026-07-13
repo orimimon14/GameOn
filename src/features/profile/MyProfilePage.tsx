@@ -8,7 +8,8 @@ import { AvatarCropModal } from './AvatarCropModal';
 import { OwnedCollection } from './OwnedCollection';
 import { ProfileCompletenessCard } from './ProfileCompletenessCard';
 import { ProfileGallery } from './ProfileGallery';
-import { addGameToProfile, loadMyGames, removeGameFromProfile, updateMyProfile, uploadCroppedProfilePhoto, uploadProfilePhoto } from './profileApi';
+import { addGameToProfile, loadMyGames, removeGameFromProfile, updateGameRank, updateMyProfile, uploadCroppedProfilePhoto, uploadProfilePhoto } from './profileApi';
+import type { CompletenessItem } from './profileCompleteness';
 
 import { useAuthStore } from '@/features/auth/authStore';
 import { useCosmetics } from '@/features/shop/useCosmetics';
@@ -56,6 +57,43 @@ export const MyProfilePage: React.FC = () => {
   // Picking a photo opens the circular cropper; the crop result uploads as
   // a ready square JPEG. Undecodable formats fall back to the direct path.
   const [cropFile, setCropFile] = useState<File | null>(null);
+  // Completeness card actions: jump straight to the fix.
+  const avatarInputRef = React.useRef<HTMLInputElement>(null);
+  const galleryPickerRef = React.useRef<(() => void) | null>(null);
+  const gamesSectionRef = React.useRef<HTMLDivElement>(null);
+  // Inline rank editing on existing games (also the 'rank' completeness fix).
+  const [editingRankId, setEditingRankId] = useState<string | null>(null);
+  const [rankDraft, setRankDraft] = useState('');
+
+  const saveRank = async (gameId: string) => {
+    if (!user) return;
+    const rank = rankDraft.trim();
+    setEditingRankId(null);
+    if (!rank) return;
+    try {
+      await updateGameRank(user.uid, gameId, rank);
+      setGames((prev) => prev?.map((g) => (g.gameId === gameId ? { ...g, rank } : g)) ?? null);
+    } catch {
+      setGameActionError(true);
+    }
+  };
+
+  const handleFix = (item: CompletenessItem) => {
+    if (item === 'photo') avatarInputRef.current?.click();
+    else if (item === 'bio') startEditing();
+    else if (item === 'gallery') galleryPickerRef.current?.();
+    else if (item === 'games') {
+      setAddingGame(true);
+      gamesSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else if (item === 'rank') {
+      const rankless = games?.find((g) => !(g.rank ?? '').trim());
+      if (rankless) {
+        setEditingRankId(rankless.gameId);
+        setRankDraft('');
+        gamesSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+  };
 
   const onPickPhoto = (file: File | undefined) => {
     if (!file || !user) return;
@@ -236,6 +274,7 @@ export const MyProfilePage: React.FC = () => {
               )}
             </span>
             <input
+              ref={avatarInputRef}
               type="file"
               accept="image/*"
               className="hidden"
@@ -256,7 +295,7 @@ export const MyProfilePage: React.FC = () => {
 
         {!isEditing && (
           <>
-            <ProfileCompletenessCard userDoc={userDoc} games={games} />
+            <ProfileCompletenessCard userDoc={userDoc} games={games} onFix={handleFix} />
 
             <div className="flex items-start justify-between">
               <button
@@ -297,7 +336,7 @@ export const MyProfilePage: React.FC = () => {
               </div>
             </div>
 
-            <div>
+            <div ref={gamesSectionRef}>
               <div className="flex items-center justify-between mb-3">
                 <button
                   onClick={() => { setAddingGame((v) => !v); setGameActionError(false); }}
@@ -355,6 +394,10 @@ export const MyProfilePage: React.FC = () => {
                 </div>
               )}
 
+              <datalist id="add-game-ranks-inline">
+                {(editingRankId ? catalog.find((c) => c.gameId === editingRankId)?.supportedRanks : [])?.map((r) => <option key={r} value={r} />)}
+              </datalist>
+
               {gameActionError && (
                 <p role="alert" className="text-danger font-bold text-sm mb-3 text-center">{t('profile.gameActionError')}</p>
               )}
@@ -373,8 +416,25 @@ export const MyProfilePage: React.FC = () => {
                       >
                         <i className="fa-solid fa-xmark"></i>
                       </button>
-                      {game.rank && (
-                        <span className="px-3 py-1 rounded-lg bg-primary/15 border border-primary/30 text-primary text-sm font-black">{game.rank}</span>
+                      {editingRankId === game.gameId ? (
+                        <input
+                          autoFocus
+                          value={rankDraft}
+                          placeholder={t('profile.addGameRank')}
+                          list="add-game-ranks-inline"
+                          onChange={(e) => setRankDraft(e.target.value)}
+                          onBlur={() => void saveRank(game.gameId)}
+                          onKeyDown={(e) => e.key === 'Enter' && void saveRank(game.gameId)}
+                          className="w-32 bg-surface border border-primary/40 rounded-lg px-2 py-1 text-sm text-text focus:outline-none"
+                        />
+                      ) : (
+                        <button
+                          onClick={() => { setEditingRankId(game.gameId); setRankDraft(game.rank ?? ''); }}
+                          aria-label={`${t('profile.editRank')} — ${gameName(game)}`}
+                          className={`px-3 py-1 rounded-lg text-sm font-black transition-colors ${(game.rank ?? '').trim() ? 'bg-primary/15 border border-primary/30 text-primary hover:bg-primary/25' : 'border border-dashed border-white/20 text-text-muted hover:border-primary hover:text-primary'}`}
+                        >
+                          {(game.rank ?? '').trim() || `+ ${t('profile.addGameRank')}`}
+                        </button>
                       )}
                     </div>
                     <div className="text-end">
@@ -386,7 +446,7 @@ export const MyProfilePage: React.FC = () => {
               </div>
             </div>
 
-            <ProfileGallery />
+            <ProfileGallery registerOpenPicker={(open) => { galleryPickerRef.current = open; }} />
 
             <OwnedCollection />
           </>

@@ -265,6 +265,7 @@ export const he = {
     addGameRank: 'דירוג (לא חובה)',
     addGameConfirm: 'הוסף לפרופיל',
     removeGame: 'הסרת משחק',
+    editRank: 'עריכת דירוג',
     gameActionError: 'הפעולה נכשלה — נסו שוב',
     completeness: {
       title: 'השלמת הפרופיל',

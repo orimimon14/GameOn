@@ -267,6 +267,7 @@ export const en: TranslationCatalog = {
     addGameRank: 'Rank (optional)',
     addGameConfirm: 'Add to profile',
     removeGame: 'Remove game',
+    editRank: 'Edit rank',
     gameActionError: 'The action failed — try again',
     completeness: {
       title: 'Profile completeness',
