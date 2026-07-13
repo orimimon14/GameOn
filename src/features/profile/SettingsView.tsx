@@ -27,7 +27,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
     onToggleGlobalBg,
     onLogout
 }) => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const [deleting, setDeleting] = useState(false);
     const [deleteError, setDeleteError] = useState(false);
 
@@ -193,7 +193,16 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
             </div>
 
             <div className="mt-12 text-center opacity-30">
-                <p className="text-xs dark:text-white text-text-inverse uppercase font-black italic">Swish & Game v2.4.0</p>
+                <p className="text-xs dark:text-white text-text-inverse uppercase font-black italic">Swish & Game</p>
+                {/* Real build stamp — instantly tells support whether this phone runs a stale bundle */}
+                <p className="text-xs dark:text-white text-text-inverse mt-1" dir="auto">
+                    {t('settings.buildVersion', {
+                        date: new Date(Number(__BUILD_ID__)).toLocaleString(
+                            i18n.language === 'he' ? 'he-IL' : 'en-GB',
+                            { day: 'numeric', month: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' },
+                        ),
+                    })}
+                </p>
             </div>
         </div>
     );

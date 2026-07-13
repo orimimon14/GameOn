@@ -397,6 +397,7 @@ export const en: TranslationCatalog = {
     deleteConfirm1: 'Permanently delete your account? Your profile, matches and chats will be removed.',
     deleteConfirm2: 'Absolutely sure? This cannot be undone.',
     deleteError: 'Deletion failed — try again or contact support',
+    buildVersion: 'Version from {{date}}',
     language: 'Language',
     languageNote: 'Choose the interface language',
     hebrew: 'עברית',

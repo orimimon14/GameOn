@@ -395,6 +395,7 @@ export const he = {
     deleteConfirm1: 'למחוק את החשבון לצמיתות? הפרופיל, המאצ׳ים והשיחות שלך יימחקו.',
     deleteConfirm2: 'בטוח לגמרי? אי אפשר לבטל את הפעולה הזו.',
     deleteError: 'המחיקה נכשלה — נסה שוב או פנה לתמיכה',
+    buildVersion: 'גרסה מ־{{date}}',
     language: 'שפה',
     languageNote: 'בחר את שפת הממשק',
     hebrew: 'עברית',
