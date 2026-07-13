@@ -108,7 +108,7 @@ export const Header: React.FC<HeaderProps> = ({
 
   const getNotifIcon = (type: string) => {
     switch (type) {
-      case 'match': return <i className="fa-solid fa-heart text-danger"></i>;
+      case 'match': return <i className="fa-solid fa-gamepad text-primary"></i>;
       case 'message': return <i className="fa-solid fa-comment text-sky-500"></i>;
       case 'like': return <i className="fa-solid fa-fire text-orange-500"></i>;
       default: return <i className="fa-solid fa-bell text-primary"></i>;

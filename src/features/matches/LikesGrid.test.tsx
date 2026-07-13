@@ -59,13 +59,13 @@ describe('LikesGrid', () => {
   it('shows the empty state when there are no likes', async () => {
     (loadLikesYou as Mock).mockResolvedValue([]);
     renderView();
-    expect(await screen.findByText('עדיין אין לייקים חדשים')).toBeInTheDocument();
+    expect(await screen.findByText('עדיין אין הזמנות — תמשיך להחליק!')).toBeInTheDocument();
   });
 
   it('like-back calls submitSwipe with the inbound like gameId and removes the card', async () => {
     renderView();
     await screen.findByText('יעל, 25');
-    fireEvent.click(screen.getByRole('button', { name: 'לייק בחזרה' }));
+    fireEvent.click(screen.getByRole('button', { name: 'בואו נשחק!' }));
     await waitFor(() =>
       expect(submitSwipe).toHaveBeenCalledWith({
         targetUid: 'u2',
@@ -85,15 +85,15 @@ describe('LikesGrid', () => {
     });
     renderView();
     await screen.findByText('יעל, 25');
-    fireEvent.click(screen.getByRole('button', { name: 'לייק בחזרה' }));
-    expect(await screen.findByRole('dialog', { name: 'יש מאץ׳!' })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'בואו נשחק!' }));
+    expect(await screen.findByRole('dialog', { name: 'SQUAD UP!' })).toBeInTheDocument();
   });
 
   it('shows an error alert when like-back fails', async () => {
     (submitSwipe as Mock).mockRejectedValue(new Error('boom'));
     renderView();
     await screen.findByText('יעל, 25');
-    fireEvent.click(screen.getByRole('button', { name: 'לייק בחזרה' }));
+    fireEvent.click(screen.getByRole('button', { name: 'בואו נשחק!' }));
     expect(await screen.findByRole('alert')).toHaveTextContent('הלייק לא נשלח — נסה שוב');
     expect(screen.getByText('יעל, 25')).toBeInTheDocument();
   });
@@ -102,7 +102,7 @@ describe('LikesGrid', () => {
     (submitSwipe as Mock).mockRejectedValue({ code: 'functions/failed-precondition' });
     renderView();
     await screen.findByText('יעל, 25');
-    fireEvent.click(screen.getByRole('button', { name: 'לייק בחזרה' }));
+    fireEvent.click(screen.getByRole('button', { name: 'בואו נשחק!' }));
     expect(await screen.findByRole('alert')).toHaveTextContent('הלייק הזה כבר לא זמין');
     expect(screen.queryByText('יעל, 25')).not.toBeInTheDocument();
   });

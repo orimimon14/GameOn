@@ -14,7 +14,7 @@ const NAV_ITEMS = [
   { path: '/discover', icon: 'fa-gamepad', labelKey: 'nav.discover', bg: 'hover:bg-indigo-500' },
   { path: '/games', icon: 'fa-layer-group', labelKey: 'nav.games', bg: 'hover:bg-emerald-500' },
   { path: '/shop', icon: 'fa-shopping-bag', labelKey: 'nav.shop', bg: 'hover:bg-yellow-500' },
-  { path: '/likes', icon: 'fa-heart', labelKey: 'nav.likes', bg: 'hover:bg-rose-500' },
+  { path: '/likes', icon: 'fa-fire', labelKey: 'nav.likes', bg: 'hover:bg-orange-500' },
   { path: '/chat', icon: 'fa-comment', labelKey: 'nav.chat', bg: 'hover:bg-sky-500' },
   { path: '/settings', icon: 'fa-gear', labelKey: 'nav.settings', bg: 'hover:bg-gray-500' },
 ];

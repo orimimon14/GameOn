@@ -93,8 +93,8 @@ describe('SwipeView', () => {
     renderView();
     fireEvent.click(await screen.findByRole('button', { name: 'like' }));
 
-    expect(await screen.findByRole('dialog', { name: 'יש מאץ׳!' })).toBeInTheDocument();
-    expect(screen.getByText('אתה ו-יעל אהבתם אחד את השני')).toBeInTheDocument();
+    expect(await screen.findByRole('dialog', { name: 'SQUAD UP!' })).toBeInTheDocument();
+    expect(screen.getByText('אתה ו-יעל רוצים לשחק ביחד — זה הזמן לסגור משחק!')).toBeInTheDocument();
   });
 
   it('shows the daily limit screen on resource-exhausted', async () => {

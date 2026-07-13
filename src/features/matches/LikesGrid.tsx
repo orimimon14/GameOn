@@ -135,7 +135,7 @@ export const LikesGrid: React.FC = () => {
 
       {likes.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 opacity-30">
-          <i className="fa-solid fa-heart-crack text-7xl mb-4"></i>
+          <i className="fa-solid fa-gamepad text-7xl mb-4"></i>
           <p className="text-xl font-bold italic uppercase">{t('likes.empty')}</p>
         </div>
       ) : (
@@ -178,7 +178,7 @@ export const LikesGrid: React.FC = () => {
                   aria-label={t('likes.likeBack')}
                   className="w-full py-2.5 flex items-center justify-center gap-2 bg-primary text-white text-xs font-black rounded-xl shadow-glow hover:scale-105 transition-transform uppercase italic disabled:opacity-50"
                 >
-                  <i className="fa-solid fa-heart"></i>
+                  <i className="fa-solid fa-gamepad"></i>
                   {t('likes.likeBack')}
                 </button>
               </div>

@@ -15,7 +15,7 @@ describe('i18n (ADR-035)', () => {
   it('switches to English at runtime', async () => {
     await i18n.changeLanguage('en');
     expect(i18n.t('nav.games')).toBe('Games');
-    expect(i18n.t('titles.discover')).toBe('New Matches');
+    expect(i18n.t('titles.discover')).toBe('Find Teammates');
   });
 
   it('maps locales to the correct direction', () => {

@@ -24,7 +24,7 @@ export const MatchCelebration: React.FC<MatchCelebrationProps> = ({
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-6"
     >
       <div className="w-full max-w-sm text-center bg-surface/60 border border-primary/40 rounded-[40px] p-10 shadow-glow animate-[pulse_1.5s_ease-in-out_1]">
-        <div className="text-6xl mb-4">🎉</div>
+        <div className="text-6xl mb-4">🎮🔥</div>
         {imageUrl && (
           <img
             src={imageUrl}
