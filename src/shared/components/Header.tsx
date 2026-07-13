@@ -116,7 +116,8 @@ export const Header: React.FC<HeaderProps> = ({
   };
 
   return (
-    <header className="relative w-full pt-[env(safe-area-inset-top)] h-[calc(5rem+env(safe-area-inset-top))] dark:bg-background/90 bg-white/90 backdrop-blur-xl border-b dark:border-white/5 border-gray-200 shadow-sm shrink-0 flex items-center justify-between px-4 sm:px-6 z-40">
+    <header className="relative w-full pt-[env(safe-area-inset-top)] dark:bg-background/90 bg-white/90 backdrop-blur-xl border-b dark:border-white/5 border-gray-200 shadow-sm shrink-0 z-40">
+      <div className="h-14 sm:h-20 px-3 sm:px-6 grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2">
       
         {/* Right Side Controls (Hamburger and Notifications) */}
         <div className="flex items-center gap-3 z-10"> 
@@ -237,8 +238,8 @@ export const Header: React.FC<HeaderProps> = ({
           )}
         </div>
 
-        {/* Title/Brand - CENTERED */}
-        <div className="absolute inset-x-0 top-[env(safe-area-inset-top)] bottom-0 flex flex-col items-center justify-center pointer-events-none px-28 sm:px-32">
+        {/* Title — the middle grid track; truncates, can never overlap */}
+        <div className="min-w-0 flex flex-col items-center justify-center pointer-events-none">
             <h1 className="font-sans font-black text-lg sm:text-2xl tracking-tighter dark:text-white text-text-inverse drop-shadow-lg whitespace-nowrap truncate max-w-full italic uppercase leading-none">
                 {viewTitle}
             </h1>
@@ -246,21 +247,23 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
 
         {/* Pro Button / Premium Status */}
-        <div className="flex items-center">
-            <button 
+        <div className="flex items-center justify-end">
+            <button
               onClick={onOpenSubscriptions}
-              className="hidden sm:flex items-center gap-2 bg-gradient-to-r from-yellow-400 to-amber-500 text-black font-black text-[10px] px-4 py-2 rounded-full shadow-lg hover:scale-105 transition-transform uppercase italic"
+              aria-label="Premium"
+              className="flex items-center gap-2 bg-gradient-to-r from-yellow-400 to-amber-500 text-black font-black text-[10px] px-2.5 py-2 sm:px-4 rounded-full shadow-lg hover:scale-105 transition-transform uppercase italic"
             >
-                <span>Premium</span>
+                <span className="hidden sm:inline">Premium</span>
                 <i className="fa-solid fa-crown"></i>
             </button>
         </div>
+      </div>
 
         {/* Dropdown Menu (The Three Lines Content) */}
         {isMenuOpen && (
           <>
             <div className="fixed inset-0 z-40" onClick={() => setIsMenuOpen(false)}></div>
-            <div className="absolute top-16 right-6 w-72 dark:bg-surface/95 bg-white/95 backdrop-blur-2xl rounded-[28px] shadow-2xl border dark:border-white/10 border-gray-200 z-50 overflow-hidden animate-pop origin-top-right p-3">
+            <div className="absolute top-full mt-1 right-4 sm:right-6 w-72 dark:bg-surface/95 bg-white/95 backdrop-blur-2xl rounded-[28px] shadow-2xl border dark:border-white/10 border-gray-200 z-50 overflow-hidden animate-pop origin-top-right p-3">
                 <div className="flex flex-col gap-1">
                   <div className="px-4 py-3 mb-2 border-b dark:border-white/5 border-gray-100">
                     <p className="text-[10px] font-black uppercase text-text-muted tracking-widest mb-1">{t('notifications.quickMenu')}</p>
