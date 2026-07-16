@@ -1,21 +1,47 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-interface SubscriptionsViewProps {
-    onSelectPlan: (planName: string) => void;
-}
+import { startProCheckout } from './subscriptionApi';
+
+import { useUserStore } from '@/shared/store/userStore';
 
 // Real-money coin packs are out of MVP scope (ADR-018/ADR-034): coins are
 // granted (signup bonus) and spent on cosmetics only — never bought with money.
-export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ onSelectPlan }) => {
+export const SubscriptionsView: React.FC = () => {
     const { t } = useTranslation();
+    const isPro = useUserStore((s) => s.userDoc?.isPro === true);
+    const [checkingOut, setCheckingOut] = useState(false);
+    const [checkoutNotice, setCheckoutNotice] = useState<string | null>(null);
+
+    // The redirect grants nothing — Pro flips only when the verified payment
+    // webhook lands (ADR-037). Until billing is configured the backend answers
+    // failed-precondition and we show the friendly "opening soon" note.
+    const handleUpgrade = async () => {
+        if (checkingOut) return;
+        setCheckingOut(true);
+        setCheckoutNotice(null);
+        try {
+            window.location.assign(await startProCheckout());
+        } catch (error) {
+            const message = error instanceof Error ? error.message : '';
+            setCheckoutNotice(
+                message.includes('billing_not_configured')
+                    ? t('subscriptions.comingSoon')
+                    : message.includes('already_pro')
+                        ? t('subscriptions.alreadyPro')
+                        : t('subscriptions.checkoutError'),
+            );
+            setCheckingOut(false);
+        }
+    };
+
     const comparisonPlans = [
         {
             name: 'Basic',
             status: t('subscriptions.basicStatus'),
             price: t('subscriptions.free'),
-            isCurrent: true,
+            isCurrent: !isPro,
             features: [
                 { text: t('subscriptions.basicFeatures.chat'), included: true },
                 { text: t('subscriptions.basicFeatures.calls'), included: true },
@@ -28,7 +54,7 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ onSelectPl
             status: t('subscriptions.proStatus'),
             price: '₪29.90',
             period: t('subscriptions.perMonth'),
-            isCurrent: false,
+            isCurrent: isPro,
             recommended: true,
             features: [
                 { text: t('subscriptions.proFeatures.everything'), included: true },
@@ -99,20 +125,30 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ onSelectPl
                             ))}
                         </div>
 
-                        <button 
-                            onClick={() => !plan.isCurrent && onSelectPlan(plan.name)}
-                            disabled={plan.isCurrent}
+                        <button
+                            onClick={() => !plan.isCurrent && plan.recommended && void handleUpgrade()}
+                            disabled={plan.isCurrent || checkingOut}
                             className={`w-full py-5 rounded-2xl font-black text-xl italic uppercase transition-all ${
-                                plan.isCurrent 
-                                ? 'bg-white/5 text-gray-500 cursor-default border border-white/10' 
-                                : 'bg-yellow-500 text-black hover:bg-yellow-400 shadow-glow active:scale-95'
+                                plan.isCurrent
+                                ? 'bg-white/5 text-gray-500 cursor-default border border-white/10'
+                                : 'bg-yellow-500 text-black hover:bg-yellow-400 shadow-glow active:scale-95 disabled:opacity-60'
                             }`}
                         >
-                            {plan.isCurrent ? t('subscriptions.currentPlan') : t('subscriptions.upgradeNow')}
+                            {plan.isCurrent
+                                ? t('subscriptions.currentPlan')
+                                : checkingOut
+                                    ? t('subscriptions.redirecting')
+                                    : t('subscriptions.upgradeNow')}
                         </button>
                     </div>
                 ))}
             </div>
+
+            {checkoutNotice && (
+                <p role="alert" className="text-center text-yellow-400 font-bold -mt-10 mb-10">
+                    {checkoutNotice}
+                </p>
+            )}
 
             {/* Footer / Trusted Badges */}
             <div className="mt-20 flex flex-col items-center">

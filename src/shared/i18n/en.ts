@@ -322,6 +322,9 @@ export const en: TranslationCatalog = {
     currentPlan: 'This is your plan',
     upgradeNow: 'Upgrade to PRO now',
     comingSoon: 'Pro subscription purchase is coming soon! 🔜',
+    alreadyPro: 'You already have an active Pro subscription 👑',
+    checkoutError: 'Something went wrong opening the checkout — try again in a moment',
+    redirecting: 'Heading to checkout…',
     basicFeatures: {
       chat: 'Unlimited chat, likes and matches',
       calls: 'Live voice & video calls',

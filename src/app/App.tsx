@@ -207,7 +207,7 @@ const AppShell: React.FC = () => {
             <Route
               path="/subscriptions"
               element={
-                <SubscriptionsView onSelectPlan={() => alert(t('subscriptions.comingSoon'))} />
+                <SubscriptionsView />
               }
             />
             <Route

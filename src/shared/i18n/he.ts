@@ -320,6 +320,9 @@ export const he = {
     currentPlan: 'זה המנוי שלך',
     upgradeNow: 'שדרג ל-PRO עכשיו',
     comingSoon: 'רכישת מנוי Pro תיפתח בקרוב! 🔜',
+    alreadyPro: 'יש לך כבר מנוי Pro פעיל 👑',
+    checkoutError: 'משהו השתבש בפתיחת התשלום — נסה שוב עוד רגע',
+    redirecting: 'עוברים לתשלום…',
     basicFeatures: {
       chat: 'צ׳אט, לייקים והתאמות ללא הגבלה',
       calls: 'שיחות קול ווידאו חיות',

@@ -34,3 +34,6 @@ firestore-debug.log
 ui-debug.log
 storage-debug.log
 .firebase/
+
+# Local emulator secrets — never commit real values
+.secret.local

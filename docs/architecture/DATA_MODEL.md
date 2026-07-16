@@ -274,6 +274,7 @@ export type ModerationState =
   | "banned";
 
 export type BillingProvider =
+  | "revenuecat"
   | "stripe"
   | "cardcom"
   | "meshulam"

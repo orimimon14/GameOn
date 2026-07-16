@@ -126,6 +126,7 @@ The architecture is provider-agnostic and supports:
 
 ```ts
 export type BillingProvider =
+  | "revenuecat"
   | "stripe"
   | "cardcom"
   | "meshulam"
@@ -411,6 +412,7 @@ export type SubscriptionStatus =
   | "expired";
 
 export type BillingProvider =
+  | "revenuecat"
   | "stripe"
   | "cardcom"
   | "meshulam"
@@ -743,8 +745,10 @@ Purpose:
 
 ```ts
 export function deriveIsPro(subscription: SubscriptionDocument): boolean {
+  // "cancelled" keeps Pro until the paid period ends (§7.4) — the
+  // currentPeriodEnd guard is what actually turns it off.
   return subscription.tier == "pro"
-    && ["trialing", "active"].includes(subscription.status)
+    && ["trialing", "active", "cancelled"].includes(subscription.status)
     && (!subscription.currentPeriodEnd || subscription.currentPeriodEnd.toMillis() > Date.now());
 }
 ```
