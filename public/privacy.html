@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>מדיניות פרטיות — Swish & Game</title>
+<style>
+  body { font-family: -apple-system, 'Segoe UI', Rubik, Arial, sans-serif; background: #0f172a; color: #e2e8f0; margin: 0; padding: 24px 16px 64px; line-height: 1.7; }
+  main { max-width: 760px; margin: 0 auto; }
+  h1 { font-size: 1.6rem; color: #fff; } h2 { font-size: 1.25rem; color: #fff; margin-top: 2.2em; border-bottom: 1px solid #334155; padding-bottom: 6px; }
+  h3 { font-size: 1.05rem; color: #f1f5f9; margin-top: 1.6em; } h4 { color: #f1f5f9; }
+  table { border-collapse: collapse; width: 100%; margin: 12px 0; font-size: 0.9rem; display: block; overflow-x: auto; }
+  td { border: 1px solid #334155; padding: 6px 10px; vertical-align: top; }
+  code { background: #1e293b; border-radius: 4px; padding: 1px 5px; font-size: 0.9em; }
+  a { color: #93c5fd; } hr { border: 0; border-top: 1px solid #334155; margin: 28px 0; }
+  .top { font-size: 0.85rem; margin-bottom: 24px; } .top a { margin-inline-end: 16px; }
+</style>
+</head>
+<body>
+<main>
+<nav class="top"><a href="/">→ חזרה לאפליקציה</a><a href="/privacy.html">מדיניות פרטיות</a><a href="/terms.html">תנאי שימוש</a></nav>
+<h1>2. Privacy Policy — Draft</h1>
+<h2>2.1 מבוא וזהות הבקר</h2>
+<p>ברוכים הבאים ל-<strong>Swish &amp; Game</strong>.</p>
+<p>Swish &amp; Game היא אפליקציית web להתאמת גיימרים, שמאפשרת למשתמשים ליצור פרופיל, להוסיף משחקים ופלטפורמות, לגלות שחקנים אחרים, לבצע התאמות דרך discovery/swipe, לנהל chat עם matches, להשתמש ב-shop/cosmetics, לרכוש מנוי Pro, ולהשתמש בתכונות AI מסוימות.</p>
+<p>מדיניות פרטיות זו מסבירה, בטיוטה, אילו סוגי מידע עשויים להיאסף ולעובד במסגרת השירות, כיצד נעשה בהם שימוש, עם מי הם עשויים להיות משותפים, ומהן זכויות המשתמשים.</p>
+<p><strong>בקר המידע / Controller:</strong> <code>[שם הישות המשפטית]</code></p>
+<p><strong>כתובת:</strong> <code>[כתובת]</code></p>
+<p><strong>יצירת קשר בנושאי פרטיות:</strong> <code>[מייל יצירת קשר]</code></p>
+<p>&gt; הערה משפטית: יש לאשר עם עורך דין את זהות הבקר, חובות הרישום/הדיווח, נוסח ההסכמה, תחולת GDPR, חוקי הגנת פרטיות בישראל, ודינים נוספים שעשויים לחול.</p>
+<h2>2.2 אילו נתונים אנחנו אוספים</h2>
+<p>אנחנו שואפים לאסוף ולעבד רק מידע שנדרש להפעלת השירות, לשיפורו, לאבטחתו, ולשמירה על בטיחות המשתמשים.</p>
+<p>הפירוט להלן מבוסס על מודל הנתונים הנוכחי של Swish &amp; Game. אין לכלול במדיניות נתונים שאינם נאספים בפועל ללא עדכון <code>DATA_MODEL.md</code> ואישור legal.</p>
+<h3>2.2.1 נתוני חשבון והרשמה</h3>
+<p>בעת יצירת חשבון או התחברות, אנו עשויים לעבד:</p>
+<table>
+<tr><td>סוג מידע</td><td>דוגמאות</td><td>הערות</td></tr>
+<tr><td>---</td><td>---</td><td>---</td></tr>
+<tr><td>מזהה משתמש</td><td><code>uid</code></td><td>מזהה פנימי/pseudonymous.</td></tr>
+<tr><td>פרטי התחברות</td><td>email, auth provider</td><td>מנוהל דרך Firebase Auth / Google.</td></tr>
+<tr><td>סטטוס חשבון</td><td><code>isSuspended</code>, <code>isDeleted</code>, <code>createdAt</code>, <code>updatedAt</code></td><td>משמש לאבטחה, אכיפה וניהול חשבון.</td></tr>
+<tr><td>מידע פרטי לחשבון</td><td><code>users/{uid}/private/account</code></td><td>גישה מוגבלת; עשוי לכלול <code>moderationState</code>.</td></tr>
+</table>
+<p>ייתכן ש-Firebase Auth או ספק ההתחברות יעבדו מידע נוסף בהתאם למדיניות שלהם.</p>
+<h3>2.2.2 נתוני פרופיל</h3>
+<p>המשתמש עשוי למסור או לעדכן פרטי פרופיל, כגון:</p>
+<table>
+<tr><td>סוג מידע</td><td>דוגמאות</td><td>הערות</td></tr>
+<tr><td>---</td><td>---</td><td>---</td></tr>
+<tr><td>פרופיל ציבורי</td><td>display name / public profile fields</td><td>לא לכלול email בפרופיל ציבורי.</td></tr>
+<tr><td>Bio</td><td>טקסט חופשי שהמשתמש מוסר</td><td>UGC; כפוף ל-Community Guidelines.</td></tr>
+<tr><td>תמונת פרופיל / banner</td><td>קובץ תמונה או reference לתמונה</td><td>מאוחסן דרך Firebase Storage; כפוף לכללי בטיחות.</td></tr>
+<tr><td>cosmetics / equipped items</td><td>avatar border, banner, background</td><td>items וירטואליים.</td></tr>
+<tr><td>Pro badge</td><td><code>verifiedBadge</code></td><td>משמעותו Pro member בלבד, לא אימות זהות.</td></tr>
+</table>
+<p>&gt; חשוב: <code>verifiedBadge</code> אינו אימות זהות, אינו אימות גיל, ואינו הצהרה שהמשתמש “בטוח”.</p>
+<h3>2.2.3 נתוני משחקים, רמות ופלטפורמות</h3>
+<p>כדי להתאים בין משתמשים, אנו עשויים לעבד:</p>
+<table>
+<tr><td>סוג מידע</td><td>דוגמאות</td></tr>
+<tr><td>---</td><td>---</td></tr>
+<tr><td>משחקים</td><td><code>game_id</code>, למשל <code>valorant</code></td></tr>
+<tr><td>פלטפורמות</td><td>enum values באנגלית, למשל <code>pc</code>, <code>playstation</code>, <code>xbox</code>, <code>mobile</code></td></tr>
+<tr><td>רמת מיומנות</td><td><code>beginner</code>, <code>intermediate</code>, <code>pro</code>, <code>elite</code></td></tr>
+<tr><td>Rank / העדפות משחק</td><td>מידע שהמשתמש בוחר למסור</td></tr>
+<tr><td>Looking for / preferences</td><td>העדפות התאמה אם קיימות במוצר</td></tr>
+</table>
+<h3>2.2.4 Discovery, matches ו-chat</h3>
+<p>כדי להפעיל discovery והתאמות, אנו עשויים לעבד:</p>
+<table>
+<tr><td>סוג מידע</td><td>דוגמאות</td><td>הערות</td></tr>
+<tr><td>---</td><td>---</td><td>---</td></tr>
+<tr><td>Swipes</td><td>like/skip, target user, game</td><td>מנוהל backend-authoritative.</td></tr>
+<tr><td>Matches</td><td><code>matches/{matchId}</code></td><td>נוצר לאחר התאמה הדדית.</td></tr>
+<tr><td>Chats</td><td><code>chats/{chatId}</code></td><td>פתוחים למשתתפים בלבד.</td></tr>
+<tr><td>Messages</td><td>text messages, message metadata</td><td>תוכן chat הוא UGC ורגיש.</td></tr>
+<tr><td>Chat media</td><td>תמונות אם feature זמין ולפי gating</td><td>Pro-only לפי התכנון הנוכחי.</td></tr>
+</table>
+<p>אין להשתמש ב-analytics או logs לשמירת raw chat text או תוכן מדיה.</p>
+<h3>2.2.5 Coins, cosmetics ו-shop</h3>
+<p>ב-MVP, coins הם מטבע וירטואלי פנימי הניתן/נצבר בתוך השירות, ואינו נרכש בכסף אמיתי.</p>
+<p>אנו עשויים לעבד:</p>
+<table>
+<tr><td>סוג מידע</td><td>דוגמאות</td><td>הערות</td></tr>
+<tr><td>---</td><td>---</td><td>---</td></tr>
+<tr><td>יתרת coins</td><td><code>users/{uid}.coins</code></td><td>server-owned.</td></tr>
+<tr><td>transactions</td><td><code>users/{uid}/transactions</code></td><td>audit לשינויי coins.</td></tr>
+<tr><td>owned items</td><td>cosmetics שנרכשו ב-coins</td><td>ללא ערך כספי.</td></tr>
+<tr><td>equipped items</td><td>cosmetics פעילים בפרופיל</td><td>מוצגים לפי עיצוב המוצר.</td></tr>
+</table>
+<p>Coins אינם כסף אמיתי, אינם ניתנים לפדיון, ואין <code>cash-out</code>.</p>
+<h3>2.2.6 מנוי Pro ותשלומים</h3>
+<p>כאשר משתמש רוכש מנוי Pro, התשלום מתבצע דרך ספק תשלומים חיצוני שייקבע בהמשך (<code>TBD</code>).</p>
+<p>אנו עשויים לעבד:</p>
+<table>
+<tr><td>סוג מידע</td><td>דוגמאות</td><td>הערות</td></tr>
+<tr><td>---</td><td>---</td><td>---</td></tr>
+<tr><td>סטטוס מנוי</td><td><code>subscriptionStatus</code>, <code>subscriptionTier</code>, <code>subscriptionExpiresAt</code></td><td>מנוהל backend-side.</td></tr>
+<tr><td>פרטי entitlement</td><td>האם המשתמש Pro</td><td>נקבע רק לפי webhook/reconciliation מאומת.</td></tr>
+<tr><td>billing metadata</td><td>provider, subscription id, status</td><td>ללא פרטי כרטיס מלאים.</td></tr>
+<tr><td>billing events</td><td><code>billingEvents</code> בעת Scale/V1</td><td>normalized metadata בלבד.</td></tr>
+</table>
+<p>אנחנו לא אמורים לאחסן פרטי כרטיס מלאים או raw payment payload בתוך Swish &amp; Game. פרטי תשלום יעובדו על ידי ספק התשלומים החיצוני ובהתאם למדיניות שלו.</p>
+<h3>2.2.7 שימוש, analytics ונתוני מכשיר</h3>
+<p>אנו עשויים למדוד שימוש במוצר כדי להבין בריאות מוצרית ותפעולית, בהתאם ל-<code>ANALYTICS.md</code> ו-<code>OBSERVABILITY.md</code>.</p>
+<p>דוגמאות:</p>
+<table>
+<tr><td>סוג מידע</td><td>דוגמאות</td></tr>
+<tr><td>---</td><td>---</td></tr>
+<tr><td>אירועי מוצר</td><td><code>signup_completed</code>, <code>discovery_opened</code>, <code>match_created</code></td></tr>
+<tr><td>שימוש במערכת</td><td>latency, errors, function failures</td></tr>
+<tr><td>context טכני</td><td><code>app_env</code>, <code>app_version</code>, device type, route</td></tr>
+<tr><td>pseudonymous identifiers</td><td><code>uid</code> או מזהה אנליטיקה pseudonymous אם נדרש</td></tr>
+</table>
+<p>אין לשלוח ל-analytics:</p>
+<ul>
+<li>email.</li>
+<li>bio.</li>
+<li>raw chat.</li>
+<li>payment data.</li>
+<li>Gemini prompts/responses.</li>
+<li>secrets.</li>
+<li>report descriptions.</li>
+</ul>
+<h3>2.2.8 AI inputs ו-AI metadata</h3>
+<p>Swish &amp; Game עשויה להציע תכונות AI, כגון profile review או squad advice, באמצעות Google Gemini בצד השרת בלבד.</p>
+<p>כאשר משתמש מפעיל תכונת AI, אנו עשויים לעבד:</p>
+<table>
+<tr><td>סוג מידע</td><td>דוגמאות</td><td>הערות</td></tr>
+<tr><td>---</td><td>---</td><td>---</td></tr>
+<tr><td>input שנמסר לתכונת AI</td><td>בקשה/קלט שהמשתמש מספק לצורך הפקת תשובה</td><td>מעובד כדי לספק את השירות.</td></tr>
+<tr><td>פרטי פרופיל רלוונטיים</td><td>למשל games/preferences הדרושים לפונקציה</td><td>רק לפי צורך.</td></tr>
+<tr><td>AI request metadata</td><td><code>aiRequests/{requestId}</code></td><td>audit/status/cost metadata.</td></tr>
+<tr><td>סטטוס בקשה</td><td><code>pending</code>, <code>completed</code>, <code>failed</code>, <code>blocked</code></td><td>לצורכי תפעול ובטיחות.</td></tr>
+</table>
+<p>בהתאם לתכנון הנוכחי, אין לשמור ב-logs או analytics raw Gemini prompts/responses, system prompts, או API keys. יש לאשר משפטית וטכנית את מדיניות retention עבור inputs/outputs של AI לפני launch.</p>
+<h3>2.2.9 דיווחים, חסימות ובטיחות</h3>
+<p>לצורכי Trust &amp; Safety, אנו עשויים לעבד:</p>
+<table>
+<tr><td>סוג מידע</td><td>דוגמאות</td></tr>
+<tr><td>---</td><td>---</td></tr>
+<tr><td>reports</td><td><code>reports/{reportId}</code></td></tr>
+<tr><td>report reason</td><td><code>harassment</code>, <code>hate_speech</code>, <code>sexual_content</code>, <code>scam_spam</code>, <code>underage_concern</code>, <code>cheating_exploits</code>, <code>fake_profile</code>, <code>other</code></td></tr>
+<tr><td>blocks</td><td><code>users/{uid}/blocks/{blockedUid}</code></td></tr>
+<tr><td>moderation state</td><td><code>users/{uid}/private/account.moderationState</code></td></tr>
+<tr><td>moderation actions</td><td><code>moderationActions</code> בעת Scale/V1</td></tr>
+</table>
+<p>Report descriptions ומידע מודרציה הם רגישים ואינם נגישים למשתמשים רגילים.</p>
+<h2>2.3 כיצד אנחנו משתמשים בנתונים</h2>
+<p>אנו עשויים להשתמש בנתונים למטרות הבאות:</p>
+<table>
+<tr><td>מטרה</td><td>דוגמאות שימוש</td></tr>
+<tr><td>---</td><td>---</td></tr>
+<tr><td>הפעלת השירות</td><td>login, onboarding, discovery, matching, chat, shop, Pro</td></tr>
+<tr><td>יצירת התאמות</td><td>התאמה לפי games, platforms, preferences, swipes</td></tr>
+<tr><td>הצגת פרופיל</td><td>public profile, cosmetics, Pro badge</td></tr>
+<tr><td>ניהול מנוי</td><td>checkout, entitlement, renewal/cancellation status</td></tr>
+<tr><td>ניהול coins/cosmetics</td><td>balance, transactions, ownership, equip</td></tr>
+<tr><td>תכונות AI</td><td>הפקת המלצות/סקירות דרך server-side AI</td></tr>
+<tr><td>אבטחה</td><td>מניעת abuse, rules enforcement, rate limits</td></tr>
+<tr><td>Trust &amp; Safety</td><td>reports, blocks, moderation, enforcement</td></tr>
+<tr><td>תמיכה ותקשורת</td><td>מענה לפניות משתמשים</td></tr>
+<tr><td>analytics</td><td>הבנת funnels ו-KPIs ללא PII/raw content</td></tr>
+<tr><td>observability</td><td>logs/metrics/errors לצורכי בריאות מערכת</td></tr>
+<tr><td>ציות משפטי</td><td>שמירת רשומות אם נדרש בדין או לצורך הגנה על זכויות</td></tr>
+</table>
+<h2>2.4 בסיס חוקי לעיבוד</h2>
+<p>ככל ש-GDPR או דין דומה חל, בסיסי העיבוד עשויים לכלול:</p>
+<table>
+<tr><td>בסיס חוקי</td><td>דוגמאות</td></tr>
+<tr><td>---</td><td>---</td></tr>
+<tr><td>ביצוע חוזה</td><td>יצירת חשבון, התאמות, chat, Pro subscription</td></tr>
+<tr><td>אינטרס לגיטימי</td><td>אבטחה, מניעת fraud/abuse, observability, שיפור השירות</td></tr>
+<tr><td>הסכמה</td><td>cookies/tracking מסוימים, marketing אם יתווסף</td></tr>
+<tr><td>חובה משפטית</td><td>ניהול תשלומים, דיווחים, רשומות נדרשות</td></tr>
+<tr><td>הגנה על זכויות ובטיחות</td><td>moderation, reports, severe content escalation</td></tr>
+</table>
+<p>&gt; Legal review required: יש לאשר בסיסי עיבוד לפי הדין הישראלי, GDPR ככל שרלוונטי, וכל דין נוסף בהתאם לקהל המשתמשים בפועל.</p>
+<h2>2.5 שיתוף מידע עם צדדים שלישיים</h2>
+<p>אנו עשויים לשתף או לאפשר עיבוד מידע באמצעות ספקים המשמשים להפעלת השירות.</p>
+<table>
+<tr><td>ספק / קטגוריה</td><td>תפקיד</td><td>מידע אפשרי</td></tr>
+<tr><td>---</td><td>---</td><td>---</td></tr>
+<tr><td>Google / Firebase</td><td>authentication, database, storage, functions, hosting, monitoring</td><td>account data, app data, files, logs לפי הצורך</td></tr>
+<tr><td>Google Gemini</td><td>AI features server-side</td><td>AI inputs הדרושים לפונקציה, subject to minimization</td></tr>
+<tr><td>ספק תשלומים TBD</td><td>checkout, subscription billing, recurring payments</td><td>payment details אצל הספק; אצלנו metadata/entitlement בלבד</td></tr>
+<tr><td>Analytics provider TBD</td><td>product analytics</td><td>event metadata ללא PII/raw content</td></tr>
+<tr><td>Error/monitoring tools</td><td>reliability, error tracking</td><td>sanitized technical data</td></tr>
+<tr><td>יועצים/ספקים משפטיים/אבטחה</td><td>compliance, incident handling</td><td>לפי צורך ובכפוף לסודיות</td></tr>
+<tr><td>רשויות מוסמכות</td><td>כאשר נדרש לפי דין</td><td>רק לפי חובה/הליך מתאים</td></tr>
+</table>
+<p>לא נמכור מידע אישי למפרסמים.</p>
+<p>אם יתווספו פרסום, שיווק, data sharing, או monetization נוסף — יש לעדכן מדיניות זו ולקבל legal review.</p>
+<h2>2.6 העברות בינלאומיות</h2>
+<p>השירות משתמש בספקי ענן וצדדים שלישיים שעשויים לעבד מידע מחוץ לישראל, לרבות באמצעות תשתיות של Google/Firebase וספקי תשלום/analytics.</p>
+<p>יש לאשר משפטית:</p>
+<ul>
+<li>אילו מדינות מעורבות בפועל.</li>
+<li>מנגנוני העברה בינלאומית מתאימים.</li>
+<li>הסכמי עיבוד נתונים (<code>DPA</code>) עם ספקים.</li>
+<li>חובות disclosure למשתמשים.</li>
+</ul>
+<h2>2.7 שמירת נתונים</h2>
+<p>תקופות השמירה הסופיות הן placeholder ודורשות legal review.</p>
+<table>
+<tr><td>סוג מידע</td><td>Retention Draft</td></tr>
+<tr><td>---</td><td>---</td></tr>
+<tr><td>חשבון ופרופיל</td><td>כל עוד החשבון פעיל, ולאחר מכן לפי מדיניות מחיקה/retention שתאושר משפטית</td></tr>
+<tr><td>chat/messages</td><td><code>[לקבוע retention]</code></td></tr>
+<tr><td>images/media</td><td><code>[לקבוע retention]</code></td></tr>
+<tr><td>coins/transactions</td><td>עשוי להישמר זמן ארוך יותר לצורכי audit/integrity</td></tr>
+<tr><td>subscription/billing metadata</td><td>לפי חובות billing/accounting ולפי ספק התשלומים</td></tr>
+<tr><td>reports/moderation</td><td>לפי מדיניות safety/legal retention</td></tr>
+<tr><td>AI request metadata</td><td><code>[לקבוע retention]</code>; מומלץ קצר ומינימלי ככל שניתן</td></tr>
+<tr><td>analytics raw events</td><td><code>[לקבוע retention]</code>; aggregate data עשוי להישמר יותר אם anonymized</td></tr>
+<tr><td>logs/errors</td><td>לפי מדיניות observability, privacy ו-cost</td></tr>
+</table>
+<p>כאשר משתמש מבקש מחיקת חשבון, ייתכן שחלק מהמידע יימחק, יעבור anonymization, או יישמר לתקופה מוגבלת כאשר הדבר נדרש לצורך אבטחה, fraud prevention, טיפול בדיווחים, חיובים, או חובה משפטית.</p>
+<h2>2.8 זכויות משתמש</h2>
+<p>בכפוף לדין החל, משתמשים עשויים להיות זכאים ל:</p>
+<ul>
+<li>גישה למידע אישי.</li>
+<li>תיקון מידע.</li>
+<li>מחיקת חשבון או מידע.</li>
+<li>ייצוא מידע.</li>
+<li>התנגדות או הגבלה לעיבוד מסוים.</li>
+<li>ביטול הסכמה כאשר העיבוד מבוסס על הסכמה.</li>
+<li>opt-out מ-analytics/tracking מסוימים, ככל שנדרש.</li>
+<li>פנייה לרשות מוסמכת, אם הדין מקנה זאת.</li>
+</ul>
+<p>בקשות ניתן לשלוח ל:</p>
+<p>```text</p>
+<p>[מייל יצירת קשר לפרטיות]</p>
+<p>```</p>
+<p>יש לאשר עם legal את מסגרת הזמנים, תהליך האימות, חריגים, ופורמט המענה.</p>
+<h2>2.9 קטינים וגיל מינימלי</h2>
+<p>השירות מיועד למשתמשים בני:</p>
+<p>```text</p>
+<p>16+</p>
+<p>```</p>
+<p>הגיל המינימלי הוא <code>16+</code> בכפוף לאישור משפטי סופי.</p>
+<p>משתמשים מתחת לגיל המינימלי אינם רשאים להשתמש בשירות. אם נקבל דיווח או אינדיקציה שמשתמש עשוי להיות מתחת לגיל המינימלי, אנו עשויים להגביל, להשעות או למחוק את החשבון בהתאם למדיניות Trust &amp; Safety ולדין החל.</p>
+<p>במקרים הקשורים לבטיחות קטינים, לרבות <code>underage_concern</code>, sexual exploitation, grooming, או חשד לתוכן בלתי חוקי, נפעל לפי תהליך escalation חמור ונתייעץ עם legal/רשויות מוסמכות לפי הצורך.</p>
+<p>&gt; Legal review required: מדיניות גיל, הסכמות הורים, טיפול בקטינים, ושימור/מחיקה של מידע בקטגוריה זו חייבים אישור משפטי לפני launch.</p>
+<h2>2.10 Cookies, tracking ו-consent</h2>
+<p>השירות עשוי להשתמש ב-cookies או טכנולוגיות דומות לצורך:</p>
+<ul>
+<li>login/session.</li>
+<li>אבטחה.</li>
+<li>analytics.</li>
+<li>performance.</li>
+<li>remembering preferences.</li>
+</ul>
+<p>סוגי tracking שאינם חיוניים עשויים לדרוש הסכמה, בהתאם לדין החל.</p>
+<p>יש להגדיר לפני launch:</p>
+<table>
+<tr><td>נושא</td><td>Status</td></tr>
+<tr><td>---</td><td>---</td></tr>
+<tr><td>cookie banner</td><td><code>[TBD — legal/product]</code></td></tr>
+<tr><td>analytics opt-out</td><td><code>[TBD]</code></td></tr>
+<tr><td>retention של cookies</td><td><code>[TBD]</code></td></tr>
+</table>
+<h2>2.11 אבטחת מידע</h2>
+<p>אנו מיישמים אמצעים טכניים וארגוניים שנועדו להגן על המידע, לרבות:</p>
+<ul>
+<li>Firebase Authentication.</li>
+<li>Firestore Security Rules.</li>
+<li>Storage Rules.</li>
+<li>backend-authoritative Cloud Functions.</li>
+<li>Secret Manager.</li>
+<li>environment separation: <code>dev</code>, <code>staging</code>, <code>prod</code>.</li>
+<li>איסור secrets ב-client.</li>
+<li>logging ו-analytics ללא PII/raw content/secrets.</li>
+<li>audit collections לפעולות רגישות.</li>
+<li>CI/CD checks ו-bundle scans.</li>
+</ul>
+<p>עם זאת, אף מערכת אינה מאובטחת באופן מוחלט. משתמשים נדרשים לשמור על פרטי ההתחברות שלהם ולא לשתף גישה לחשבון.</p>
+<h2>2.12 יצירת קשר ושינויים במדיניות</h2>
+<p>לשאלות או בקשות בנושא פרטיות:</p>
+<p>```text</p>
+<p>[מייל יצירת קשר]</p>
+<p>[כתובת]</p>
+<p>[שם הישות המשפטית]</p>
+<p>```</p>
+<p>אנו עשויים לעדכן מדיניות זו מעת לעת. שינוי מהותי במדיניות עשוי להיות מוצג למשתמשים בתוך השירות או באמצעי תקשורת מתאים, בהתאם לדין החל.</p>
+<hr>
+</main>
+</body>
+</html>

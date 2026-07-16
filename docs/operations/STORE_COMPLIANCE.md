@@ -516,7 +516,7 @@ Include review notes for:
 | Google Play Billing | no | yes for digital goods |
 | RevenueCat Android SDK | no | yes |
 | Data Safety form | no | yes |
-| Privacy Policy URL | web policy exists as draft | public URL required |
+| Privacy Policy URL | published (draft copy pending counsel): `/privacy.html` + `/terms.html` on the hosting domain, linked from Settings and the sign-in screen | swap copy after legal approval |
 | Content rating | no | yes, IARC |
 | Account deletion | web required | in-app + web URL |
 | Target API | no | yes |

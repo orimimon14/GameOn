@@ -212,6 +212,15 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                             </div>
                         </div>
                     )}
+                    {/* Store requirement: policies reachable from inside the app */}
+                    <a href="/terms.html" target="_blank" rel="noreferrer" className="w-full text-right py-4 px-2 dark:text-white text-text-inverse hover:bg-white/5 rounded-xl transition-colors flex items-center justify-between border-b dark:border-white/5 border-gray-200">
+                         <i className="fa-solid fa-file-contract text-xs"></i>
+                         <span>{t('settings.termsLink')}</span>
+                    </a>
+                    <a href="/privacy.html" target="_blank" rel="noreferrer" className="w-full text-right py-4 px-2 dark:text-white text-text-inverse hover:bg-white/5 rounded-xl transition-colors flex items-center justify-between border-b dark:border-white/5 border-gray-200">
+                         <i className="fa-solid fa-shield-halved text-xs"></i>
+                         <span>{t('settings.privacyLink')}</span>
+                    </a>
                     <button onClick={onLogout} className="w-full text-right py-4 px-2 text-danger hover:bg-danger/10 rounded-xl transition-colors flex items-center justify-between border-b dark:border-white/5 border-gray-200">
                          <i className="fa-solid fa-right-from-bracket text-xs"></i>
                          <span>{t('auth.logout')}</span>

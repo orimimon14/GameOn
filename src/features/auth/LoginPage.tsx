@@ -143,6 +143,18 @@ export const LoginPage: React.FC = () => {
         >
           {mode === 'login' ? t('auth.switchToSignup') : t('auth.switchToLogin')}
         </button>
+
+        {/* Store requirement: consent to policies stated at sign-in */}
+        <p className="mt-6 text-center text-xs text-text-muted">
+          {t('auth.legalConsent')}{' '}
+          <a href="/terms.html" target="_blank" rel="noreferrer" className="underline hover:text-text">
+            {t('auth.legalTerms')}
+          </a>{' '}
+          {t('auth.legalAnd')}{' '}
+          <a href="/privacy.html" target="_blank" rel="noreferrer" className="underline hover:text-text">
+            {t('auth.legalPrivacy')}
+          </a>
+        </p>
       </div>
     </div>
   );
