@@ -932,7 +932,7 @@ Swish & Game uses a freemium model.
 | Tier | Price | Included |
 |---|---:|---|
 | Basic | Free | Limited daily swipes, text-only chat, default styling, standard discovery access |
-| Pro Gamer | 29.90 ILS/month | Unlimited swipes and matches, media transfer, premium dynamic backgrounds, verified badge, enhanced cosmetics |
+| Pro Gamer | 29.90 ILS/month (weekly 14.90 · annual 119.90; 14-day free trial — ADR-044) | Unlimited swipes and matches, media transfer, premium dynamic backgrounds, verified badge, enhanced cosmetics |
 
 Pro/subscription state is server-owned. The client must never directly update Pro status.
 
@@ -946,7 +946,7 @@ Acceptance Criteria:
 - Swipe-limit prompt explains Pro unlimited swipes.
 - Media-lock prompt explains Pro media transfer.
 - Premium cosmetic lock explains Pro requirement.
-- Pricing is shown as 29.90 ILS/month.
+- Pricing is shown as 29.90 ILS/month (anchor), with weekly/annual options and the 14-day trial per ADR-044.
 - Messaging avoids misleading or aggressive paywalls.
 
 ##### SUB-002: As a Basic user, I want to upgrade to Pro so that I can unlock premium features.

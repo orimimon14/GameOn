@@ -49,10 +49,14 @@ Swish & Game משתמש במודל freemium:
 | `basic` | `0 ILS` | none | משתמש חינמי עם core matching experience. |
 | `pro` | `29.90 ILS/month` | recurring subscription | מנוי בתשלום עם entitlements מורחבים. |
 
+מסלולי חיוב ל-`pro` (ADR-044): שבועי `14.90 ILS`, חודשי `29.90 ILS` (העוגן),
+שנתי `119.90 ILS`; ניסיון חינם 14 יום למסלול חודשי/שנתי. כל המסלולים מקנים את
+אותם entitlements — ההבדל הוא בתקופת החיוב בלבד. Elite (₪49.90) — Scale/V1.
+
 ### 2.2 Canonical Subscription Rules
 
 - כסף אמיתי ב-MVP משמש ל-`pro` subscription בלבד.
-- coins לא נרכשים בכסף אמיתי ב-MVP.
+- coins לא נרכשים בכסף אמיתי ב-MVP; חבילות מטבעות ורכישות חד-פעמיות (בוסט/הזמנה בוערת) — שלב 2 לפי ADR-044.
 - Pro price canonical: `29.90 ILS/month`.
 - `currency = "ILS"`.
 - `verifiedBadge` מייצג `"Pro member"` בלבד ונגזר מ-`isPro`.

@@ -103,6 +103,17 @@ linked to identity (account-based app). No data sold; no third-party ads.
 Account deletion: available IN-APP (settings → delete permanently) and
 required by both stores — already implemented (`deleteAccount`).
 
+## 6.5 In-app products to configure (RevenueCat + store consoles) — ADR-044
+
+| Product id (suggested) | Type | Price | Notes |
+|---|---|---|---|
+| `pro_weekly` | auto-renewing subscription | ₪14.90/week | no trial |
+| `pro_monthly` | auto-renewing subscription | ₪29.90/month | 14-day free trial |
+| `pro_annual` | auto-renewing subscription | ₪119.90/year | 14-day free trial; badge "best value" |
+| coins packs (`coins_100/250/550/1200`) | consumable | ₪4.90 / 10.90 / 19.90 / 34.90 | Phase 2 — do NOT configure at launch |
+| `boost_1`, `boost_3` | consumable | ₪9.90 / ₪24.90 | Phase 2 |
+| `super_invite_1`, `super_invite_5` | consumable | ₪6.90 / ₪27.90 | Phase 2 |
+
 ## 7. Assets checklist
 
 | Asset | Spec | Status |
