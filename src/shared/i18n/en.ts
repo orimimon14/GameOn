@@ -329,6 +329,17 @@ export const en: TranslationCatalog = {
     alreadyPro: 'You already have an active Pro subscription 👑',
     checkoutError: 'Something went wrong opening the checkout — try again in a moment',
     redirecting: 'Heading to checkout…',
+    perWeek: '/ week',
+    perYear: '/ year',
+    choosePeriod: 'Choose billing period',
+    plans: {
+      weekly: 'Weekly',
+      monthly: 'Monthly',
+      annual: 'Annual',
+    },
+    bestValue: 'Best value',
+    annualEquivalent: 'Equals just ₪9.99 a month',
+    trialNote: '14-day free trial — cancel anytime, no questions asked',
     basicFeatures: {
       chat: 'Unlimited chat, likes and matches',
       calls: 'Live voice & video calls',

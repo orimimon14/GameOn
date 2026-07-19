@@ -8,11 +8,22 @@ import { useUserStore } from '@/shared/store/userStore';
 
 // Real-money coin packs are out of MVP scope (ADR-018/ADR-034): coins are
 // granted (signup bonus) and spent on cosmetics only — never bought with money.
+type BillingPlan = 'weekly' | 'monthly' | 'annual';
+
+// ADR-044 price anchors. Monthly is the anchor; annual carries the trial +
+// best-value badge; weekly is the no-commitment entry for younger players.
+const PLAN_PRICING: Record<BillingPlan, { price: string; suffixKey: string; trial: boolean }> = {
+    weekly: { price: '₪14.90', suffixKey: 'subscriptions.perWeek', trial: false },
+    monthly: { price: '₪29.90', suffixKey: 'subscriptions.perMonth', trial: true },
+    annual: { price: '₪119.90', suffixKey: 'subscriptions.perYear', trial: true },
+};
+
 export const SubscriptionsView: React.FC = () => {
     const { t } = useTranslation();
     const isPro = useUserStore((s) => s.userDoc?.isPro === true);
     const [checkingOut, setCheckingOut] = useState(false);
     const [checkoutNotice, setCheckoutNotice] = useState<string | null>(null);
+    const [billingPlan, setBillingPlan] = useState<BillingPlan>('monthly');
 
     // The redirect grants nothing — Pro flips only when the verified payment
     // webhook lands (ADR-037). Until billing is configured the backend answers
@@ -22,7 +33,7 @@ export const SubscriptionsView: React.FC = () => {
         setCheckingOut(true);
         setCheckoutNotice(null);
         try {
-            window.location.assign(await startProCheckout());
+            window.location.assign(await startProCheckout(billingPlan));
         } catch (error) {
             const message = error instanceof Error ? error.message : '';
             setCheckoutNotice(
@@ -52,8 +63,8 @@ export const SubscriptionsView: React.FC = () => {
         {
             name: 'Pro Gamer',
             status: t('subscriptions.proStatus'),
-            price: '₪29.90',
-            period: t('subscriptions.perMonth'),
+            price: PLAN_PRICING[billingPlan].price,
+            period: t(PLAN_PRICING[billingPlan].suffixKey),
             isCurrent: isPro,
             recommended: true,
             features: [
@@ -106,6 +117,31 @@ export const SubscriptionsView: React.FC = () => {
                                 {plan.period && <span className="text-text-muted text-sm">{plan.period}</span>}
                                 <span className="text-4xl font-black text-white">{plan.price}</span>
                             </div>
+                            {plan.recommended && billingPlan === 'annual' && (
+                                <p className="text-yellow-400/90 text-xs font-bold mt-1">{t('subscriptions.annualEquivalent')}</p>
+                            )}
+                            {plan.recommended && (
+                                <div className="flex justify-end gap-2 mt-4" role="group" aria-label={t('subscriptions.choosePeriod')}>
+                                    {(['weekly', 'monthly', 'annual'] as const).map((p) => (
+                                        <button
+                                            key={p}
+                                            onClick={() => setBillingPlan(p)}
+                                            className={`relative px-4 py-1.5 rounded-full text-xs font-black uppercase transition-all ${
+                                                billingPlan === p
+                                                    ? 'bg-yellow-500 text-black'
+                                                    : 'bg-white/5 text-text-muted border border-white/10 hover:bg-white/10'
+                                            }`}
+                                        >
+                                            {t(`subscriptions.plans.${p}`)}
+                                            {p === 'annual' && (
+                                                <span className="absolute -top-2.5 -start-2 bg-green-500 text-black text-[9px] font-black px-1.5 py-0.5 rounded-full whitespace-nowrap">
+                                                    {t('subscriptions.bestValue')}
+                                                </span>
+                                            )}
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
                         </div>
 
                         <div className="flex-1 space-y-6 mb-12">
@@ -140,6 +176,11 @@ export const SubscriptionsView: React.FC = () => {
                                     ? t('subscriptions.redirecting')
                                     : t('subscriptions.upgradeNow')}
                         </button>
+                        {plan.recommended && !plan.isCurrent && PLAN_PRICING[billingPlan].trial && (
+                            <p className="text-center text-text-muted text-xs font-bold mt-3">
+                                {t('subscriptions.trialNote')}
+                            </p>
+                        )}
                     </div>
                 ))}
             </div>

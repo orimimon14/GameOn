@@ -1478,6 +1478,8 @@ Reads:
 export type CreateCheckoutSessionInput = {
   successUrl?: string;
   cancelUrl?: string;
+  // ADR-044 billing plans; default "monthly"
+  plan?: "weekly" | "monthly" | "annual";
 };
 ```
 

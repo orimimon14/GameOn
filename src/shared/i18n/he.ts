@@ -327,6 +327,17 @@ export const he = {
     alreadyPro: 'יש לך כבר מנוי Pro פעיל 👑',
     checkoutError: 'משהו השתבש בפתיחת התשלום — נסה שוב עוד רגע',
     redirecting: 'עוברים לתשלום…',
+    perWeek: '/ שבוע',
+    perYear: '/ שנה',
+    choosePeriod: 'בחירת תקופת חיוב',
+    plans: {
+      weekly: 'שבועי',
+      monthly: 'חודשי',
+      annual: 'שנתי',
+    },
+    bestValue: 'הכי משתלם',
+    annualEquivalent: 'שווה ערך ל-₪9.99 לחודש בלבד',
+    trialNote: '14 ימי ניסיון חינם — אפשר לבטל מתי שרוצים, בלי שאלות',
     basicFeatures: {
       chat: 'צ׳אט, לייקים והתאמות ללא הגבלה',
       calls: 'שיחות קול ווידאו חיות',

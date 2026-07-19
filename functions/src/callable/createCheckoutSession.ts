@@ -11,6 +11,8 @@ import { z } from 'zod';
 const inputSchema = z.object({
   successUrl: z.string().url().max(500).optional(),
   cancelUrl: z.string().url().max(500).optional(),
+  // ADR-044 billing plans — same entitlements, different billing period.
+  plan: z.enum(['weekly', 'monthly', 'annual']).optional().default('monthly'),
 });
 
 export const createCheckoutSession = onCall(async (request) => {
@@ -18,9 +20,11 @@ export const createCheckoutSession = onCall(async (request) => {
   if (!uid) {
     throw new HttpsError('unauthenticated', 'auth required');
   }
-  if (!inputSchema.safeParse(request.data ?? {}).success) {
+  const parsed = inputSchema.safeParse(request.data ?? {});
+  if (!parsed.success) {
     throw new HttpsError('invalid-argument', 'invalid_argument');
   }
+  const { plan } = parsed.data;
 
   const db = getFirestore();
   const userSnap = await db.doc(`users/${uid}`).get();
@@ -34,9 +38,15 @@ export const createCheckoutSession = onCall(async (request) => {
 
   const configSnap = await db.doc('system/config').get();
   const billing = configSnap.data()?.billing as
-    | { webPurchaseUrl?: string; enabled?: boolean }
+    | {
+        webPurchaseUrl?: string;
+        // optional per-plan purchase links (ADR-044); falls back to the base
+        webPurchaseUrls?: Partial<Record<'weekly' | 'monthly' | 'annual', string>>;
+        enabled?: boolean;
+      }
     | undefined;
-  if (!billing?.enabled || !billing.webPurchaseUrl) {
+  const planUrl = billing?.webPurchaseUrls?.[plan] ?? billing?.webPurchaseUrl;
+  if (!billing?.enabled || !planUrl) {
     // Provider account not connected yet — the client shows a friendly
     // "payments open soon" state on this exact code.
     throw new HttpsError('failed-precondition', 'billing_not_configured');
@@ -45,7 +55,7 @@ export const createCheckoutSession = onCall(async (request) => {
   // RevenueCat Web Billing purchase links accept the App User ID as a query
   // param — set to the Firebase uid (ADR-037) so the webhook maps back to
   // this account with zero lookups.
-  const url = new URL(billing.webPurchaseUrl);
+  const url = new URL(planUrl);
   url.searchParams.set('app_user_id', uid);
 
   return {
