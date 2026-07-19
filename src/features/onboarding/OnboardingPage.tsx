@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Navigate, useNavigate } from 'react-router-dom';
@@ -71,6 +71,12 @@ export const OnboardingPage: React.FC = () => {
   const [stepTwoError, setStepTwoError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(false);
+  // Post-onboarding celebration screen — the button navigates to /discover.
+  // The ref flips BEFORE the server call: the Firestore listener can deliver
+  // onboardingCompleted ahead of the callable's response, and the redirect
+  // guard must already know a celebration is coming.
+  const [celebrating, setCelebrating] = useState(false);
+  const celebratingRef = useRef(false);
 
   const {
     register,
@@ -89,7 +95,9 @@ export const OnboardingPage: React.FC = () => {
     loadGameCatalog().then(setCatalog, () => setCatalogError(true));
   }, []);
 
-  if (userDoc?.onboardingCompleted) {
+  // celebrating: the user JUST completed onboarding here — let them enjoy the
+  // moment; the button navigates. The redirect only guards direct visits.
+  if (userDoc?.onboardingCompleted && !celebrating && !celebratingRef.current) {
     return <Navigate to="/discover" replace />;
   }
 
@@ -119,6 +127,7 @@ export const OnboardingPage: React.FC = () => {
     setStepTwoError(null);
     setSubmitError(false);
     setSubmitting(true);
+    celebratingRef.current = true;
     try {
       await completeOnboarding({
         profile: basics,
@@ -133,12 +142,38 @@ export const OnboardingPage: React.FC = () => {
       if (user && birthDate) {
         void updateMyBirthDate(user.uid, birthDate).catch(() => undefined);
       }
-      navigate('/discover');
+      // The moment matters: land on a celebration, not a cold deck.
+      setCelebrating(true);
     } catch {
+      celebratingRef.current = false;
       setSubmitError(true);
       setSubmitting(false);
     }
   };
+
+  if (celebrating) {
+    return (
+      <div className="h-screen-dynamic w-full bg-background text-text flex flex-col items-center justify-center p-8 text-center relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-primary/25 via-transparent to-premium/10 pointer-events-none" />
+        <div className="relative z-10 flex flex-col items-center animate-pop">
+          {photoUrl ? (
+            <img src={photoUrl} alt="" className="w-28 h-28 rounded-full object-cover border-4 border-premium shadow-glow mb-6" />
+          ) : (
+            <div className="w-28 h-28 rounded-full bg-surface border-4 border-premium shadow-glow mb-6 flex items-center justify-center text-5xl">🎮</div>
+          )}
+          <h1 className="text-4xl font-black italic uppercase tracking-tighter mb-3">{t('onboarding.doneTitle')}</h1>
+          <p className="text-text-muted font-bold mb-2 max-w-sm">{t('onboarding.doneSubtitle', { name: basics?.displayName ?? '' })}</p>
+          <p className="text-text-muted text-sm mb-8 max-w-sm">{t('onboarding.doneHint')}</p>
+          <button
+            onClick={() => navigate('/discover')}
+            className="px-10 py-4 bg-primary text-white rounded-full font-black text-lg uppercase italic tracking-wide hover:scale-105 transition-all active:scale-95 shadow-glow"
+          >
+            {t('onboarding.doneCta')}
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="h-screen-dynamic w-full bg-background text-text flex flex-col items-center p-6 overflow-y-auto overscroll-contain">

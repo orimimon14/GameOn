@@ -117,10 +117,10 @@ export const SubscriptionsView: React.FC = () => {
                                 {plan.period && <span className="text-text-muted text-sm">{plan.period}</span>}
                                 <span className="text-4xl font-black text-white">{plan.price}</span>
                             </div>
-                            {plan.recommended && billingPlan === 'annual' && (
+                            {plan.recommended && !plan.isCurrent && billingPlan === 'annual' && (
                                 <p className="text-yellow-400/90 text-xs font-bold mt-1">{t('subscriptions.annualEquivalent')}</p>
                             )}
-                            {plan.recommended && (
+                            {plan.recommended && !plan.isCurrent && (
                                 <div className="flex justify-end gap-2 mt-4" role="group" aria-label={t('subscriptions.choosePeriod')}>
                                     {(['weekly', 'monthly', 'annual'] as const).map((p) => (
                                         <button
@@ -161,21 +161,26 @@ export const SubscriptionsView: React.FC = () => {
                             ))}
                         </div>
 
-                        <button
-                            onClick={() => !plan.isCurrent && plan.recommended && void handleUpgrade()}
-                            disabled={plan.isCurrent || checkingOut}
-                            className={`w-full py-5 rounded-2xl font-black text-xl italic uppercase transition-all ${
-                                plan.isCurrent
-                                ? 'bg-white/5 text-gray-500 cursor-default border border-white/10'
-                                : 'bg-yellow-500 text-black hover:bg-yellow-400 shadow-glow active:scale-95 disabled:opacity-60'
-                            }`}
-                        >
-                            {plan.isCurrent
-                                ? t('subscriptions.currentPlan')
-                                : checkingOut
-                                    ? t('subscriptions.redirecting')
-                                    : t('subscriptions.upgradeNow')}
-                        </button>
+                        {/* A Pro member must never see an upgrade CTA — the
+                            Basic card gets a quiet label, the Pro card shows
+                            "this is your plan". */}
+                        {plan.isCurrent ? (
+                            <div className="w-full py-5 rounded-2xl font-black text-xl italic uppercase text-center bg-white/5 text-gray-500 border border-white/10">
+                                {t('subscriptions.currentPlan')}
+                            </div>
+                        ) : plan.recommended ? (
+                            <button
+                                onClick={() => void handleUpgrade()}
+                                disabled={checkingOut}
+                                className="w-full py-5 rounded-2xl font-black text-xl italic uppercase transition-all bg-yellow-500 text-black hover:bg-yellow-400 shadow-glow active:scale-95 disabled:opacity-60"
+                            >
+                                {checkingOut ? t('subscriptions.redirecting') : t('subscriptions.upgradeNow')}
+                            </button>
+                        ) : (
+                            <div className="w-full py-5 text-center text-gray-500 font-bold text-sm">
+                                {t('subscriptions.freeTierLabel')}
+                            </div>
+                        )}
                         {plan.recommended && !plan.isCurrent && PLAN_PRICING[billingPlan].trial && (
                             <p className="text-center text-text-muted text-xs font-bold mt-3">
                                 {t('subscriptions.trialNote')}

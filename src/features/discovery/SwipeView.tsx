@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
 import { loadDeck, loadMyActiveGameIds, sortByLevelCloseness, submitSwipe } from './discoveryApi';
+import { FirstRunTips } from './FirstRunTips';
 import { MatchCelebration } from './MatchCelebration';
 import { SwipeActions } from './SwipeActions';
 import { SwipeCard } from './SwipeCard';
@@ -254,6 +255,7 @@ export const SwipeView: React.FC = () => {
   if (!currentProfile && recycledPool.length > 0) {
     return (
       <div className="flex flex-col items-center justify-center h-full text-center p-10 relative z-10">
+        <FirstRunTips />
         <div className="mb-8 w-full max-w-md">{levelChips}</div>
         <i className="fa-solid fa-rotate-right text-7xl mb-6 text-primary"></i>
         <h3 className="text-2xl font-bold italic uppercase dark:text-white text-text-inverse">
@@ -277,6 +279,7 @@ export const SwipeView: React.FC = () => {
       // Taller than the viewport once game suggestions render — must scroll,
       // and the ghost centers itself (my-auto) only when there IS room.
       <div className="h-full overflow-y-auto no-scrollbar relative z-10">
+        <FirstRunTips />
         <div className="min-h-full flex flex-col items-center text-center px-4 pt-3 pb-6 sm:px-6 sm:pt-4">
         <div className="w-full max-w-md">{levelChips}</div>
         <div className="my-auto py-8 opacity-70 flex flex-col items-center">
@@ -333,6 +336,7 @@ export const SwipeView: React.FC = () => {
 
   return (
     <div className="h-full flex flex-col items-center gap-3 sm:gap-4 p-4 sm:p-6 pt-3 sm:pt-4 pb-4 relative z-10">
+      <FirstRunTips />
       {levelChips}
       {round === 'recycled' && (
         <div className="shrink-0 px-4 py-1 rounded-full bg-primary/15 border border-primary/30 text-primary text-xs font-bold">
