@@ -10,6 +10,8 @@ import {
   markChatRead,
   signalTyping,
   resolveMediaUrl,
+  proposeGameSession,
+  respondGameSession,
   sendImageMessage,
   sendTextMessage,
   sendVideoMessage,
@@ -18,6 +20,7 @@ import {
   unreadCountFor,
 } from './chatApi';
 import { VideoMessageRecorder } from './VideoMessageRecorder';
+import { ScheduleGameSheet } from './ScheduleGameSheet';
 
 import { PublicProfileSheet } from '@/features/profile/PublicProfileSheet';
 import { MediaLightbox } from '@/shared/components/MediaLightbox';
@@ -80,7 +83,7 @@ const formatTime = (message: MessageDocument): string =>
     : '';
 
 export const ChatView: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const uid = useUserStore((s) => s.userDoc?.uid);
   const isPro = useUserStore((s) => s.userDoc?.isPro === true);
@@ -98,6 +101,8 @@ export const ChatView: React.FC = () => {
   const [reporting, setReporting] = useState(false);
   const [safetyNotice, setSafetyNotice] = useState<string | null>(null);
   const [showProUpsell, setShowProUpsell] = useState(false);
+  const [showScheduleSheet, setShowScheduleSheet] = useState(false);
+  const [respondingSession, setRespondingSession] = useState<string | null>(null);
   const [sendingImage, setSendingImage] = useState(false);
   const [viewingPartner, setViewingPartner] = useState(false);
   const activeCall = useCallStore((s) => s.activeCall);
@@ -450,6 +455,54 @@ export const ChatView: React.FC = () => {
                     >
                       {message.type === 'video' || message.type === 'image' ? (
                         <MediaBubble message={message} />
+                      ) : message.type === 'session' ? (
+                        <div className="text-right">
+                          <p className="font-black uppercase italic mb-1">🗓️ {t('chat.session.bubbleTitle')}</p>
+                          <p className="text-lg font-bold" dir="auto">
+                            {message.sessionAt
+                              ? new Intl.DateTimeFormat(i18n.language === 'he' ? 'he-IL' : 'en-GB', {
+                                  weekday: 'long', day: 'numeric', month: 'numeric', hour: '2-digit', minute: '2-digit',
+                                }).format(message.sessionAt.toDate())
+                              : ''}
+                          </p>
+                          {message.sessionStatus === 'accepted' && (
+                            <p className="mt-1 text-sm font-black text-green-300">✔ {t('chat.session.accepted')}</p>
+                          )}
+                          {message.sessionStatus === 'declined' && (
+                            <p className="mt-1 text-sm font-black opacity-70">✖ {t('chat.session.declined')}</p>
+                          )}
+                          {message.sessionStatus === 'proposed' && isMe && (
+                            <p className="mt-1 text-sm font-bold opacity-70">{t('chat.session.pending')}</p>
+                          )}
+                          {message.sessionStatus === 'proposed' && !isMe && (
+                            <div className="flex gap-2 mt-2 justify-end">
+                              <button
+                                onClick={() => {
+                                  setRespondingSession(message.messageId);
+                                  void respondGameSession(selectedChatId!, message.messageId, true)
+                                    .catch(() => undefined)
+                                    .finally(() => setRespondingSession(null));
+                                }}
+                                disabled={respondingSession === message.messageId}
+                                className="px-4 py-2 rounded-xl bg-green-500 text-black text-sm font-black disabled:opacity-50"
+                              >
+                                {t('chat.session.accept')}
+                              </button>
+                              <button
+                                onClick={() => {
+                                  setRespondingSession(message.messageId);
+                                  void respondGameSession(selectedChatId!, message.messageId, false)
+                                    .catch(() => undefined)
+                                    .finally(() => setRespondingSession(null));
+                                }}
+                                disabled={respondingSession === message.messageId}
+                                className="px-4 py-2 rounded-xl bg-white/10 text-sm font-black disabled:opacity-50"
+                              >
+                                {t('chat.session.decline')}
+                              </button>
+                            </div>
+                          )}
+                        </div>
                       ) : (
                         <p className="text-base leading-relaxed text-right">{message.text}</p>
                       )}
@@ -519,6 +572,14 @@ export const ChatView: React.FC = () => {
               >
                 <button
                   type="button"
+                  onClick={() => setShowScheduleSheet(true)}
+                  aria-label={t('chat.session.sheetTitle')}
+                  className="w-12 h-12 sm:w-14 sm:h-14 shrink-0 rounded-2xl bg-white/10 hover:bg-primary text-white flex items-center justify-center transition-all"
+                >
+                  <i className="fa-solid fa-calendar-plus text-lg"></i>
+                </button>
+                <button
+                  type="button"
                   onClick={handleVideoMessageClick}
                   aria-label={t('chat.videoMessage.record')}
                   className="w-12 h-12 sm:w-14 sm:h-14 shrink-0 rounded-2xl bg-white/10 hover:bg-primary text-white flex items-center justify-center transition-all relative"
@@ -579,6 +640,12 @@ export const ChatView: React.FC = () => {
                   <i className="fa-solid fa-paper-plane text-lg"></i>
                 </button>
               </form>
+              {showScheduleSheet && selectedChatId && (
+                <ScheduleGameSheet
+                  onSend={(ms) => proposeGameSession(selectedChatId, ms)}
+                  onClose={() => setShowScheduleSheet(false)}
+                />
+              )}
             </div>
           </>
         ) : (
@@ -650,7 +717,9 @@ export const ChatView: React.FC = () => {
                             : 'text-text-muted'
                       }`}
                     >
-                      {chat.lastMessage ?? t('chat.startTalking')}
+                      {chat.lastMessageType === 'session'
+                        ? `🗓️ ${t('chat.session.preview')}`
+                        : chat.lastMessage || t('chat.startTalking')}
                     </p>
                   </div>
                 </button>

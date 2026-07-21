@@ -1107,6 +1107,18 @@ V1.
 
 ---
 
+### ADR-046: In-Chat Game Session Scheduling
+
+**Status:** Accepted (2026-07-19).
+
+"סוגרים משחק" הופך למובנה: כפתור 🗓️ בצ׳אט → הצעת זמן (הערב/מחר ב-21:00 או
+מותאם) → הודעת `session` עם אישור/דחייה בלחיצה → בקבלה נקבע `gameSessions`
+doc ותזכורת push לשני הצדדים ~15 דק׳ לפני (sweep כל 10 דק׳, exactly-once דרך
+`reminderSent`). הודעות session נוצרות שרת בלבד (proposeGameSession /
+respondGameSession); ראו API_CONTRACT §3.16–3.17.
+
+---
+
 ## Category D — נושאים פתוחים
 
 ---

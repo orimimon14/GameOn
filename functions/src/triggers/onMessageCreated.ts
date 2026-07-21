@@ -82,7 +82,12 @@ export const onMessageCreated = onDocumentCreated(
         await sendPushToUser(recipient, {
           kind: 'message',
           title: senderName ? `💬 הודעה חדשה מ-${senderName}` : '💬 הודעה חדשה',
-          body: message.type === 'text' ? preview : 'נשלחה אליך מדיה',
+          body:
+            message.type === 'text'
+              ? preview
+              : message.type === 'session'
+                ? 'הזמנה לקבוע משחק 🗓️'
+                : 'נשלחה אליך מדיה',
           url: `/chat?open=${chatId}`,
         });
       }

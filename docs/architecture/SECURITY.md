@@ -1482,3 +1482,9 @@ Firebase web config מותר ב-client:
 | Image moderation automation provider | Open / V1 | משפיע על Storage approval flow, report queues ו-risk level. |
 | Payment provider final selection | Proposed via ADR-017 | משפיע על webhook signature implementation ו-secret naming. |
 | Account deletion retention policy | Open | משפיע על `onUserDeleted`, chat retention, reports retention ו-privacy compliance. |
+
+## gameSessions (ADR-046)
+
+`gameSessions/{sessionId}` — server-only (deny all client access); נכתב ע"י
+`respondGameSession` ונקרא ע"י `sessionReminderTick`. הודעות `type: "session"`
+נוצרות רק דרך callables (clients יוצרים הודעות text בלבד).

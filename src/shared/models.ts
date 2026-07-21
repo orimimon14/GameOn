@@ -11,6 +11,7 @@ import type {
   ModerationState,
   Platform,
   PlayTime,
+  SessionStatus,
   SkillLevel,
   ShopItemCategory,
   ShopItemRarity,
@@ -196,6 +197,9 @@ export interface MessageDocument {
   senderId: string;
 
   type: MessageType;
+  // type === 'session' (ADR-046): when the proposed game starts + lifecycle
+  sessionAt?: Timestamp;
+  sessionStatus?: SessionStatus;
 
   text?: string;
 

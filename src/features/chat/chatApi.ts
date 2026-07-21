@@ -98,6 +98,22 @@ export const loadChatPartnerProfiles = async (
 
 // Recorded video messages (ADR-041, Pro-only): upload to the Storage path the
 // rules gate (chatMedia/{chatId}/{uid}/...), then let the backend validate and
+// Game sessions (ADR-046, API_CONTRACT §3.16-17) — proposals and answers go
+// through callables; session messages are server-created only.
+export const proposeGameSession = async (chatId: string, sessionAtMs: number): Promise<void> => {
+  const { functions } = getFirebase();
+  await httpsCallable(functions, 'proposeGameSession')({ chatId, sessionAtMs });
+};
+
+export const respondGameSession = async (
+  chatId: string,
+  messageId: string,
+  accept: boolean,
+): Promise<void> => {
+  const { functions } = getFirebase();
+  await httpsCallable(functions, 'respondGameSession')({ chatId, messageId, accept });
+};
+
 // create the message via sendChatMediaMessage (API_CONTRACT §3.4).
 // Photo attachments (API_CONTRACT §3.4, Pro-only like all chat media):
 // compress client-side, upload to the rules-gated chatMedia path, then let

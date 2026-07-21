@@ -68,8 +68,12 @@ export type SubscriptionStatus = (typeof SUBSCRIPTION_STATUSES)[number];
 export const MATCH_STATUSES = ['pending', 'matched', 'blocked', 'archived'] as const;
 export type MatchStatus = (typeof MATCH_STATUSES)[number];
 
-export const MESSAGE_TYPES = ['text', 'image', 'video', 'system'] as const;
+export const MESSAGE_TYPES = ['text', 'image', 'video', 'system', 'session'] as const;
 export type MessageType = (typeof MESSAGE_TYPES)[number];
+
+// Game-session proposal lifecycle (ADR-046) — lives on 'session' messages.
+export const SESSION_STATUSES = ['proposed', 'accepted', 'declined'] as const;
+export type SessionStatus = (typeof SESSION_STATUSES)[number];
 
 export const MESSAGE_STATUSES = ['sent', 'failed', 'deleted'] as const;
 export type MessageStatus = (typeof MESSAGE_STATUSES)[number];

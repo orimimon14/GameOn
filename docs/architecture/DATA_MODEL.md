@@ -151,6 +151,13 @@ export type SkillLevel =
   | "pro"
   | "elite";
 
+// ADR-046 — session lifecycle on `type:"session"` messages (fields
+// `sessionAt: Timestamp`, `sessionStatus`), plus a server-only reminder doc:
+// gameSessions/{chatId}_{messageId} = { chatId, messageId, participants,
+// sessionAt, reminderSent, remindedAt?, createdAt } — written by
+// respondGameSession, consumed by sessionReminderTick.
+export type SessionStatus = "proposed" | "accepted" | "declined";
+
 export type PlayTime =
   | "morning"
   | "afternoon"
@@ -192,7 +199,8 @@ export type MessageType =
   | "text"
   | "image"
   | "video"
-  | "system";
+  | "system"
+  | "session"; // ADR-046 — server-created game-session proposals
 
 export type MessageStatus =
   | "sent"

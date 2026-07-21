@@ -1686,6 +1686,30 @@ Writes (atomic batch):
 
 ---
 
+### 3.16 `proposeGameSession`
+
+| Field | Value |
+|---|---|
+| Type | Callable Function |
+| Scope | MVP (ADR-046) |
+| Auth | משתתף בצ׳אט פעיל |
+| Input | `{ chatId: string; sessionAtMs: number }` — בין now+5m ל-now+14d |
+| Effect | יוצר הודעת `type: "session"` (`sessionAt`, `sessionStatus: "proposed"`) — הודעות session נוצרות שרת בלבד; push לצד השני |
+| Output | `{ messageId: string }` |
+| Errors | `unauthenticated`, `invalid-argument` (`session_time_out_of_range`), `not-found` (`chat_unavailable`), `permission-denied` |
+
+### 3.17 `respondGameSession`
+
+| Field | Value |
+|---|---|
+| Type | Callable Function |
+| Scope | MVP (ADR-046) |
+| Auth | משתתף בצ׳אט שאינו המציע |
+| Input | `{ chatId: string; messageId: string; accept: boolean }` |
+| Effect | טרנזקציה: `sessionStatus → accepted/declined`; ב-accept נוצר `gameSessions/{chatId}_{messageId}` עבור sweep התזכורות (`sessionReminderTick`, כל 10 דקות); push למציע |
+| Output | `{ sessionStatus: "accepted" | "declined" }` |
+| Errors | `unauthenticated`, `invalid-argument`, `not-found`, `permission-denied`, `failed-precondition` (`own_proposal`, `already_answered`) |
+
 ## 4. HTTP / Webhook Functions
 
 ---
