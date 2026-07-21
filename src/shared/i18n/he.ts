@@ -65,6 +65,8 @@ export const he = {
     bioPlaceholder: 'ספר על סגנון המשחק שלך…',
     skillLevel: 'רמת מיומנות',
     platforms: 'פלטפורמות',
+    playTimes: 'מתי אתה בדרך כלל משחק?',
+    playTimesHint: 'לא חובה — אבל זה עוזר למצוא שותפים שזמינים כשאתה זמין',
     chooseGame: 'בחר משחק',
     chooseGames: 'באילו משחקים אתה משחק? (אפשר לבחור כמה)',
     ranksTitle: 'הדירוג שלך בכל משחק (לא חובה)',

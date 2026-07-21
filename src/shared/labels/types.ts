@@ -1,6 +1,7 @@
 import type {
   LookingFor,
   Platform,
+  PlayTime,
   ReportReason,
   ShopItemCategory,
   ShopItemRarity,
@@ -12,6 +13,7 @@ import type {
 // (LOCALIZATION §4.19). A missing key fails typecheck.
 export interface EnumLabels {
   skillLevel: Record<SkillLevel, string>;
+  playTime: Record<PlayTime, string>;
   platform: Record<Platform, string>;
   lookingFor: Record<LookingFor, string>;
   voicePreference: Record<VoicePreference, string>;

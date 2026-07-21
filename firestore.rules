@@ -113,6 +113,18 @@ service cloud.firestore {
         ]);
     }
 
+    function isValidPlayTimeList(values) {
+      return values is list
+        && values.size() <= 5
+        && values.hasOnly([
+          "morning",
+          "afternoon",
+          "evening",
+          "night",
+          "weekends"
+        ]);
+    }
+
     function isValidLookingFor(value) {
       return value in [
         "duo",
@@ -150,6 +162,7 @@ service cloud.firestore {
         "preferredLocale",
         "skillLevel",
         "platforms",
+        "playTimes",
         "isDiscoverable",
         "profileImageUrl",
         "bannerImageUrl",
@@ -205,6 +218,7 @@ service cloud.firestore {
         && (!("preferredLocale" in data) || data.preferredLocale in ["he", "en"])
         && (!("skillLevel" in data) || isValidSkillLevel(data.skillLevel))
         && (!("platforms" in data) || isValidPlatformList(data.platforms))
+        && (!("playTimes" in data) || isValidPlayTimeList(data.playTimes))
         && (!("isDiscoverable" in data) || data.isDiscoverable is bool)
         && (!("profileImageUrl" in data) || data.profileImageUrl is string)
         && (!("bannerImageUrl" in data) || data.bannerImageUrl is string)

@@ -5,6 +5,10 @@
 export const SKILL_LEVELS = ['beginner', 'intermediate', 'pro', 'elite'] as const;
 export type SkillLevel = (typeof SKILL_LEVELS)[number];
 
+// When do you usually play — profile field + card chips (ADR-045).
+export const PLAY_TIMES = ['morning', 'afternoon', 'evening', 'night', 'weekends'] as const;
+export type PlayTime = (typeof PLAY_TIMES)[number];
+
 export const PLATFORMS = [
   'pc',
   'playstation_5',

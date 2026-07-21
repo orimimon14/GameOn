@@ -78,6 +78,7 @@ describe('MyProfilePage', () => {
       bio: 'ביו מעודכן',
       skillLevel: 'elite',
       platforms: ['pc'],
+      playTimes: [],
     });
   });
 

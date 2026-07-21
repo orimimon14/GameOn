@@ -1094,6 +1094,19 @@ Option B לבדו אינו מספיק (שגיאות בזמן swipe), ו-Option A
 
 ---
 
+### ADR-045: Play-Time Availability on Profiles
+
+**Status:** Accepted (2026-07-19).
+
+`playTimes?: PlayTime[]` (`morning|afternoon|evening|night|weekends`, עד 5) —
+שדה client-writable ב-`users/{uid}` (allowlist + ולידציה ב-Rules), נאסף
+כאופציונלי ב-onboarding וב-עריכת פרופיל, ומשוקף ל-`publicProfiles` ע"י
+`syncPublicProfileForUser`. מוצג כצ'יפים על כרטיסי ההחלקה (עד 3) ובפרופיל
+הציבורי. מטרה: התאמות בין שחקנים שזמינים באותן שעות. סינון/מיון לפי שעות —
+V1.
+
+---
+
 ## Category D — נושאים פתוחים
 
 ---

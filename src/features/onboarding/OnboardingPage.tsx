@@ -10,7 +10,7 @@ import { useAuthStore } from '@/features/auth/authStore';
 import { AvatarCropModal } from '@/features/profile/AvatarCropModal';
 import { updateMyBirthDate, uploadCroppedProfilePhoto, uploadProfilePhoto } from '@/features/profile/profileApi';
 import { computeAgeFromBirthDate } from '@/shared/api/birthDate';
-import { LOOKING_FOR, LookingFor, Platform, PLATFORMS, SKILL_LEVELS, VOICE_PREFERENCES, VoicePreference } from '@/shared/enums';
+import { LOOKING_FOR, LookingFor, Platform, PLATFORMS, PLAY_TIMES, PlayTime, SKILL_LEVELS, VOICE_PREFERENCES, VoicePreference } from '@/shared/enums';
 import { useLabels } from '@/shared/labels';
 import type { GameCatalogDocument } from '@/shared/models';
 // Step 1 uses the shared client-writable basics schema (also used by profile editing).
@@ -82,13 +82,15 @@ export const OnboardingPage: React.FC = () => {
     register,
     handleSubmit,
     setValue,
+    getValues,
     watch,
     formState: { errors },
   } = useForm<BasicsInput>({
     resolver: zodResolver(basicsSchema),
-    defaultValues: { displayName: '', bio: '', skillLevel: 'intermediate', platforms: [] },
+    defaultValues: { displayName: '', bio: '', skillLevel: 'intermediate', platforms: [], playTimes: [] },
   });
   const selectedPlatforms = watch('platforms');
+  const selectedPlayTimes = watch('playTimes') ?? [];
   const selectedSkill = watch('skillLevel');
 
   useEffect(() => {
@@ -100,6 +102,15 @@ export const OnboardingPage: React.FC = () => {
   if (userDoc?.onboardingCompleted && !celebrating && !celebratingRef.current) {
     return <Navigate to="/discover" replace />;
   }
+
+  const togglePlayTime = (playTime: PlayTime) => {
+    // getValues (not the render closure) — rapid taps must not overwrite
+    const current = getValues('playTimes') ?? [];
+    const next = current.includes(playTime)
+      ? current.filter((p) => p !== playTime)
+      : [...current, playTime];
+    setValue('playTimes', next, { shouldValidate: true });
+  };
 
   const togglePlatform = (platform: Platform) => {
     const next = selectedPlatforms.includes(platform)
@@ -300,6 +311,18 @@ export const OnboardingPage: React.FC = () => {
               {errors.platforms?.message && (
                 <p role="alert" className="text-text-danger text-sm mt-1">{t(errors.platforms.message)}</p>
               )}
+            </div>
+
+            <div>
+              <span className="block text-sm font-bold text-text-muted mb-2">{t('onboarding.playTimes')}</span>
+              <div className="flex flex-wrap gap-2">
+                {PLAY_TIMES.map((playTime) => (
+                  <button key={playTime} type="button" onClick={() => togglePlayTime(playTime)} className={chipClass(selectedPlayTimes.includes(playTime))}>
+                    {labels.playTime[playTime]}
+                  </button>
+                ))}
+              </div>
+              <p className="text-text-muted text-xs mt-1">{t('onboarding.playTimesHint')}</p>
             </div>
 
             <button type="submit" className="w-full py-4 rounded-2xl font-black italic uppercase bg-primary text-white shadow-glow-primary hover:scale-[1.02] transition-all mt-2">

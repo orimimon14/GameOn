@@ -67,6 +67,8 @@ export const en: TranslationCatalog = {
     bioPlaceholder: 'Tell us about your play style…',
     skillLevel: 'Skill level',
     platforms: 'Platforms',
+    playTimes: 'When do you usually play?',
+    playTimesHint: "Optional — but it helps find teammates who are online when you are",
     chooseGame: 'Choose a game',
     chooseGames: 'Which games do you play? (pick as many as you like)',
     ranksTitle: 'Your rank per game (optional)',

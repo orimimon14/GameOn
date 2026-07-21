@@ -288,7 +288,7 @@ function userClientWritableKeys() {
     "bio",
     "preferredLocale",
     "skillLevel",
-    "platforms",
+    "platforms", "playTimes",
     "isDiscoverable",
     "profileImageUrl",
     "bannerImageUrl",

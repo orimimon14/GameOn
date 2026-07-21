@@ -10,6 +10,7 @@ import type {
   MessageType,
   ModerationState,
   Platform,
+  PlayTime,
   SkillLevel,
   ShopItemCategory,
   ShopItemRarity,
@@ -44,6 +45,7 @@ export interface UserDocument {
   preferredLocale?: 'he' | 'en';
   skillLevel: SkillLevel;
   platforms: Platform[];
+  playTimes?: PlayTime[]; // ADR-045
 
   onboardingCompleted: boolean;
   isDiscoverable: boolean;
@@ -99,6 +101,7 @@ export interface PublicProfileDocument {
   bio: string;
   skillLevel: SkillLevel;
   platforms: Platform[];
+  playTimes?: PlayTime[]; // ADR-045
 
   profileImageUrl?: string;
   bannerImageUrl?: string;

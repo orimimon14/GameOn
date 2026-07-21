@@ -17,6 +17,8 @@ export const PLATFORMS = [
   'other',
 ] as const;
 
+export const PLAY_TIMES = ['morning', 'afternoon', 'evening', 'night', 'weekends'] as const;
+
 export const LOOKING_FOR = [
   'duo',
   'squad',
@@ -47,6 +49,7 @@ export const completeOnboardingSchema = z
       bio: z.string().max(300),
       skillLevel: z.enum(SKILL_LEVELS),
       platforms: z.array(z.enum(PLATFORMS)).min(1).max(10),
+      playTimes: z.array(z.enum(PLAY_TIMES)).max(5).optional(), // ADR-045
     }),
     games: z.array(onboardingGameSchema).min(1).max(10).optional(),
     game: onboardingGameSchema.optional(),

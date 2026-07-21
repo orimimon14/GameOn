@@ -77,9 +77,9 @@ const GAMES = [
 ];
 
 const DEMO_USERS = [
-  { email: 'demo.oren@swish.test', displayName: 'אורן', age: 22, bio: 'מחפש סקוואד רגוע לערב. בעיקר Warzone.', skillLevel: 'pro', platforms: ['playstation_5', 'pc'], game: { gameId: 'warzone', rank: 'Platinum', lookingFor: 'squad', voicePreference: 'preferred' } },
-  { email: 'demo.yael@swish.test', displayName: 'יעל', age: 25, bio: 'גיימרית קז\'ואל שאוהבת co-op ובניית עולמות.', skillLevel: 'beginner', platforms: ['pc', 'nintendo_switch'], game: { gameId: 'minecraft', rank: 'Casual', lookingFor: 'casual', voicePreference: 'flexible' } },
-  { email: 'demo.tomer@swish.test', displayName: 'תומר', age: 28, bio: 'טריהארד ולורנט. עולים דיוויז\'ן?', skillLevel: 'elite', platforms: ['pc'], game: { gameId: 'valorant', rank: 'Immortal', lookingFor: 'ranked_climb', voicePreference: 'required' } },
+  { email: 'demo.oren@swish.test', displayName: 'אורן', age: 22, bio: 'מחפש סקוואד רגוע לערב. בעיקר Warzone.', skillLevel: 'pro', platforms: ['playstation_5', 'pc'], playTimes: ['evening', 'night'], game: { gameId: 'warzone', rank: 'Platinum', lookingFor: 'squad', voicePreference: 'preferred' } },
+  { email: 'demo.yael@swish.test', displayName: 'יעל', age: 25, bio: 'גיימרית קז\'ואל שאוהבת co-op ובניית עולמות.', skillLevel: 'beginner', platforms: ['pc', 'nintendo_switch'], playTimes: ['weekends', 'afternoon'], game: { gameId: 'minecraft', rank: 'Casual', lookingFor: 'casual', voicePreference: 'flexible' } },
+  { email: 'demo.tomer@swish.test', displayName: 'תומר', age: 28, bio: 'טריהארד ולורנט. עולים דיוויז\'ן?', skillLevel: 'elite', platforms: ['pc'], playTimes: ['night'], game: { gameId: 'valorant', rank: 'Immortal', lookingFor: 'ranked_climb', voicePreference: 'required' } },
 ];
 
 const now = () => new Date();
@@ -144,7 +144,7 @@ const main = async () => {
 
     await writeDoc(`users/${uid}`, {
       uid, displayName: u.displayName, email: u.email, age: u.age, bio: u.bio,
-      skillLevel: u.skillLevel, platforms: u.platforms,
+      skillLevel: u.skillLevel, platforms: u.platforms, playTimes: u.playTimes ?? [],
       onboardingCompleted: true, isDiscoverable: true,
       coins: 250, subscriptionTier: 'basic', subscriptionStatus: 'none', isPro: false,
       ownedItemIds: [], isSuspended: false, isDeleted: false,
@@ -160,7 +160,7 @@ const main = async () => {
     });
     await writeDoc(`publicProfiles/${uid}`, {
       uid, displayName: u.displayName, age: u.age, bio: u.bio,
-      skillLevel: u.skillLevel, platforms: u.platforms,
+      skillLevel: u.skillLevel, platforms: u.platforms, playTimes: u.playTimes ?? [],
       isPro: false, verifiedBadge: false,
       gameIds: [u.game.gameId], primaryGameId: u.game.gameId, primaryRank: u.game.rank,
       isDiscoverable: true, isSuspended: false, isDeleted: false,

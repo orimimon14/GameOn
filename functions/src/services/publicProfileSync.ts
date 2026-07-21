@@ -27,6 +27,7 @@ export const syncPublicProfileForUser = async (uid: string): Promise<boolean> =>
     bio: user.bio ?? '',
     skillLevel: user.skillLevel ?? 'beginner',
     platforms: user.platforms ?? [],
+    playTimes: user.playTimes ?? [], // ADR-045 — when they usually play
     isPro,
     verifiedBadge: isPro, // ADR-025: verifiedBadge == Pro member
     gameIds,

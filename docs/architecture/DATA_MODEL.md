@@ -151,6 +151,13 @@ export type SkillLevel =
   | "pro"
   | "elite";
 
+export type PlayTime =
+  | "morning"
+  | "afternoon"
+  | "evening"
+  | "night"
+  | "weekends";
+
 export type Platform =
   | "pc"
   | "playstation_5"
@@ -317,6 +324,7 @@ export type UserDocument = {
   preferredLocale?: "he" | "en";
   skillLevel: SkillLevel;
   platforms: Platform[];
+  playTimes?: PlayTime[]; // ADR-045 — client-writable, mirrored to publicProfiles
 
   onboardingCompleted: boolean;
   isDiscoverable: boolean;
@@ -432,6 +440,7 @@ export type PublicProfileDocument = {
   bio: string;
   skillLevel: SkillLevel;
   platforms: Platform[];
+  playTimes?: PlayTime[]; // ADR-045 — client-writable, mirrored to publicProfiles
 
   profileImageUrl?: string;
   bannerImageUrl?: string;
@@ -1220,6 +1229,7 @@ export type DiscoveryProfileDocument = {
   bio: string;
   skillLevel: SkillLevel;
   platforms: Platform[];
+  playTimes?: PlayTime[]; // ADR-045 — client-writable, mirrored to publicProfiles
 
   profileImageUrl?: string;
   bannerImageUrl?: string;

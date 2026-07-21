@@ -14,7 +14,7 @@ import type { CompletenessItem } from './profileCompleteness';
 import { useAuthStore } from '@/features/auth/authStore';
 import { useCosmetics } from '@/features/shop/useCosmetics';
 import { loadGameCatalog } from '@/shared/api/gameCatalog';
-import { LOOKING_FOR, LookingFor, Platform, PLATFORMS, SKILL_LEVELS } from '@/shared/enums';
+import { LOOKING_FOR, LookingFor, Platform, PLATFORMS, PLAY_TIMES, PlayTime, SKILL_LEVELS } from '@/shared/enums';
 import { useLabels } from '@/shared/labels';
 import type { GameCatalogDocument, UserGameDocument } from '@/shared/models';
 import { profileBasicsSchema, ProfileBasicsInput } from '@/shared/schemas/profileForm';
@@ -131,10 +131,12 @@ export const MyProfilePage: React.FC = () => {
     handleSubmit,
     reset,
     setValue,
+    getValues,
     watch,
     formState: { errors },
   } = useForm<ProfileBasicsInput>({ resolver: zodResolver(profileBasicsSchema) });
   const selectedPlatforms = watch('platforms') ?? [];
+  const selectedPlayTimes = watch('playTimes') ?? [];
   const selectedSkill = watch('skillLevel');
 
   useEffect(() => {
@@ -203,6 +205,7 @@ export const MyProfilePage: React.FC = () => {
       bio: userDoc.bio,
       skillLevel: userDoc.skillLevel,
       platforms: userDoc.platforms,
+      playTimes: userDoc.playTimes ?? [],
     });
     setSaveError(false);
     setIsEditing(true);
@@ -213,6 +216,15 @@ export const MyProfilePage: React.FC = () => {
       ? selectedPlatforms.filter((p) => p !== platform)
       : [...selectedPlatforms, platform];
     setValue('platforms', next, { shouldValidate: true });
+  };
+
+  const togglePlayTime = (playTime: PlayTime) => {
+    // getValues (not the render closure) — rapid taps must not overwrite
+    const current = getValues('playTimes') ?? [];
+    const next = current.includes(playTime)
+      ? current.filter((p) => p !== playTime)
+      : [...current, playTime];
+    setValue('playTimes', next, { shouldValidate: true });
   };
 
   const onSave = async (values: ProfileBasicsInput) => {
@@ -317,6 +329,9 @@ export const MyProfilePage: React.FC = () => {
               <span className={chipClass(true)}>{labels.skillLevel[userDoc.skillLevel]}</span>
               {userDoc.platforms?.map((p) => (
                 <span key={p} className={chipClass(false)}>{labels.platform[p]}</span>
+              ))}
+              {userDoc.playTimes?.map((p) => (
+                <span key={p} className={chipClass(false)}>{labels.playTime[p]}</span>
               ))}
             </div>
 
@@ -495,6 +510,17 @@ export const MyProfilePage: React.FC = () => {
                 ))}
               </div>
               {errors.platforms?.message && <p role="alert" className="text-text-danger text-sm mt-1">{t(errors.platforms.message)}</p>}
+            </div>
+
+            <div>
+              <span className="block text-sm font-bold text-text-muted mb-2">{t('onboarding.playTimes')}</span>
+              <div className="flex flex-wrap gap-2">
+                {PLAY_TIMES.map((playTime) => (
+                  <button key={playTime} type="button" onClick={() => togglePlayTime(playTime)} className={chipClass(selectedPlayTimes.includes(playTime))}>
+                    {labels.playTime[playTime]}
+                  </button>
+                ))}
+              </div>
             </div>
 
             {saveError && <p role="alert" className="text-text-danger text-sm font-bold bg-danger/10 border border-danger/30 rounded-xl px-4 py-3">{t('profile.saveError')}</p>}

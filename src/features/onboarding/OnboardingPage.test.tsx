@@ -91,6 +91,7 @@ describe('OnboardingPage', () => {
         bio: 'גיימר תחרותי',
         skillLevel: 'intermediate',
         platforms: ['pc'],
+        playTimes: [],
       },
       games: [
         { gameId: 'valorant', rank: 'Platinum', lookingFor: 'casual' },

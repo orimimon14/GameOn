@@ -8,6 +8,13 @@ export const heLabels: EnumLabels = {
     pro: 'מקצוען',
     elite: 'עילית',
   },
+  playTime: {
+    morning: '🌅 בוקר',
+    afternoon: '🌤️ צהריים',
+    evening: '🌆 ערב',
+    night: '🌙 לילה',
+    weekends: '🎮 סופ״ש',
+  },
   platform: {
     pc: 'PC',
     playstation_5: 'PlayStation 5',

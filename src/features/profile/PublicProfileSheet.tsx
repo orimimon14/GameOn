@@ -143,6 +143,14 @@ export const PublicProfileSheet: React.FC<PublicProfileSheetProps> = ({ profile,
                   {labels.platform[platform]}
                 </span>
               ))}
+              {profile.playTimes?.map((playTime) => (
+                <span
+                  key={playTime}
+                  className="px-3 py-1.5 rounded-xl bg-primary/10 border border-primary/30 text-primary text-xs font-bold"
+                >
+                  {labels.playTime[playTime]}
+                </span>
+              ))}
             </div>
           </div>
 

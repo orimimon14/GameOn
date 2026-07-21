@@ -169,6 +169,18 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({ profile, exitDirection, di
         </h2>
         <p className="text-white/80 font-bold mb-6 line-clamp-2">{profile.bio}</p>
 
+        {(profile.playTimes?.length ?? 0) > 0 && (
+          <div className="flex flex-wrap gap-2 justify-end mb-2">
+            {profile.playTimes?.slice(0, 3).map((playTime) => (
+              <span
+                key={playTime}
+                className="px-3 py-1 bg-primary/25 backdrop-blur-md rounded-full text-[10px] font-black text-white border border-primary/40"
+              >
+                {labels.playTime[playTime]}
+              </span>
+            ))}
+          </div>
+        )}
         <div className="flex flex-wrap gap-2 justify-end">
           {profile.platforms.map((platform) => (
             <span
